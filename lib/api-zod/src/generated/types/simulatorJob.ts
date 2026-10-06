@@ -5,11 +5,18 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { DiscoveredGroup } from './discoveredGroup';
 import type { SimulatorJobKind } from './simulatorJobKind';
+import type { SimulatorJobMode } from './simulatorJobMode';
+import type { SimulatorJobPlatform } from './simulatorJobPlatform';
 import type { SimulatorJobStatus } from './simulatorJobStatus';
 import type { SimulatorTarget } from './simulatorTarget';
 
 export interface SimulatorJob {
+  mode?: SimulatorJobMode;
+  action?: string;
+  platform?: SimulatorJobPlatform;
+  discoveredGroups?: DiscoveredGroup[];
   id: string;
   kind: SimulatorJobKind;
   /** @nullable */

@@ -14,3 +14,9 @@ A request for the complete project ZIP should include application runtime and so
 **Why:** The download is for running and editing the application on a personal computer; copying the hosted workspace wholesale would expose unrelated or private state and still require the hosted toolchain.
 
 **How to apply:** Keep the standalone runnable package at the archive root and additional development source separate. Preserve exclusions for dependencies, databases, and credentials when expanding the bundle.
+
+Keep the internal Electron application identity stable during public rebranding unless a data-directory migration is also provided.
+
+**Why:** The public brand changed to Social Najhin, but changing the package identity can change Electron's user-data location and make existing local records and sessions appear lost.
+
+**How to apply:** Rename visible titles, logos, metadata and download labels independently of the existing storage identity.

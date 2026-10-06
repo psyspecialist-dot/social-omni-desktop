@@ -1,17 +1,19 @@
 {
   "name": "socialomni-desktop",
-  "productName": "SocialOmni Desktop",
+  "productName": "Social Najhin",
   "version": "1.0.0",
-  "description": "Local-first social campaign planning and manual platform handoff.",
+  "description": "Social Najhin local social management and approved browser automation.",
   "main": "main.js",
   "type": "commonjs",
   "private": true,
   "scripts": {
     "start": "electron .",
+    "postinstall": "playwright install chromium",
     "check": "node --check main.js && node --check preload.js"
   },
   "dependencies": {
     "express": "^5.2.1",
+    "playwright": "^1.58.0",
     "sql.js": "^1.13.0"
   },
   "devDependencies": {

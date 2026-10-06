@@ -11,6 +11,24 @@ tags:
   - name: health
     description: Health operations
 paths:
+  /socialomni/browser/jobs:
+    post:
+      operationId: startLocalBrowserTask
+      summary: Start an explicitly approved desktop-only browser task
+      parameters:
+        - $ref: "#/components/parameters/Workspace"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/BrowserTaskInput"}
+      responses:
+        "200":
+          $ref: "#/components/responses/WorkspaceState"
+        "400":
+          description: Invalid task or missing consent
+        "422":
+          description: Local browser execution is unavailable in hosted preview
   /socialomni/download:
     get:
       operationId: downloadDesktopPackage
@@ -198,6 +216,16 @@ components:
         application/json:
           schema: {$ref: "#/components/schemas/SimulatorState"}
   schemas:
+    BrowserTaskInput:
+      type: object
+      required: [action, accountId]
+      properties:
+        action: {type: string, enum: [connect, search, send, publish]}
+        accountId: {type: string}
+        campaignId: {type: string}
+        keywords: {type: string, maxLength: 300}
+        groupUrls: {type: string, maxLength: 5000}
+        approved: {type: boolean, description: Explicit recipient consent or group posting permission attestation}
     SimulatorJobInput:
       type: object
       required: [kind]
@@ -217,8 +245,8 @@ components:
       properties:
         theme: {type: string, enum: [light, dark]}
         keywords: {type: string, maxLength: 300}
-        delayMin: {type: integer, minimum: 3, maximum: 30}
-        delayMax: {type: integer, minimum: 3, maximum: 30}
+        delayMin: {type: integer, minimum: 5, maximum: 12}
+        delayMax: {type: integer, minimum: 5, maximum: 12}
         phoneNumbers: {type: string, maxLength: 10000}
         messageContent: {type: string, maxLength: 10000}
         mediaId: {type: [string, "null"]}
@@ -260,13 +288,19 @@ components:
       properties:
         id: {type: string}
         name: {type: string}
-        joinStatus: {type: string, enum: [Pending, Joined]}
-        postStatus: {type: string, enum: [Pending, Posted]}
+        joinStatus: {type: string, enum: [Pending, Joined, Requested, Needs review]}
+        postStatus: {type: string, enum: [Pending, Posted, Not posted]}
         sendStatus: {type: string, enum: [Pending, Sent]}
     SimulatorJob:
       type: object
       required: [id, kind, status, progress, currentStep, steps, createdAt]
       properties:
+        mode: {type: string, enum: [live]}
+        action: {type: string}
+        platform: {type: string, enum: [Facebook, WhatsApp]}
+        discoveredGroups:
+          type: array
+          items: {$ref: "#/components/schemas/DiscoveredGroup"}
         id: {type: string}
         kind: {type: string, enum: [campaign, whatsapp, leads]}
         campaignId: {type: [string, "null"]}
@@ -315,11 +349,13 @@ components:
       type: object
       required: [messagesSent]
       properties:
+        realMessagesSent: {type: integer, minimum: 0, description: Cumulative server-accepted live WhatsApp sends; separate from simulations}
         messagesSent: {type: integer, minimum: 0, description: Cumulative simulated sends, unaffected by job-history pruning}
     SimulatorState:
       type: object
       required: [store, settings, jobs, initialized, media, leads, analytics]
       properties:
+        automationAvailable: {type: boolean}
         store:
           type: object
           required: [campaigns, accounts, contacts, lists, activity]
@@ -343,4 +379,10 @@ components:
           type: string
       required:
         - status
+    DiscoveredGroup:
+      type: object
+      required: [name, url]
+      properties:
+        name: {type: string}
+        url: {type: string}
 

@@ -36,7 +36,7 @@ export function downloadLeads(leads: Lead[], format: 'csv' | 'xlsx'): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `socialomni-simulated-leads-${new Date().toISOString().slice(0, 10)}.${format}`;
+  a.download = `social-najhin-simulated-leads-${new Date().toISOString().slice(0, 10)}.${format}`;
   document.body.appendChild(a);
   a.click();
   a.remove();

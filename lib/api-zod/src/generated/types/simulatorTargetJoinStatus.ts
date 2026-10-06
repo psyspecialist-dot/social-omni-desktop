@@ -12,4 +12,6 @@ export type SimulatorTargetJoinStatus = typeof SimulatorTargetJoinStatus[keyof t
 export const SimulatorTargetJoinStatus = {
   Pending: 'Pending',
   Joined: 'Joined',
+  Requested: 'Requested',
+  Needs_review: 'Needs review',
 } as const;

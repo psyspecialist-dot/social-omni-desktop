@@ -9,6 +9,145 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary Start an explicitly approved desktop-only browser task
+ */
+export const StartLocalBrowserTaskHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const startLocalBrowserTaskBodyKeywordsMax = 300;
+
+export const startLocalBrowserTaskBodyGroupUrlsMax = 5000;
+
+
+
+export const StartLocalBrowserTaskBody = zod.object({
+  "action": zod.enum(['connect', 'search', 'send', 'publish']),
+  "accountId": zod.string(),
+  "campaignId": zod.string().optional(),
+  "keywords": zod.string().max(startLocalBrowserTaskBodyKeywordsMax).optional(),
+  "groupUrls": zod.string().max(startLocalBrowserTaskBodyGroupUrlsMax).optional(),
+  "approved": zod.boolean().optional().describe('Explicit recipient consent or group posting permission attestation')
+})
+
+export const startLocalBrowserTaskResponseSettingsKeywordsMax = 300;
+
+export const startLocalBrowserTaskResponseSettingsDelayMinMin = 5;
+export const startLocalBrowserTaskResponseSettingsDelayMinMax = 12;
+
+export const startLocalBrowserTaskResponseSettingsDelayMaxMin = 5;
+export const startLocalBrowserTaskResponseSettingsDelayMaxMax = 12;
+
+export const startLocalBrowserTaskResponseSettingsPhoneNumbersMax = 10000;
+
+export const startLocalBrowserTaskResponseSettingsMessageContentMax = 10000;
+
+export const startLocalBrowserTaskResponseSettingsLicenseKeyMax = 200;
+
+export const startLocalBrowserTaskResponseLeadsOneKeywordMax = 100;
+
+export const startLocalBrowserTaskResponseLeadsOneCityMax = 150;
+
+export const startLocalBrowserTaskResponseLeadsOneTargetCountMax = 200;
+
+export const startLocalBrowserTaskResponseAnalyticsRealMessagesSentMin = 0;
+
+export const startLocalBrowserTaskResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const StartLocalBrowserTaskResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "keywords": zod.string().max(startLocalBrowserTaskResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(startLocalBrowserTaskResponseSettingsDelayMinMin).max(startLocalBrowserTaskResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(startLocalBrowserTaskResponseSettingsDelayMaxMin).max(startLocalBrowserTaskResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(startLocalBrowserTaskResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(startLocalBrowserTaskResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(startLocalBrowserTaskResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
+  "sendStatus": zod.enum(['Pending', 'Sent'])
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(startLocalBrowserTaskResponseLeadsOneKeywordMax),
+  "city": zod.string().max(startLocalBrowserTaskResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(startLocalBrowserTaskResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(startLocalBrowserTaskResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(startLocalBrowserTaskResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
+/**
  * @summary Download the complete standalone desktop application ZIP
  */
 export const DownloadDesktopPackageResponse = zod.unknown()
@@ -34,11 +173,11 @@ export const SaveSocialOmniLeadDraftBody = zod.object({
 
 export const saveSocialOmniLeadDraftResponseSettingsKeywordsMax = 300;
 
-export const saveSocialOmniLeadDraftResponseSettingsDelayMinMin = 3;
-export const saveSocialOmniLeadDraftResponseSettingsDelayMinMax = 30;
+export const saveSocialOmniLeadDraftResponseSettingsDelayMinMin = 5;
+export const saveSocialOmniLeadDraftResponseSettingsDelayMinMax = 12;
 
-export const saveSocialOmniLeadDraftResponseSettingsDelayMaxMin = 3;
-export const saveSocialOmniLeadDraftResponseSettingsDelayMaxMax = 30;
+export const saveSocialOmniLeadDraftResponseSettingsDelayMaxMin = 5;
+export const saveSocialOmniLeadDraftResponseSettingsDelayMaxMax = 12;
 
 export const saveSocialOmniLeadDraftResponseSettingsPhoneNumbersMax = 10000;
 
@@ -52,11 +191,14 @@ export const saveSocialOmniLeadDraftResponseLeadsOneCityMax = 150;
 
 export const saveSocialOmniLeadDraftResponseLeadsOneTargetCountMax = 200;
 
+export const saveSocialOmniLeadDraftResponseAnalyticsRealMessagesSentMin = 0;
+
 export const saveSocialOmniLeadDraftResponseAnalyticsMessagesSentMin = 0;
 
 
 
 export const SaveSocialOmniLeadDraftResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -76,6 +218,13 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
   "licenseKey": zod.string().max(saveSocialOmniLeadDraftResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
   "id": zod.string(),
   "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
@@ -87,8 +236,8 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
   "targets": zod.array(zod.object({
   "id": zod.string(),
   "name": zod.string(),
-  "joinStatus": zod.enum(['Pending', 'Joined']),
-  "postStatus": zod.enum(['Pending', 'Posted']),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
   "sendStatus": zod.enum(['Pending', 'Sent'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
@@ -133,6 +282,7 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
 }))
 })),
   "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(saveSocialOmniLeadDraftResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
   "messagesSent": zod.number().int().min(saveSocialOmniLeadDraftResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
 })
 })
@@ -147,11 +297,11 @@ export const ClearSocialOmniLeadsHeader = zod.object({
 
 export const clearSocialOmniLeadsResponseSettingsKeywordsMax = 300;
 
-export const clearSocialOmniLeadsResponseSettingsDelayMinMin = 3;
-export const clearSocialOmniLeadsResponseSettingsDelayMinMax = 30;
+export const clearSocialOmniLeadsResponseSettingsDelayMinMin = 5;
+export const clearSocialOmniLeadsResponseSettingsDelayMinMax = 12;
 
-export const clearSocialOmniLeadsResponseSettingsDelayMaxMin = 3;
-export const clearSocialOmniLeadsResponseSettingsDelayMaxMax = 30;
+export const clearSocialOmniLeadsResponseSettingsDelayMaxMin = 5;
+export const clearSocialOmniLeadsResponseSettingsDelayMaxMax = 12;
 
 export const clearSocialOmniLeadsResponseSettingsPhoneNumbersMax = 10000;
 
@@ -165,11 +315,14 @@ export const clearSocialOmniLeadsResponseLeadsOneCityMax = 150;
 
 export const clearSocialOmniLeadsResponseLeadsOneTargetCountMax = 200;
 
+export const clearSocialOmniLeadsResponseAnalyticsRealMessagesSentMin = 0;
+
 export const clearSocialOmniLeadsResponseAnalyticsMessagesSentMin = 0;
 
 
 
 export const ClearSocialOmniLeadsResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -189,6 +342,13 @@ export const ClearSocialOmniLeadsResponse = zod.object({
   "licenseKey": zod.string().max(clearSocialOmniLeadsResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
   "id": zod.string(),
   "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
@@ -200,8 +360,8 @@ export const ClearSocialOmniLeadsResponse = zod.object({
   "targets": zod.array(zod.object({
   "id": zod.string(),
   "name": zod.string(),
-  "joinStatus": zod.enum(['Pending', 'Joined']),
-  "postStatus": zod.enum(['Pending', 'Posted']),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
   "sendStatus": zod.enum(['Pending', 'Sent'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
@@ -246,6 +406,7 @@ export const ClearSocialOmniLeadsResponse = zod.object({
 }))
 })),
   "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(clearSocialOmniLeadsResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
   "messagesSent": zod.number().int().min(clearSocialOmniLeadsResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
 })
 })
@@ -257,11 +418,11 @@ export const GetSocialOmniStateHeader = zod.object({
 
 export const getSocialOmniStateResponseSettingsKeywordsMax = 300;
 
-export const getSocialOmniStateResponseSettingsDelayMinMin = 3;
-export const getSocialOmniStateResponseSettingsDelayMinMax = 30;
+export const getSocialOmniStateResponseSettingsDelayMinMin = 5;
+export const getSocialOmniStateResponseSettingsDelayMinMax = 12;
 
-export const getSocialOmniStateResponseSettingsDelayMaxMin = 3;
-export const getSocialOmniStateResponseSettingsDelayMaxMax = 30;
+export const getSocialOmniStateResponseSettingsDelayMaxMin = 5;
+export const getSocialOmniStateResponseSettingsDelayMaxMax = 12;
 
 export const getSocialOmniStateResponseSettingsPhoneNumbersMax = 10000;
 
@@ -275,11 +436,14 @@ export const getSocialOmniStateResponseLeadsOneCityMax = 150;
 
 export const getSocialOmniStateResponseLeadsOneTargetCountMax = 200;
 
+export const getSocialOmniStateResponseAnalyticsRealMessagesSentMin = 0;
+
 export const getSocialOmniStateResponseAnalyticsMessagesSentMin = 0;
 
 
 
 export const GetSocialOmniStateResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -299,6 +463,13 @@ export const GetSocialOmniStateResponse = zod.object({
   "licenseKey": zod.string().max(getSocialOmniStateResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
   "id": zod.string(),
   "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
@@ -310,8 +481,8 @@ export const GetSocialOmniStateResponse = zod.object({
   "targets": zod.array(zod.object({
   "id": zod.string(),
   "name": zod.string(),
-  "joinStatus": zod.enum(['Pending', 'Joined']),
-  "postStatus": zod.enum(['Pending', 'Posted']),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
   "sendStatus": zod.enum(['Pending', 'Sent'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
@@ -356,6 +527,7 @@ export const GetSocialOmniStateResponse = zod.object({
 }))
 })),
   "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(getSocialOmniStateResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
   "messagesSent": zod.number().int().min(getSocialOmniStateResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
 })
 })
@@ -367,11 +539,11 @@ export const ClearSocialOmniStateHeader = zod.object({
 
 export const clearSocialOmniStateResponseSettingsKeywordsMax = 300;
 
-export const clearSocialOmniStateResponseSettingsDelayMinMin = 3;
-export const clearSocialOmniStateResponseSettingsDelayMinMax = 30;
+export const clearSocialOmniStateResponseSettingsDelayMinMin = 5;
+export const clearSocialOmniStateResponseSettingsDelayMinMax = 12;
 
-export const clearSocialOmniStateResponseSettingsDelayMaxMin = 3;
-export const clearSocialOmniStateResponseSettingsDelayMaxMax = 30;
+export const clearSocialOmniStateResponseSettingsDelayMaxMin = 5;
+export const clearSocialOmniStateResponseSettingsDelayMaxMax = 12;
 
 export const clearSocialOmniStateResponseSettingsPhoneNumbersMax = 10000;
 
@@ -385,11 +557,14 @@ export const clearSocialOmniStateResponseLeadsOneCityMax = 150;
 
 export const clearSocialOmniStateResponseLeadsOneTargetCountMax = 200;
 
+export const clearSocialOmniStateResponseAnalyticsRealMessagesSentMin = 0;
+
 export const clearSocialOmniStateResponseAnalyticsMessagesSentMin = 0;
 
 
 
 export const ClearSocialOmniStateResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -409,6 +584,13 @@ export const ClearSocialOmniStateResponse = zod.object({
   "licenseKey": zod.string().max(clearSocialOmniStateResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
   "id": zod.string(),
   "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
@@ -420,8 +602,8 @@ export const ClearSocialOmniStateResponse = zod.object({
   "targets": zod.array(zod.object({
   "id": zod.string(),
   "name": zod.string(),
-  "joinStatus": zod.enum(['Pending', 'Joined']),
-  "postStatus": zod.enum(['Pending', 'Posted']),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
   "sendStatus": zod.enum(['Pending', 'Sent'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
@@ -466,6 +648,7 @@ export const ClearSocialOmniStateResponse = zod.object({
 }))
 })),
   "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(clearSocialOmniStateResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
   "messagesSent": zod.number().int().min(clearSocialOmniStateResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
 })
 })
@@ -477,11 +660,11 @@ export const UpdateSocialOmniSettingsHeader = zod.object({
 
 export const updateSocialOmniSettingsBodyKeywordsMax = 300;
 
-export const updateSocialOmniSettingsBodyDelayMinMin = 3;
-export const updateSocialOmniSettingsBodyDelayMinMax = 30;
+export const updateSocialOmniSettingsBodyDelayMinMin = 5;
+export const updateSocialOmniSettingsBodyDelayMinMax = 12;
 
-export const updateSocialOmniSettingsBodyDelayMaxMin = 3;
-export const updateSocialOmniSettingsBodyDelayMaxMax = 30;
+export const updateSocialOmniSettingsBodyDelayMaxMin = 5;
+export const updateSocialOmniSettingsBodyDelayMaxMax = 12;
 
 export const updateSocialOmniSettingsBodyPhoneNumbersMax = 10000;
 
@@ -505,11 +688,11 @@ export const UpdateSocialOmniSettingsBody = zod.object({
 
 export const updateSocialOmniSettingsResponseSettingsKeywordsMax = 300;
 
-export const updateSocialOmniSettingsResponseSettingsDelayMinMin = 3;
-export const updateSocialOmniSettingsResponseSettingsDelayMinMax = 30;
+export const updateSocialOmniSettingsResponseSettingsDelayMinMin = 5;
+export const updateSocialOmniSettingsResponseSettingsDelayMinMax = 12;
 
-export const updateSocialOmniSettingsResponseSettingsDelayMaxMin = 3;
-export const updateSocialOmniSettingsResponseSettingsDelayMaxMax = 30;
+export const updateSocialOmniSettingsResponseSettingsDelayMaxMin = 5;
+export const updateSocialOmniSettingsResponseSettingsDelayMaxMax = 12;
 
 export const updateSocialOmniSettingsResponseSettingsPhoneNumbersMax = 10000;
 
@@ -523,11 +706,14 @@ export const updateSocialOmniSettingsResponseLeadsOneCityMax = 150;
 
 export const updateSocialOmniSettingsResponseLeadsOneTargetCountMax = 200;
 
+export const updateSocialOmniSettingsResponseAnalyticsRealMessagesSentMin = 0;
+
 export const updateSocialOmniSettingsResponseAnalyticsMessagesSentMin = 0;
 
 
 
 export const UpdateSocialOmniSettingsResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -547,6 +733,13 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "licenseKey": zod.string().max(updateSocialOmniSettingsResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
   "id": zod.string(),
   "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
@@ -558,8 +751,8 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "targets": zod.array(zod.object({
   "id": zod.string(),
   "name": zod.string(),
-  "joinStatus": zod.enum(['Pending', 'Joined']),
-  "postStatus": zod.enum(['Pending', 'Posted']),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
   "sendStatus": zod.enum(['Pending', 'Sent'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
@@ -604,6 +797,7 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
 }))
 })),
   "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(updateSocialOmniSettingsResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
   "messagesSent": zod.number().int().min(updateSocialOmniSettingsResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
 })
 })
@@ -623,11 +817,11 @@ export const CreateSocialOmniJobBody = zod.object({
 
 export const createSocialOmniJobResponseSettingsKeywordsMax = 300;
 
-export const createSocialOmniJobResponseSettingsDelayMinMin = 3;
-export const createSocialOmniJobResponseSettingsDelayMinMax = 30;
+export const createSocialOmniJobResponseSettingsDelayMinMin = 5;
+export const createSocialOmniJobResponseSettingsDelayMinMax = 12;
 
-export const createSocialOmniJobResponseSettingsDelayMaxMin = 3;
-export const createSocialOmniJobResponseSettingsDelayMaxMax = 30;
+export const createSocialOmniJobResponseSettingsDelayMaxMin = 5;
+export const createSocialOmniJobResponseSettingsDelayMaxMax = 12;
 
 export const createSocialOmniJobResponseSettingsPhoneNumbersMax = 10000;
 
@@ -641,11 +835,14 @@ export const createSocialOmniJobResponseLeadsOneCityMax = 150;
 
 export const createSocialOmniJobResponseLeadsOneTargetCountMax = 200;
 
+export const createSocialOmniJobResponseAnalyticsRealMessagesSentMin = 0;
+
 export const createSocialOmniJobResponseAnalyticsMessagesSentMin = 0;
 
 
 
 export const CreateSocialOmniJobResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -665,6 +862,13 @@ export const CreateSocialOmniJobResponse = zod.object({
   "licenseKey": zod.string().max(createSocialOmniJobResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
   "id": zod.string(),
   "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
@@ -676,8 +880,8 @@ export const CreateSocialOmniJobResponse = zod.object({
   "targets": zod.array(zod.object({
   "id": zod.string(),
   "name": zod.string(),
-  "joinStatus": zod.enum(['Pending', 'Joined']),
-  "postStatus": zod.enum(['Pending', 'Posted']),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
   "sendStatus": zod.enum(['Pending', 'Sent'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
@@ -722,6 +926,7 @@ export const CreateSocialOmniJobResponse = zod.object({
 }))
 })),
   "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(createSocialOmniJobResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
   "messagesSent": zod.number().int().min(createSocialOmniJobResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
 })
 })
@@ -737,11 +942,11 @@ export const CancelSocialOmniJobHeader = zod.object({
 
 export const cancelSocialOmniJobResponseSettingsKeywordsMax = 300;
 
-export const cancelSocialOmniJobResponseSettingsDelayMinMin = 3;
-export const cancelSocialOmniJobResponseSettingsDelayMinMax = 30;
+export const cancelSocialOmniJobResponseSettingsDelayMinMin = 5;
+export const cancelSocialOmniJobResponseSettingsDelayMinMax = 12;
 
-export const cancelSocialOmniJobResponseSettingsDelayMaxMin = 3;
-export const cancelSocialOmniJobResponseSettingsDelayMaxMax = 30;
+export const cancelSocialOmniJobResponseSettingsDelayMaxMin = 5;
+export const cancelSocialOmniJobResponseSettingsDelayMaxMax = 12;
 
 export const cancelSocialOmniJobResponseSettingsPhoneNumbersMax = 10000;
 
@@ -755,11 +960,14 @@ export const cancelSocialOmniJobResponseLeadsOneCityMax = 150;
 
 export const cancelSocialOmniJobResponseLeadsOneTargetCountMax = 200;
 
+export const cancelSocialOmniJobResponseAnalyticsRealMessagesSentMin = 0;
+
 export const cancelSocialOmniJobResponseAnalyticsMessagesSentMin = 0;
 
 
 
 export const CancelSocialOmniJobResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -779,6 +987,13 @@ export const CancelSocialOmniJobResponse = zod.object({
   "licenseKey": zod.string().max(cancelSocialOmniJobResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
   "id": zod.string(),
   "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
@@ -790,8 +1005,8 @@ export const CancelSocialOmniJobResponse = zod.object({
   "targets": zod.array(zod.object({
   "id": zod.string(),
   "name": zod.string(),
-  "joinStatus": zod.enum(['Pending', 'Joined']),
-  "postStatus": zod.enum(['Pending', 'Posted']),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
   "sendStatus": zod.enum(['Pending', 'Sent'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
@@ -836,6 +1051,7 @@ export const CancelSocialOmniJobResponse = zod.object({
 }))
 })),
   "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(cancelSocialOmniJobResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
   "messagesSent": zod.number().int().min(cancelSocialOmniJobResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
 })
 })
@@ -860,11 +1076,11 @@ export const UploadSocialOmniMediaBody = zod.object({
 
 export const uploadSocialOmniMediaResponseSettingsKeywordsMax = 300;
 
-export const uploadSocialOmniMediaResponseSettingsDelayMinMin = 3;
-export const uploadSocialOmniMediaResponseSettingsDelayMinMax = 30;
+export const uploadSocialOmniMediaResponseSettingsDelayMinMin = 5;
+export const uploadSocialOmniMediaResponseSettingsDelayMinMax = 12;
 
-export const uploadSocialOmniMediaResponseSettingsDelayMaxMin = 3;
-export const uploadSocialOmniMediaResponseSettingsDelayMaxMax = 30;
+export const uploadSocialOmniMediaResponseSettingsDelayMaxMin = 5;
+export const uploadSocialOmniMediaResponseSettingsDelayMaxMax = 12;
 
 export const uploadSocialOmniMediaResponseSettingsPhoneNumbersMax = 10000;
 
@@ -878,11 +1094,14 @@ export const uploadSocialOmniMediaResponseLeadsOneCityMax = 150;
 
 export const uploadSocialOmniMediaResponseLeadsOneTargetCountMax = 200;
 
+export const uploadSocialOmniMediaResponseAnalyticsRealMessagesSentMin = 0;
+
 export const uploadSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
 
 
 
 export const UploadSocialOmniMediaResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -902,6 +1121,13 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "licenseKey": zod.string().max(uploadSocialOmniMediaResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
   "id": zod.string(),
   "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
@@ -913,8 +1139,8 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "targets": zod.array(zod.object({
   "id": zod.string(),
   "name": zod.string(),
-  "joinStatus": zod.enum(['Pending', 'Joined']),
-  "postStatus": zod.enum(['Pending', 'Posted']),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
   "sendStatus": zod.enum(['Pending', 'Sent'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
@@ -959,6 +1185,7 @@ export const UploadSocialOmniMediaResponse = zod.object({
 }))
 })),
   "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(uploadSocialOmniMediaResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
   "messagesSent": zod.number().int().min(uploadSocialOmniMediaResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
 })
 })
@@ -974,11 +1201,11 @@ export const ReadSocialOmniMediaHeader = zod.object({
 
 export const readSocialOmniMediaResponseSettingsKeywordsMax = 300;
 
-export const readSocialOmniMediaResponseSettingsDelayMinMin = 3;
-export const readSocialOmniMediaResponseSettingsDelayMinMax = 30;
+export const readSocialOmniMediaResponseSettingsDelayMinMin = 5;
+export const readSocialOmniMediaResponseSettingsDelayMinMax = 12;
 
-export const readSocialOmniMediaResponseSettingsDelayMaxMin = 3;
-export const readSocialOmniMediaResponseSettingsDelayMaxMax = 30;
+export const readSocialOmniMediaResponseSettingsDelayMaxMin = 5;
+export const readSocialOmniMediaResponseSettingsDelayMaxMax = 12;
 
 export const readSocialOmniMediaResponseSettingsPhoneNumbersMax = 10000;
 
@@ -992,11 +1219,14 @@ export const readSocialOmniMediaResponseLeadsOneCityMax = 150;
 
 export const readSocialOmniMediaResponseLeadsOneTargetCountMax = 200;
 
+export const readSocialOmniMediaResponseAnalyticsRealMessagesSentMin = 0;
+
 export const readSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
 
 
 
 export const ReadSocialOmniMediaResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -1016,6 +1246,13 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "licenseKey": zod.string().max(readSocialOmniMediaResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
   "id": zod.string(),
   "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
@@ -1027,8 +1264,8 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "targets": zod.array(zod.object({
   "id": zod.string(),
   "name": zod.string(),
-  "joinStatus": zod.enum(['Pending', 'Joined']),
-  "postStatus": zod.enum(['Pending', 'Posted']),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
   "sendStatus": zod.enum(['Pending', 'Sent'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
@@ -1073,6 +1310,7 @@ export const ReadSocialOmniMediaResponse = zod.object({
 }))
 })),
   "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(readSocialOmniMediaResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
   "messagesSent": zod.number().int().min(readSocialOmniMediaResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
 })
 })
@@ -1091,11 +1329,11 @@ export const DeleteSocialOmniMediaHeader = zod.object({
 
 export const deleteSocialOmniMediaResponseSettingsKeywordsMax = 300;
 
-export const deleteSocialOmniMediaResponseSettingsDelayMinMin = 3;
-export const deleteSocialOmniMediaResponseSettingsDelayMinMax = 30;
+export const deleteSocialOmniMediaResponseSettingsDelayMinMin = 5;
+export const deleteSocialOmniMediaResponseSettingsDelayMinMax = 12;
 
-export const deleteSocialOmniMediaResponseSettingsDelayMaxMin = 3;
-export const deleteSocialOmniMediaResponseSettingsDelayMaxMax = 30;
+export const deleteSocialOmniMediaResponseSettingsDelayMaxMin = 5;
+export const deleteSocialOmniMediaResponseSettingsDelayMaxMax = 12;
 
 export const deleteSocialOmniMediaResponseSettingsPhoneNumbersMax = 10000;
 
@@ -1109,11 +1347,14 @@ export const deleteSocialOmniMediaResponseLeadsOneCityMax = 150;
 
 export const deleteSocialOmniMediaResponseLeadsOneTargetCountMax = 200;
 
+export const deleteSocialOmniMediaResponseAnalyticsRealMessagesSentMin = 0;
+
 export const deleteSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
 
 
 
 export const DeleteSocialOmniMediaResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -1133,6 +1374,13 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "licenseKey": zod.string().max(deleteSocialOmniMediaResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
   "id": zod.string(),
   "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
@@ -1144,8 +1392,8 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "targets": zod.array(zod.object({
   "id": zod.string(),
   "name": zod.string(),
-  "joinStatus": zod.enum(['Pending', 'Joined']),
-  "postStatus": zod.enum(['Pending', 'Posted']),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
   "sendStatus": zod.enum(['Pending', 'Sent'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
@@ -1190,6 +1438,7 @@ export const DeleteSocialOmniMediaResponse = zod.object({
 }))
 })),
   "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(deleteSocialOmniMediaResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
   "messagesSent": zod.number().int().min(deleteSocialOmniMediaResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
 })
 })
@@ -1231,11 +1480,11 @@ export const CreateSocialOmniRecordBody = zod.object({
 
 export const createSocialOmniRecordResponseSettingsKeywordsMax = 300;
 
-export const createSocialOmniRecordResponseSettingsDelayMinMin = 3;
-export const createSocialOmniRecordResponseSettingsDelayMinMax = 30;
+export const createSocialOmniRecordResponseSettingsDelayMinMin = 5;
+export const createSocialOmniRecordResponseSettingsDelayMinMax = 12;
 
-export const createSocialOmniRecordResponseSettingsDelayMaxMin = 3;
-export const createSocialOmniRecordResponseSettingsDelayMaxMax = 30;
+export const createSocialOmniRecordResponseSettingsDelayMaxMin = 5;
+export const createSocialOmniRecordResponseSettingsDelayMaxMax = 12;
 
 export const createSocialOmniRecordResponseSettingsPhoneNumbersMax = 10000;
 
@@ -1249,11 +1498,14 @@ export const createSocialOmniRecordResponseLeadsOneCityMax = 150;
 
 export const createSocialOmniRecordResponseLeadsOneTargetCountMax = 200;
 
+export const createSocialOmniRecordResponseAnalyticsRealMessagesSentMin = 0;
+
 export const createSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
 
 
 
 export const CreateSocialOmniRecordResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -1273,6 +1525,13 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "licenseKey": zod.string().max(createSocialOmniRecordResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
   "id": zod.string(),
   "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
@@ -1284,8 +1543,8 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "targets": zod.array(zod.object({
   "id": zod.string(),
   "name": zod.string(),
-  "joinStatus": zod.enum(['Pending', 'Joined']),
-  "postStatus": zod.enum(['Pending', 'Posted']),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
   "sendStatus": zod.enum(['Pending', 'Sent'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
@@ -1330,6 +1589,7 @@ export const CreateSocialOmniRecordResponse = zod.object({
 }))
 })),
   "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(createSocialOmniRecordResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
   "messagesSent": zod.number().int().min(createSocialOmniRecordResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
 })
 })
@@ -1375,11 +1635,11 @@ export const UpdateSocialOmniRecordBody = zod.object({
 
 export const updateSocialOmniRecordResponseSettingsKeywordsMax = 300;
 
-export const updateSocialOmniRecordResponseSettingsDelayMinMin = 3;
-export const updateSocialOmniRecordResponseSettingsDelayMinMax = 30;
+export const updateSocialOmniRecordResponseSettingsDelayMinMin = 5;
+export const updateSocialOmniRecordResponseSettingsDelayMinMax = 12;
 
-export const updateSocialOmniRecordResponseSettingsDelayMaxMin = 3;
-export const updateSocialOmniRecordResponseSettingsDelayMaxMax = 30;
+export const updateSocialOmniRecordResponseSettingsDelayMaxMin = 5;
+export const updateSocialOmniRecordResponseSettingsDelayMaxMax = 12;
 
 export const updateSocialOmniRecordResponseSettingsPhoneNumbersMax = 10000;
 
@@ -1393,11 +1653,14 @@ export const updateSocialOmniRecordResponseLeadsOneCityMax = 150;
 
 export const updateSocialOmniRecordResponseLeadsOneTargetCountMax = 200;
 
+export const updateSocialOmniRecordResponseAnalyticsRealMessagesSentMin = 0;
+
 export const updateSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
 
 
 
 export const UpdateSocialOmniRecordResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -1417,6 +1680,13 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "licenseKey": zod.string().max(updateSocialOmniRecordResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
   "id": zod.string(),
   "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
@@ -1428,8 +1698,8 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "targets": zod.array(zod.object({
   "id": zod.string(),
   "name": zod.string(),
-  "joinStatus": zod.enum(['Pending', 'Joined']),
-  "postStatus": zod.enum(['Pending', 'Posted']),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
   "sendStatus": zod.enum(['Pending', 'Sent'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
@@ -1474,6 +1744,7 @@ export const UpdateSocialOmniRecordResponse = zod.object({
 }))
 })),
   "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(updateSocialOmniRecordResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
   "messagesSent": zod.number().int().min(updateSocialOmniRecordResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
 })
 })
@@ -1490,11 +1761,11 @@ export const DeleteSocialOmniRecordHeader = zod.object({
 
 export const deleteSocialOmniRecordResponseSettingsKeywordsMax = 300;
 
-export const deleteSocialOmniRecordResponseSettingsDelayMinMin = 3;
-export const deleteSocialOmniRecordResponseSettingsDelayMinMax = 30;
+export const deleteSocialOmniRecordResponseSettingsDelayMinMin = 5;
+export const deleteSocialOmniRecordResponseSettingsDelayMinMax = 12;
 
-export const deleteSocialOmniRecordResponseSettingsDelayMaxMin = 3;
-export const deleteSocialOmniRecordResponseSettingsDelayMaxMax = 30;
+export const deleteSocialOmniRecordResponseSettingsDelayMaxMin = 5;
+export const deleteSocialOmniRecordResponseSettingsDelayMaxMax = 12;
 
 export const deleteSocialOmniRecordResponseSettingsPhoneNumbersMax = 10000;
 
@@ -1508,11 +1779,14 @@ export const deleteSocialOmniRecordResponseLeadsOneCityMax = 150;
 
 export const deleteSocialOmniRecordResponseLeadsOneTargetCountMax = 200;
 
+export const deleteSocialOmniRecordResponseAnalyticsRealMessagesSentMin = 0;
+
 export const deleteSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
 
 
 
 export const DeleteSocialOmniRecordResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -1532,6 +1806,13 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "licenseKey": zod.string().max(deleteSocialOmniRecordResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
   "id": zod.string(),
   "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
@@ -1543,8 +1824,8 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "targets": zod.array(zod.object({
   "id": zod.string(),
   "name": zod.string(),
-  "joinStatus": zod.enum(['Pending', 'Joined']),
-  "postStatus": zod.enum(['Pending', 'Posted']),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
   "sendStatus": zod.enum(['Pending', 'Sent'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
@@ -1589,6 +1870,7 @@ export const DeleteSocialOmniRecordResponse = zod.object({
 }))
 })),
   "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(deleteSocialOmniRecordResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
   "messagesSent": zod.number().int().min(deleteSocialOmniRecordResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
 })
 })

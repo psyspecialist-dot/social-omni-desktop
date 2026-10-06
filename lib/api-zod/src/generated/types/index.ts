@@ -6,12 +6,17 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './browserTaskInput';
+export * from './browserTaskInputAction';
+export * from './discoveredGroup';
 export * from './healthStatus';
 export * from './simulatorAnalytics';
 export * from './simulatorJob';
 export * from './simulatorJobInput';
 export * from './simulatorJobInputKind';
 export * from './simulatorJobKind';
+export * from './simulatorJobMode';
+export * from './simulatorJobPlatform';
 export * from './simulatorJobStatus';
 export * from './simulatorLead';
 export * from './simulatorLeadInput';

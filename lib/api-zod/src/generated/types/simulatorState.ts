@@ -13,6 +13,7 @@ import type { SimulatorSettings } from './simulatorSettings';
 import type { SimulatorStateStore } from './simulatorStateStore';
 
 export interface SimulatorState {
+  automationAvailable?: boolean;
   store: SimulatorStateStore;
   settings: SimulatorSettings;
   jobs: SimulatorJob[];

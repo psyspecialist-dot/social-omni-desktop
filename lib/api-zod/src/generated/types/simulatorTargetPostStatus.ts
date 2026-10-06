@@ -12,4 +12,5 @@ export type SimulatorTargetPostStatus = typeof SimulatorTargetPostStatus[keyof t
 export const SimulatorTargetPostStatus = {
   Pending: 'Pending',
   Posted: 'Posted',
+  Not_posted: 'Not posted',
 } as const;

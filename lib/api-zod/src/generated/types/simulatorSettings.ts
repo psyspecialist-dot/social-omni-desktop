@@ -15,13 +15,13 @@ export interface SimulatorSettings {
   /** @maxLength 300 */
   keywords?: string;
   /**
-     * @minimum 3
-     * @maximum 30
+     * @minimum 5
+     * @maximum 12
      */
   delayMin?: number;
   /**
-     * @minimum 3
-     * @maximum 30
+     * @minimum 5
+     * @maximum 12
      */
   delayMax?: number;
   /** @maxLength 10000 */

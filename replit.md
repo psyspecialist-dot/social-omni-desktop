@@ -1,6 +1,6 @@
-# SocialOmni Desktop
+# Social Najhin
 
-A local-first social marketing simulation dashboard with a React browser preview and a standalone Electron edition.
+A local-first desktop social-management suite with a React browser preview, a standalone Electron edition and explicitly approved local browser automation.
 
 ## Run & Operate
 
@@ -37,10 +37,10 @@ A local-first social marketing simulation dashboard with a React browser preview
 
 ## Architecture decisions
 
-- Publishing and messaging stay manual on official platform sites. No browser automation, credential/cookie storage, member extraction, auto-joining, bulk sends, or ban-evasion behavior.
+- Live WhatsApp text sending and Facebook keyword discovery/approved group join/post flows execute in visible local Playwright Chromium browsers. Users sign in manually; account-isolated browser profiles retain sessions outside SQLite. No credential pasting, stealth, CAPTCHA solving, restriction bypass or automatic action retries.
 - The Electron renderer has Node.js disabled and uses a whitelisted preload bridge for local persistence and platform opening.
 - Due scheduled items become review reminders on the next API poll; paused reminders do not progress.
-- The user chose a complete local simulator, not real platform actions. Start Campaign and WhatsApp Run Task must remain explicitly simulated.
+- Live controls and rehearsal controls remain explicitly distinct. The browser preview cannot execute live tasks; only the downloaded desktop service receives a Playwright adapter.
 
 ## Product
 
@@ -49,12 +49,12 @@ A local-first social marketing simulation dashboard with a React browser preview
 - Local contact records with explicit consent indicators and lists; no sending
 - Light/dark themes, persistent simulation settings, live activity logs and per-target queue tables
 - Downloadable Electron source folder with the prebuilt renderer from Settings
-- Working Express CRUD routes, anonymous preview SQLite, native local SQLite, simulation worker progress and 3–30 second delay settings
+- Working Express CRUD routes, anonymous preview SQLite, native local SQLite, live browser worker and rehearsal worker, enforced 5–12 second pacing
 - Phone lists, formatted message templates, saved image/video attachments, campaign keywords and target counts; sequential simulated sends, joins, and posts with cancellation
 - Sidebar modules: Overview & Analytics, Accounts Manager, WhatsApp Marketing, Facebook & Instagram Automation, Google Maps Leads, Settings & Future License; campaigns and contacts remain available
 - Google Maps Lead Extractor is a local simulation only: niche/location drafts and synthetic business results persist in SQLite; no actual Google Maps scraping or lead collection
 - Lead results export as CSV and real XLSX; fictional phone ranges and reserved .example websites prevent synthetic records from masquerading as verified business contacts
-- Overview totals track saved campaigns, active simulated accounts, cumulative simulated messages, and currently saved synthetic leads
+- Overview distinguishes server-accepted live messages from cumulative simulated sends. Live runs require explicit recipient consent/group posting permission, use reviewed group URLs (up to 20), and stop on platform restrictions or uncertain outcomes.
 - Future-license input is a locally persisted placeholder only; it does not activate, validate, or restrict use
 
 ## User preferences

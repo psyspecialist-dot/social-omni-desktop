@@ -1,5 +1,5 @@
 // Purely local simulation. This module never contacts any platform.
-module.exports = function createWorker({ get, save, recordActivity }) {
+module.exports = function createWorker({ get, save, recordActivity, onLive }) {
   const timers = new Map();
   const runnable = state => state.jobs.filter(j => ['Pending', 'Running'].includes(j.status))
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
@@ -14,6 +14,7 @@ module.exports = function createWorker({ get, save, recordActivity }) {
     timers.delete(id);
     const job = runnable(get(id))[0];
     if (!job) return;
+    if (job.mode === 'live') { onLive?.(id); return; }
     const timeout = job.status === 'Pending' ? 100 : Math.max(0, Date.parse(job.nextActionAt || '') - Date.now()) || 0;
     timers.set(id, setTimeout(() => tick(id, job.id), timeout));
   }
@@ -80,7 +81,7 @@ module.exports = function createWorker({ get, save, recordActivity }) {
         save(id, state);
         kick(id);
       } catch {
-        process.emitWarning('SocialOmni simulation stopped: local SQLite is unavailable. Reopen the application to recover.');
+        process.emitWarning('Social Najhin rehearsal stopped: local SQLite is unavailable. Reopen the application to recover.');
       }
     }
   }

@@ -111,7 +111,10 @@ function registerIpc() {
 }
 
 async function startApi() {
-  apiService = createService({ express, dbPath: path.join(app.getPath('userData'), 'socialomni-workspace.sqlite'), secret: apiSecret });
+  apiService = createService({
+    express, dbPath: path.join(app.getPath('userData'), 'socialomni-workspace.sqlite'), secret: apiSecret,
+    automation: { chromium: require('playwright').chromium, profileDir: path.join(app.getPath('userData'), 'browser-profiles') },
+  });
   const localApp = express();
   localApp.disable('x-powered-by');
   localApp.use(express.json({ limit: '8mb' }));
@@ -132,7 +135,7 @@ function createWindow() {
     height: 960,
     minWidth: 980,
     minHeight: 680,
-    title: 'SocialOmni Desktop',
+    title: 'Social Najhin',
     backgroundColor: '#101827',
     autoHideMenuBar: true,
     webPreferences: {
@@ -149,7 +152,7 @@ function createWindow() {
   });
   window.webContents.session.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
   window.loadFile(rendererPath).catch((error) => {
-    dialog.showErrorBox('SocialOmni could not open', error.message);
+    dialog.showErrorBox('Social Najhin could not open', error.message);
     app.quit();
   });
   window.on('closed', () => { window = null; });
@@ -171,7 +174,7 @@ app.whenReady().then(async () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
   } catch (error) {
-    dialog.showErrorBox('SocialOmni could not start', error instanceof Error ? error.message : 'Unknown startup error.');
+    dialog.showErrorBox('Social Najhin could not start', error instanceof Error ? error.message : 'Unknown startup error.');
     app.quit();
   }
 });

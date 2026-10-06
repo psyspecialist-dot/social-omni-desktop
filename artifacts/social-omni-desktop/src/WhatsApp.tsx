@@ -5,6 +5,7 @@ import type { Account } from '@/lib/workspace';
 import MediaUpload from '@/components/MediaUpload';
 import RichMessage from '@/components/RichMessage';
 import SimQueue from '@/components/SimQueue';
+import LiveAutomation from '@/components/LiveAutomation';
 import './whatsapp.css';
 
 type Perform = (method: 'POST' | 'PUT' | 'PATCH' | 'DELETE', route: string, body?: unknown) => Promise<ApiState>;
@@ -19,7 +20,7 @@ export const parsePhones = (raw: string) => raw.split(/[,\n]/).map(s => s.trim()
 const normalize = (s: string) => s.replace(/[\s().-]/g, '');
 
 export default function WhatsApp({ settings, media, accounts, jobs, perform, onSave, onRun, onCancel }: Props) {
-  const [d, setD] = useState<Draft>({ keywords: settings.keywords, delayMin: settings.delayMin || 3, delayMax: settings.delayMax || 5, phoneNumbers: settings.phoneNumbers || '', messageContent: settings.messageContent || '', mediaId: settings.mediaId ?? null, accountId: settings.accountId ?? null });
+  const [d, setD] = useState<Draft>({ keywords: settings.keywords, delayMin: settings.delayMin || 5, delayMax: settings.delayMax || 12, phoneNumbers: settings.phoneNumbers || '', messageContent: settings.messageContent || '', mediaId: settings.mediaId ?? null, accountId: settings.accountId ?? null });
   const [busy, setBusy] = useState<'' | 'save' | 'run'>('');
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
@@ -58,12 +59,13 @@ export default function WhatsApp({ settings, media, accounts, jobs, perform, onS
   const changeMax = (v: number) => set({ delayMax: v, delayMin: Math.min(v, d.delayMin) });
 
   return <main className="page">
-    <div className="page-heading"><div><div className="eyebrow">Local simulation</div><h1>WhatsApp Marketing</h1>
-      <p className="heading-sub">Rehearse a message run on this device. Nothing is sent, joined, or collected.</p></div>
+    <div className="page-heading"><div><div className="eyebrow">Social Najhin</div><h1>WhatsApp Marketing</h1>
+      <p className="heading-sub">Save your message, connect a local browser, and send only to opted-in recipients.</p></div>
       <div style={{ display: 'flex', gap: 8 }}>
         {active && <button type="button" className="button button-secondary" onClick={() => onCancel(active.id)} data-testid="button-cancel-run"><Square /> Stop</button>}
-        <button type="button" className="button button-primary" onClick={run} disabled={mediaBusy || busy !== '' || Boolean(active)} data-testid="button-run-task"><Play /> {busy === 'run' ? 'Starting…' : active ? 'Simulation in progress…' : 'Run Task'}</button></div></div>
-    <div className="wa-sim-note" role="note"><strong>Simulation only.</strong> No WhatsApp messages are sent, no account is connected, and no real cookies or credentials are used. Run Task uses your saved inputs and shows honest simulated progress.</div>
+        <button type="button" className="button button-secondary" onClick={run} disabled={mediaBusy || busy !== '' || Boolean(active)} data-testid="button-run-task"><Play /> {busy === 'run' ? 'Starting…' : active ? 'Queue active…' : 'Rehearse only'}</button></div></div>
+    <LiveAutomation platform="WhatsApp" accounts={accounts} jobs={jobs} perform={perform} draftPreview={d} beforeSend={async () => { if (problem) throw new Error(problem); await onSave(d); }} />
+    <div className="wa-sim-note" role="note"><strong>Draft &amp; rehearsal tools.</strong> Rehearse only never sends anything. The separate live browser controls above send real messages after your approval. Live sending uses the current text draft; attachments are rehearsal-only.</div>
     {error && <div className="wa-feedback err" role="alert" data-testid="error-run">{error}</div>}
     <div className="wa-grid wide">
       <form className="wa-stack" onSubmit={save}>
@@ -93,13 +95,13 @@ export default function WhatsApp({ settings, media, accounts, jobs, perform, onS
               <textarea id="wa-keywords" className="field-textarea" style={{ minHeight: 60 }} value={d.keywords} onChange={e => set({ keywords: e.target.value })} data-testid="input-keywords" /></div>
             <div className="wa-range-row">
               <div className="field-group"><label className="field-label" htmlFor="wa-min">Minimum delay<span className="wa-value">{d.delayMin}s</span></label>
-                <input id="wa-min" className="wa-range" type="range" min={3} max={30} value={d.delayMin} onChange={e => changeMin(Number(e.target.value))} data-testid="slider-delay-min" /></div>
+                <input id="wa-min" className="wa-range" type="range" min={5} max={12} value={d.delayMin} onChange={e => changeMin(Number(e.target.value))} data-testid="slider-delay-min" /></div>
               <div className="field-group"><label className="field-label" htmlFor="wa-max">Maximum delay<span className="wa-value">{d.delayMax}s</span></label>
-                <input id="wa-max" className="wa-range" type="range" min={3} max={30} value={d.delayMax} onChange={e => changeMax(Number(e.target.value))} data-testid="slider-delay-max" /></div>
+                <input id="wa-max" className="wa-range" type="range" min={5} max={12} value={d.delayMax} onChange={e => changeMax(Number(e.target.value))} data-testid="slider-delay-max" /></div>
             </div>
             <div className="form-actions"><button type="submit" className="button button-secondary" disabled={mediaBusy || busy !== ''} data-testid="button-save-settings"><Save /> {mediaBusy ? 'Saving attachment…' : busy === 'save' ? 'Saving…' : 'Save inputs'}</button></div>
             {saved && !dirty && <div className="wa-feedback ok" role="status" data-testid="status-saved">Inputs saved.</div>}
-            {dirty && <div className="wa-hint">Unsaved changes. Run Task saves them first.</div>}
+            {dirty && <div className="wa-hint">Unsaved changes. Both live sending and rehearsal save the draft first.</div>}
           </div>
         </section>
       </form>
@@ -107,7 +109,7 @@ export default function WhatsApp({ settings, media, accounts, jobs, perform, onS
         <div className="panel-head"><div><div className="panel-title">Live queue</div><div className="panel-caption">Per-recipient progress, all simulated.</div></div></div>
         <div className="panel-body">
           {relevant.length ? relevant.slice(0, 3).map(j => <SimQueue key={j.id} job={j} testId={j.id} />)
-            : <div className="empty-state"><b>No run yet</b><p>Add numbers and a message, then choose Run Task.</p></div>}
+            : <div className="empty-state"><b>No run yet</b><p>Add numbers and a message, then choose live sending or Rehearse only.</p></div>}
         </div>
       </section>
     </div>

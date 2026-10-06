@@ -5,6 +5,28 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export type BrowserTaskInputAction = typeof BrowserTaskInputAction[keyof typeof BrowserTaskInputAction];
+
+
+export const BrowserTaskInputAction = {
+  connect: 'connect',
+  search: 'search',
+  send: 'send',
+  publish: 'publish',
+} as const;
+
+export interface BrowserTaskInput {
+  action: BrowserTaskInputAction;
+  accountId: string;
+  campaignId?: string;
+  /** @maxLength 300 */
+  keywords?: string;
+  /** @maxLength 5000 */
+  groupUrls?: string;
+  /** Explicit recipient consent or group posting permission attestation */
+  approved?: boolean;
+}
+
 export type SimulatorJobInputKind = typeof SimulatorJobInputKind[keyof typeof SimulatorJobInputKind];
 
 
@@ -55,13 +77,13 @@ export interface SimulatorSettings {
   /** @maxLength 300 */
   keywords?: string;
   /**
-     * @minimum 3
-     * @maximum 30
+     * @minimum 5
+     * @maximum 12
      */
   delayMin?: number;
   /**
-     * @minimum 3
-     * @maximum 30
+     * @minimum 5
+     * @maximum 12
      */
   delayMax?: number;
   /** @maxLength 10000 */
@@ -142,6 +164,8 @@ export type SimulatorTargetJoinStatus = typeof SimulatorTargetJoinStatus[keyof t
 export const SimulatorTargetJoinStatus = {
   Pending: 'Pending',
   Joined: 'Joined',
+  Requested: 'Requested',
+  Needs_review: 'Needs review',
 } as const;
 
 export type SimulatorTargetPostStatus = typeof SimulatorTargetPostStatus[keyof typeof SimulatorTargetPostStatus];
@@ -150,6 +174,7 @@ export type SimulatorTargetPostStatus = typeof SimulatorTargetPostStatus[keyof t
 export const SimulatorTargetPostStatus = {
   Pending: 'Pending',
   Posted: 'Posted',
+  Not_posted: 'Not posted',
 } as const;
 
 export type SimulatorTargetSendStatus = typeof SimulatorTargetSendStatus[keyof typeof SimulatorTargetSendStatus];
@@ -167,6 +192,21 @@ export interface SimulatorTarget {
   postStatus: SimulatorTargetPostStatus;
   sendStatus: SimulatorTargetSendStatus;
 }
+
+export type SimulatorJobMode = typeof SimulatorJobMode[keyof typeof SimulatorJobMode];
+
+
+export const SimulatorJobMode = {
+  live: 'live',
+} as const;
+
+export type SimulatorJobPlatform = typeof SimulatorJobPlatform[keyof typeof SimulatorJobPlatform];
+
+
+export const SimulatorJobPlatform = {
+  Facebook: 'Facebook',
+  WhatsApp: 'WhatsApp',
+} as const;
 
 export type SimulatorJobKind = typeof SimulatorJobKind[keyof typeof SimulatorJobKind];
 
@@ -188,7 +228,16 @@ export const SimulatorJobStatus = {
   Failed: 'Failed',
 } as const;
 
+export interface DiscoveredGroup {
+  name: string;
+  url: string;
+}
+
 export interface SimulatorJob {
+  mode?: SimulatorJobMode;
+  action?: string;
+  platform?: SimulatorJobPlatform;
+  discoveredGroups?: DiscoveredGroup[];
   id: string;
   kind: SimulatorJobKind;
   /** @nullable */
@@ -241,6 +290,11 @@ export type SimulatorLeadWorkspace = SimulatorLeadInput & {
 
 export interface SimulatorAnalytics {
   /**
+     * Cumulative server-accepted live WhatsApp sends; separate from simulations
+     * @minimum 0
+     */
+  realMessagesSent?: number;
+  /**
      * Cumulative simulated sends
      * @minimum 0
      */
@@ -264,6 +318,7 @@ export type SimulatorStateStore = {
 };
 
 export interface SimulatorState {
+  automationAvailable?: boolean;
   store: SimulatorStateStore;
   settings: SimulatorSettings;
   jobs: SimulatorJob[];

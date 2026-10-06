@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module';
-import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, lstatSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, lstatSync, writeFileSync, copyFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -17,10 +17,10 @@ function add(source, destination) {
       add(path.join(source, entry), `${destination ? `${destination}/` : ''}${entry}`);
     }
   } else if (stat.isFile()) {
-    files[`socialomni-desktop/${destination}`] = new Uint8Array(readFileSync(source));
+    files[`social-najhin-desktop/${destination}`] = new Uint8Array(readFileSync(source));
   }
 }
-for (const required of ['main.js', 'preload.js', 'package.json', 'README.md', 'renderer/index.html', 'api-service.cjs', 'validation.cjs', 'worker.cjs', 'leads.cjs']) {
+for (const required of ['main.js', 'preload.js', 'package.json', 'README.md', 'renderer/index.html', 'api-service.cjs', 'validation.cjs', 'worker.cjs', 'leads.cjs', 'browser-worker.cjs']) {
   if (!existsSync(path.join(frontend, 'desktop', required))) throw new Error(`Missing desktop file: ${required}. Run desktop:export first.`);
 }
 add(path.join(frontend, 'desktop'), '');
@@ -35,8 +35,10 @@ add(path.join(root, 'lib'), 'source/lib');
 for (const entry of ['package.json', 'pnpm-workspace.yaml', 'pnpm-lock.yaml', 'tsconfig.json', 'tsconfig.base.json']) {
   if (existsSync(path.join(root, entry))) add(path.join(root, entry), `source/${entry}`);
 }
-const output = path.join(frontend, 'public/downloads/socialomni-desktop.zip');
+const output = path.join(frontend, 'public/downloads/social-najhin-desktop.zip');
 mkdirSync(path.dirname(output), { recursive: true });
 writeFileSync(`${output}.tmp`, zipSync(files, { level: 6 }));
 renameSync(`${output}.tmp`, output);
+// Preserve older direct download bookmarks without serving an outdated build.
+copyFileSync(output, path.join(frontend, 'public/downloads/socialomni-desktop.zip'));
 process.stdout.write(`Bundled ${Object.keys(files).length} application files into ${output}\n`);

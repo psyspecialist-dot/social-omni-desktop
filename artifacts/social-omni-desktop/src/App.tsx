@@ -8,6 +8,7 @@ import WhatsApp from '@/WhatsApp';
 import Leads from '@/Leads';
 import MediaUpload from '@/components/MediaUpload';
 import SimQueue from '@/components/SimQueue';
+import LiveAutomation from '@/components/LiveAutomation';
 import { STORAGE_KEY, THEME_KEY, platforms, statuses, isoIn, seedStore, parseStore, type CampaignStatus, type Campaign, type Account, type Contact, type Store } from '@/lib/workspace';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -35,11 +36,11 @@ const titleForPath: Record<string, string> = { '/': 'Overview & Analytics', '/ca
 
 function Workspace() {
   const [store, setStore] = useState<Store>(seedStore);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [ready, setReady] = useState(false);
   const [storageError, setStorageError] = useState('');
   const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState<SimulationSettings>({ theme: 'light', keywords: '', delayMin: 3, delayMax: 5, phoneNumbers: '', messageContent: '', mediaId: null, accountId: null, licenseKey: '' });
+  const [settings, setSettings] = useState<SimulationSettings>({ theme: 'dark', keywords: '', delayMin: 5, delayMax: 12, phoneNumbers: '', messageContent: '', mediaId: null, accountId: null, licenseKey: '' });
   const [leads, setLeads] = useState<LeadWorkspace>({ keyword: '', city: '', targetCount: 10, results: [] });
   const [analytics, setAnalytics] = useState<SimulationAnalytics>({ messagesSent: 0 });
   const [media, setMedia] = useState<MediaAsset[]>([]);
@@ -110,7 +111,7 @@ function Workspace() {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
-  useEffect(() => { document.title = `${titleForPath[path] || 'Workspace'} | SocialOmni Desktop`; }, [path]);
+  useEffect(() => { document.title = `${titleForPath[path] || 'Workspace'} | Social Najhin`; }, [path]);
   useEffect(() => { if (!toast) return; const timer = window.setTimeout(() => setToast(''), 2800); return () => window.clearTimeout(timer); }, [toast]);
   const handoff = (platform: string) => {
     openOfficialPlatform(platform).then(() => perform('POST', '/activity', { platform }))
@@ -130,7 +131,7 @@ function Workspace() {
   };
   const remove = (kind: 'campaign' | 'account' | 'contact', item: Campaign | Account | Contact) => {
     const name = 'title' in item ? item.title : 'displayLabel' in item ? item.displayLabel : item.name;
-    setConfirm({ title: `Remove ${name}?`, body: 'This record will be permanently removed from this workspace. This cannot be undone.', onConfirm: () => {
+    setConfirm({ title: `Remove ${name}?`, body: `This record will be permanently removed from this workspace.${kind === 'account' && isDesktop ? ' Its local browser profile and saved sign-in session will also be deleted.' : ''} This cannot be undone.`, onConfirm: () => {
       void perform('DELETE', `/${kind === 'campaign' ? 'campaigns' : kind === 'account' ? 'accounts' : 'contacts'}/${item.id}`)
         .then(() => setConfirm(null)).catch(report);
     } });
@@ -144,13 +145,13 @@ function Workspace() {
     }
     void perform('PATCH', `/campaigns/${id}/status`, { status }).catch(report);
   };
-  const clearWorkspace = () => setConfirm({ title: 'Clear local workspace?', body: 'This permanently removes campaigns, accounts, contacts, media, simulation inputs, leads, counters, license placeholder, jobs, and activity from this workspace. It cannot be undone.', onConfirm: () => {
+  const clearWorkspace = () => setConfirm({ title: 'Clear local workspace?', body: 'This permanently removes campaigns, accounts, contacts, media, inputs, leads, counters, license placeholder, jobs, activity, and local browser profiles from this workspace. It cannot be undone.', onConfirm: () => {
     void perform('DELETE', '/state').then(() => setConfirm(null)).catch(report);
   } });
   const runTask = (kind: 'campaign' | 'whatsapp', campaignId?: string) =>
     perform('POST', '/jobs', { kind, campaignId }).then(() => undefined);
   const cancelTask = (id: string) => { void perform('POST', `/jobs/${id}/cancel`).catch(report); };
-  if (!ready) return <main className="page" data-testid="status-storage-loading"><h1>SocialOmni Desktop</h1><p role={storageError ? 'alert' : 'status'}>{storageError || 'Loading local workspace…'}</p>{storageError && <button className="button button-secondary" onClick={() => window.location.reload()} data-testid="button-retry-load">Retry without changing saved records</button>}</main>;
+  if (!ready) return <main className="page" data-testid="status-storage-loading"><h1>Social Najhin</h1><p role={storageError ? 'alert' : 'status'}>{storageError || 'Loading local workspace…'}</p>{storageError && <button className="button button-secondary" onClick={() => window.location.reload()} data-testid="button-retry-load">Retry without changing saved records</button>}</main>;
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -163,15 +164,15 @@ function Workspace() {
                 <div className="crumb">WORKSPACE <span style={{ opacity: .5, padding: '0 6px' }}>/</span> {titleForPath[path] || 'Workspace'}</div>
                 <div className="top-actions">
                   <button className="icon-button" onClick={() => { void perform('PUT', '/settings', { theme: theme === 'dark' ? 'light' : 'dark' }).catch(report); }} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`} data-testid="button-toggle-theme-top">{theme === 'dark' ? <Sun size={16} /> : <Moon size={15} />}</button>
-                   <div className="profile-chip"><span className="profile-avatar">SO</span><span>Local workspace</span></div>
+                   <div className="profile-chip"><span className="profile-avatar">SN</span><span>Local workspace</span></div>
                 </div>
               </header>
                {storageError && <div className="storage-alert" role="alert" data-testid="error-storage-save">{storageError}<button className="button button-secondary" onClick={() => { apiRequest('GET', '/state').then(data => { applyState(data); setStorageError(''); }).catch(report); }} data-testid="button-retry-save">Reconnect</button></div>}
               <ErrorBoundary resetKey={path}>
                 <Switch>
                   <Route path="/"><Dashboard jobs={jobs} store={store} leads={leads} analytics={analytics} onStatus={saveStatus} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
-                   <Route path="/campaigns"><Campaigns jobs={jobs} store={store} open={item => setDialog({ type: 'campaign', item })} create={() => setDialog({ type: 'campaign' })} remove={item => remove('campaign', item)} status={saveStatus} handoff={handoff} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
-                    <Route path="/automation"><Campaigns automation jobs={jobs} store={store} open={item => setDialog({ type: 'campaign', item })} create={() => setDialog({ type: 'campaign' })} remove={item => remove('campaign', item)} status={saveStatus} handoff={handoff} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
+                   <Route path="/campaigns"><Campaigns jobs={jobs} store={store} perform={perform} open={item => setDialog({ type: 'campaign', item })} create={() => setDialog({ type: 'campaign' })} remove={item => remove('campaign', item)} status={saveStatus} handoff={handoff} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
+                    <Route path="/automation"><Campaigns automation jobs={jobs} store={store} perform={perform} open={item => setDialog({ type: 'campaign', item })} create={() => setDialog({ type: 'campaign' })} remove={item => remove('campaign', item)} status={saveStatus} handoff={handoff} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
                    <Route path="/accounts"><Accounts store={store} open={item => setDialog({ type: 'account', item })} create={() => setDialog({ type: 'account' })} remove={item => remove('account', item)} handoff={handoff} /></Route>
                    <Route path="/whatsapp"><WhatsApp settings={settings} media={media} accounts={store.accounts} jobs={jobs} perform={perform} onSave={async value => { await perform('PUT', '/settings', value); }} onRun={() => runTask('whatsapp')} onCancel={cancelTask} /></Route>
                    <Route path="/leads"><Leads leads={leads} jobs={jobs} perform={perform} onCancel={cancelTask} /></Route>
@@ -180,7 +181,7 @@ function Workspace() {
                   <Route component={NotFound} />
                 </Switch>
               </ErrorBoundary>
-               <section className="activity-console" aria-label="Live local activity log" data-testid="console-activity"><div className="activity-console-head"><strong><Activity size={13} /> Live simulation &amp; activity</strong><span data-testid="status-storage">{storageError ? 'Connection issue' : saving ? 'Saving…' : isDesktop ? 'Saved · local SQLite' : 'Saved · preview SQLite'}</span></div>
+               <section className="activity-console" aria-label="Live local activity log" data-testid="console-activity"><div className="activity-console-head"><strong><Activity size={13} /> Live execution &amp; activity</strong><span data-testid="status-storage">{storageError ? 'Connection issue' : saving ? 'Saving…' : isDesktop ? 'Saved · local SQLite' : 'Saved · preview SQLite'}</span></div>
                  {jobs.slice(0, 3).map(job => <div key={job.id} className="job-line"><span>{job.kind === 'whatsapp' ? 'WhatsApp' : job.kind === 'leads' ? 'Lead extraction' : 'Campaign'} · {job.status}</span><div className="job-progress" role="progressbar" aria-label={`${job.kind} simulation progress`} aria-valuenow={job.progress} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${job.progress}%` }} /></div><span>{job.progress}%</span>{['Pending', 'Running'].includes(job.status) && <button type="button" className="button button-quiet" onClick={() => cancelTask(job.id)} aria-label="Cancel simulation">Cancel</button>}</div>)}
                  <div role="log" aria-live="polite">{store.activity.slice(0, 6).map(entry => <div className="console-log" key={entry.id}><time>{formatTime(entry.timestamp)}</time><span className={`log-level log-${entry.level}`}>{entry.level}</span><span>{entry.message}</span></div>)}</div></section>
             </div>
@@ -209,7 +210,7 @@ function Sidebar({ active, open, close }: { active: string; open: boolean; close
     { href: '/contacts', title: 'Contacts', icon: Users },
   ];
   return <aside className={`sidebar ${open ? 'open' : ''}`}>
-    <div className="brand"><div className="brand-mark">so</div><div><div className="brand-name">SocialOmni Desktop</div><div className="brand-sub">local simulation dashboard</div></div>
+    <div className="brand"><div className="brand-mark">SN</div><div><div className="brand-name">Social Najhin</div><div className="brand-sub">desktop management suite</div></div>
       <button className="small-icon" style={{ color: 'inherit', marginLeft: 'auto' }} onClick={close} aria-label="Close navigation" data-testid="button-sidebar-close"><X /></button>
     </div>
     <div className="nav-label">Your workspace</div>
@@ -234,11 +235,11 @@ function StatusPill({ value }: { value: CampaignStatus }) {
 function Dashboard({ jobs, store, leads, analytics, onStatus, run }: { jobs: SimulationJob[]; store: Store; leads: LeadWorkspace; analytics: SimulationAnalytics; onStatus: (id: string, status: CampaignStatus) => void; run: (id: string) => void }) {
   const upcoming = [...store.campaigns].filter(c => ['Scheduled', 'Ready for review'].includes(c.status)).sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt)).slice(0, 4);
   return <main className="page">
-    <PageHeading eyebrow="SocialOmni Desktop" title="Overview & Analytics" subtitle="Live workspace totals and simulation progress. No external sending, posting, joining, or scraping." action={<Link href="/campaigns" className="button button-primary" data-testid="button-new-campaign"><Plus /> Plan a campaign</Link>} />
+    <PageHeading eyebrow="Social Najhin" title="Overview & Analytics" subtitle="Local workspace analytics, approved desktop execution, and clearly labeled rehearsals." action={<Link href="/campaigns" className="button button-primary" data-testid="button-new-campaign"><Plus /> Plan a campaign</Link>} />
     <div className="stat-grid">
       <Stat title="Total campaigns" value={store.campaigns.length} note="Saved campaign plans" icon={<ClipboardList />} trend="All platforms" />
-      <Stat title="Active accounts" value={store.accounts.filter(a => a.status.startsWith('Active')).length} note="Simulated identities" icon={<AtSign />} trend="Not connected" />
-      <Stat title="Messages sent" value={analytics.messagesSent} note="Cumulative simulated sends" icon={<MessageCircle />} trend="No real messages" />
+      <Stat title="Active accounts" value={store.accounts.filter(a => a.status.startsWith('Active')).length} note="Saved account labels" icon={<AtSign />} trend="Session checked per run" />
+      <Stat title="Messages sent" value={analytics.realMessagesSent || 0} note="Server-accepted live sends" icon={<MessageCircle />} trend={`${analytics.messagesSent} simulated`} />
       <Stat title="Scraped leads" value={leads.results.length} note="Saved synthetic results" icon={<MapPin />} trend="No real scraping" />
     </div>
     <div className="dash-grid">
@@ -265,7 +266,7 @@ function Dashboard({ jobs, store, leads, analytics, onStatus, run }: { jobs: Sim
     <section className="panel" style={{ marginBottom: 16 }} data-testid="panel-live-queues"><div className="panel-head"><div><div className="panel-title">Live queues</div><div className="panel-caption">Simulated runs only. Nothing is sent or posted.</div></div></div><div className="panel-body">
       {jobs.filter(j => ['Pending', 'Running'].includes(j.status)).length ? jobs.filter(j => ['Pending', 'Running'].includes(j.status)).map(j => <div key={j.id}><div className="sq-title">{j.kind === 'whatsapp' ? 'WhatsApp message run' : j.kind === 'leads' ? 'Google Maps lead simulation' : `Campaign: ${store.campaigns.find(c => c.id === j.campaignId)?.title || 'removed campaign'}`}</div>{j.kind === 'leads' ? <p role="status">{j.completedCount}/{j.totalCount} synthetic leads · {j.status} · {j.progress}%</p> : <SimQueue job={j} testId={`dash-${j.id}`} />}</div>) : <Empty symbol={<Activity />} title="No simulation running" text="Start a campaign, WhatsApp, or lead extraction simulation to watch its queue here." />}
     </div></section>
-    <div className="console" data-testid="status-local-console"><div className="console-orb"><ShieldCheck size={17} /></div><div className="console-copy"><b>{isDesktop ? 'Local workspace is ready' : 'Preview workspace is ready'}</b><span>Data is in {isDesktop ? 'SQLite on this computer' : 'SQLite on the Replit preview server (not your device)'}. SocialOmni never publishes or contacts anyone for you.</span></div><div className="console-state">Standing by</div></div>
+    <div className="console" data-testid="status-local-console"><div className="console-orb"><ShieldCheck size={17} /></div><div className="console-copy"><b>{isDesktop ? 'Local workspace is ready' : 'Preview workspace is ready'}</b><span>Data is in {isDesktop ? 'SQLite on this computer. Live browser actions require your approval.' : 'SQLite on the preview server. Live automation requires the downloaded Social Najhin desktop app.'}</span></div><div className="console-state">Standing by</div></div>
   </main>;
 }
 function Stat({ title, value, note, icon, trend }: { title: string; value: number; note: string; icon: ReactNode; trend: string }) {
@@ -275,7 +276,7 @@ function Empty({ symbol, title, text, action }: { symbol: ReactNode; title: stri
   return <div className="empty-state"><div className="empty-symbol">{symbol}</div><b>{title}</b><p>{text}</p>{action}</div>;
 }
 
-function Campaigns({ automation = false, jobs, store, open, create, remove, status, handoff, run }: { automation?: boolean; jobs: SimulationJob[]; store: Store; open: (c: Campaign) => void; create: () => void; remove: (c: Campaign) => void; status: (id: string, s: CampaignStatus) => void; handoff: (platform: string) => void; run: (id: string) => void }) {
+function Campaigns({ automation = false, jobs, store, perform, open, create, remove, status, handoff, run }: { automation?: boolean; jobs: SimulationJob[]; store: Store; perform: (method: 'POST' | 'PUT' | 'PATCH' | 'DELETE', route: string, body?: unknown) => Promise<ApiState>; open: (c: Campaign) => void; create: () => void; remove: (c: Campaign) => void; status: (id: string, s: CampaignStatus) => void; handoff: (platform: string) => void; run: (id: string) => void }) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('All statuses');
   const [tab, setTab] = useState<'all' | 'review'>('all');
@@ -285,7 +286,8 @@ function Campaigns({ automation = false, jobs, store, open, create, remove, stat
     return matchQuery && (filter === 'All statuses' || c.status === filter) && (tab === 'all' || c.status === 'Ready for review');
   }).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)), [scoped, query, filter, tab]);
   return <main className="page">
-    <PageHeading eyebrow="Local simulation" title={automation ? 'Facebook & Instagram Automation' : 'Campaigns'} subtitle={automation ? 'Save keywords, images or videos, captions, and 50, 100, 200+ target groups. Rehearse joins and posts locally; no platform actions occur.' : 'Shape the work here. You decide when and where anything goes live.'} action={<button className="button button-primary" onClick={create} data-testid="button-create-campaign"><Plus /> New campaign</button>} />
+    <PageHeading eyebrow="Social Najhin" title={automation ? 'Facebook & Instagram Automation' : 'Campaigns'} subtitle={automation ? 'Facebook: local browser search and approved group actions. Instagram remains planning and rehearsal only.' : 'Save campaign plans and choose between explicit live execution and rehearsal.'} action={<button className="button button-primary" onClick={create} data-testid="button-create-campaign"><Plus /> New campaign</button>} />
+    <LiveAutomation platform="Facebook" accounts={store.accounts} campaigns={store.campaigns} jobs={jobs} perform={perform} />
     <div className="toolbar">
       <div className="search-wrap"><Search /><input className="search-input" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search campaigns or captions" aria-label="Search campaigns" data-testid="input-search-campaigns" /></div>
       <select className="field-select" value={filter} onChange={e => setFilter(e.target.value)} aria-label="Filter campaigns by status" data-testid="select-campaign-status"><option>All statuses</option>{statuses.map(s => <option key={s}>{s}</option>)}</select>
@@ -307,7 +309,7 @@ function Campaigns({ automation = false, jobs, store, open, create, remove, stat
         </div>)}
       </> : <Empty symbol={<FileText />} title={query || filter !== 'All statuses' || tab === 'review' ? 'No matching campaigns' : 'Start with a small plan'} text={query || filter !== 'All statuses' || tab === 'review' ? 'Try a different search or status filter.' : 'Keep your upcoming social work clear, intentional, and on your terms.'} action={<button className="button button-primary" onClick={create} data-testid="button-empty-create-campaign"><Plus /> Create campaign</button>} />}
     </div>
-    <section className="panel" style={{ marginTop: 16 }} data-testid="panel-group-queues"><div className="panel-head"><div><div className="panel-title">Simulated group queues</div><div className="panel-caption">Hypothetical groups derived from keywords. SocialOmni never discovers or joins real groups.</div></div></div><div className="panel-body">
+    <section className="panel" style={{ marginTop: 16 }} data-testid="panel-group-queues"><div className="panel-head"><div><div className="panel-title">Campaign queues</div><div className="panel-caption">Each queue is labeled Live or Simulated. Use the local browser controls above for real Facebook actions.</div></div></div><div className="panel-body">
       {(() => { const latest = scoped.map(c => ({ c, j: jobs.find(j => j.kind === 'campaign' && j.campaignId === c.id) })).filter(x => x.j); return latest.length ? latest.map(({ c, j }) => <div key={c.id}><div className="sq-title">{c.title} <span className="mono-tag">{c.platform}</span></div><SimQueue job={j!} testId={`camp-${c.id}`} /></div>) : <Empty symbol={<ListFilter />} title="No group queue yet" text="Press Start Campaign simulation on a campaign to see Pending, Joined, and Posted counters." />; })()}
     </div></section>
      <div style={{ marginTop: 13, color: 'hsl(var(--muted-foreground))', fontSize: 10, display: 'flex', alignItems: 'center', gap: 6 }}><CircleHelp size={13} /> Start Campaign runs a local progress simulation. It never joins groups or publishes anything. Scheduled items move to Ready for review.</div>
@@ -326,7 +328,7 @@ function Accounts({ store, open, create, remove, handoff }: { store: Store; open
         <button className="small-icon" aria-label={`Edit ${account.displayLabel}`} onClick={() => open(account)} data-testid={`button-edit-account-${account.id}`}><Pencil /></button>
         <button className="small-icon" aria-label={`Remove ${account.displayLabel}`} onClick={() => remove(account)} data-testid={`button-delete-account-${account.id}`}><Trash2 /></button></div></td></tr>)}
     </tbody></table></div> : <div className="list-panel"><Empty symbol={<AtSign />} title={query ? 'No matching accounts' : 'Keep your identities together'} text={query ? 'Try another platform, name, or username.' : 'Add simulated accounts. Real credentials and cookies are never requested.'} action={<button className="button button-primary" onClick={create} data-testid="button-empty-add-account"><Plus /> Add account</button>} /></div>}
-    <p style={{ marginTop: 15, fontSize: 10, color: 'hsl(var(--muted-foreground))', lineHeight: 1.6 }}>Accounts are simulation labels only; the demo session is a fake reference. Open site is a user-initiated handoff to the platform’s official website. SocialOmni does not store passwords, cookies, or sign-in sessions.</p>
+    <p style={{ marginTop: 15, fontSize: 10, color: 'hsl(var(--muted-foreground))', lineHeight: 1.6 }}>Accounts are saved labels. Connect WhatsApp or Facebook from its automation module in the desktop app; sign in manually in the visible browser. Sessions remain in private local browser profiles, not the account table. Never enter credentials or cookies here.</p>
   </main>;
 }
 
@@ -371,7 +373,7 @@ function Settings({ settings, saveSettings, theme, setTheme, store, clear }: { s
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = url; link.download = 'socialomni-desktop.zip';
+      link.href = url; link.download = 'social-najhin-desktop.zip';
       document.body.appendChild(link); link.click(); link.remove();
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
       setDownloadNote('ZIP sent to your browser. Check Downloads, unzip it, and follow README.md for macOS setup.');
@@ -404,12 +406,12 @@ function Settings({ settings, saveSettings, theme, setTheme, store, clear }: { s
         </section>
         <section className="setting-card" id="simulation"><div className="setting-head"><div><strong>Simulation defaults</strong><p>Random delay between simulated steps, shared with the WhatsApp page. Everything here is a local rehearsal: no sends, no joins, no real sessions.</p></div><span className="mono-tag">SIMULATED</span></div>
           <div className="form-grid" style={{ marginTop: 15 }}>
-            <div className="field-group"><label className="field-label" htmlFor="set-min">Minimum delay<span className="field-hint">{min}s</span></label><input id="set-min" type="range" min={3} max={30} value={min} onChange={e => { const v = Number(e.target.value); setMin(v); if (v > max) setMax(v); }} style={{ width: '100%' }} data-testid="settings-delay-min" /></div>
-            <div className="field-group"><label className="field-label" htmlFor="set-max">Maximum delay<span className="field-hint">{max}s</span></label><input id="set-max" type="range" min={3} max={30} value={max} onChange={e => { const v = Number(e.target.value); setMax(v); if (v < min) setMin(v); }} style={{ width: '100%' }} data-testid="settings-delay-max" /></div></div>
+          <div className="field-group"><label className="field-label" htmlFor="set-min">Minimum delay<span className="field-hint">{min}s</span></label><input id="set-min" type="range" min={5} max={12} value={min} onChange={e => { const v = Number(e.target.value); setMin(v); if (v > max) setMax(v); }} style={{ width: '100%' }} data-testid="settings-delay-min" /></div>
+          <div className="field-group"><label className="field-label" htmlFor="set-max">Maximum delay<span className="field-hint">{max}s</span></label><input id="set-max" type="range" min={5} max={12} value={max} onChange={e => { const v = Number(e.target.value); setMax(v); if (v < min) setMin(v); }} style={{ width: '100%' }} data-testid="settings-delay-max" /></div></div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}><button className="button button-secondary" onClick={saveDelay} data-testid="button-save-delay">Save delay</button><Link href="/whatsapp" className="text-link" data-testid="link-settings-whatsapp">Open WhatsApp rehearsal</Link>{note && <span role="status" style={{ fontSize: 10, color: 'hsl(var(--muted-foreground))' }} data-testid="status-delay-saved">{note}</span>}</div>
         </section>
          <section className="setting-card" id="future-license"><div className="setting-head"><div><strong>Future license</strong><p>Placeholder only. The simulator is not license-gated and does not contact an activation service. Use a demo value, not a password or API token.</p></div><span className="mono-tag">NOT ACTIVATED</span></div><form onSubmit={e => { e.preventDefault(); void saveLicense(); }} style={{ marginTop: 15 }}><div className="field-group"><label className="field-label" htmlFor="license-key">License key placeholder</label><input id="license-key" className="field-input" maxLength={200} autoComplete="off" placeholder="DEMO-XXXX-XXXX-XXXX" value={license} onChange={e => { setLicense(e.target.value); setLicenseNote(''); }} data-testid="input-license-key" /></div><button type="submit" className="button button-secondary" disabled={licenseBusy} data-testid="button-save-license">{licenseBusy ? 'Saving…' : 'Save placeholder'}</button>{licenseNote && <p role="status" className="heading-sub" data-testid="status-license-saved">{licenseNote}</p>}</form></section>
-         <section className="setting-card"><div className="setting-head"><div><strong>{isDesktop ? 'Secure desktop bridge' : 'Run locally with Electron'}</strong><p>{isDesktop ? 'The renderer uses a restricted preload bridge and local SQLite. Platform logins stay in your default browser.' : 'Download the complete application ZIP, unzip it, then run npm install and npm start inside the socialomni-desktop folder. Includes the built interface, frontend/backend source, main.js, preload.js, package.json, and a macOS README. This is source, not a signed installer.'}</p></div><ShieldCheck size={18} color="hsl(var(--primary))" /></div>{!isDesktop && <><button type="button" className="button button-primary" style={{ marginTop: 16 }} onClick={downloadDesktop} disabled={downloadBusy} data-testid="link-download-desktop"><Download size={14} /> {downloadBusy ? 'Downloading ZIP…' : 'Download desktop ZIP'}</button>{downloadNote && <p role="status" style={{ marginTop: 12 }}>{downloadNote}</p>}</>}</section>
+         <section className="setting-card"><div className="setting-head"><div><strong>{isDesktop ? 'Secure desktop bridge' : 'Run Social Najhin locally'}</strong><p>{isDesktop ? 'The renderer uses a restricted preload bridge and local SQLite. Live actions run in visible local Playwright browsers with private account profiles.' : 'Download the complete application ZIP, unzip it, then run npm install and npm start inside the social-najhin-desktop folder. The install includes Chromium for local browser automation. Includes frontend/backend source, main.js, preload.js, package.json, and a macOS README. This is source, not a signed installer.'}</p></div><ShieldCheck size={18} color="hsl(var(--primary))" /></div>{!isDesktop && <><button type="button" className="button button-primary" style={{ marginTop: 16 }} onClick={downloadDesktop} disabled={downloadBusy} data-testid="link-download-desktop"><Download size={14} /> {downloadBusy ? 'Downloading ZIP…' : 'Download desktop ZIP'}</button>{downloadNote && <p role="status" style={{ marginTop: 12 }}>{downloadNote}</p>}</>}</section>
       </div>
     </div>
   </main>;
@@ -432,7 +434,7 @@ function EditorDialog({ automation = false, kind, item, store, media, perform, c
     title: initialCampaign?.title || '', platform: initialCampaign?.platform || initialAccount?.platform || 'Instagram',
     caption: initialCampaign?.caption || '', scheduledAt: initialCampaign?.scheduledAt || isoIn(1, 10),
     campaignStatus: initialCampaign?.status || 'Draft', displayLabel: initialAccount?.displayLabel || '',
-    handle: initialAccount?.handle || '', accountStatus: initialAccount?.status || 'Active (simulated)',
+    handle: initialAccount?.handle || '', accountStatus: initialAccount?.status || 'Active label',
     name: initialContact?.name || '', channel: initialContact?.channel || 'Email', value: initialContact?.value || '',
     optedIn: initialContact?.optedIn ?? false, list: initialContact?.list || store.lists[0] || 'New list',
   } });
@@ -506,7 +508,7 @@ function EditorDialog({ automation = false, kind, item, store, media, perform, c
           <div className="field-group"><label className="field-label" htmlFor="account-platform">Platform</label><select id="account-platform" className="field-select" style={{ width: '100%' }} value={platform} onChange={e => setPlatform(e.target.value)} data-testid="select-account-platform">{platforms.map(p => <option key={p}>{p}</option>)}</select></div>
           <div className="field-group"><label className="field-label" htmlFor="account-label">Account Name</label><input id="account-label" className="field-input" value={displayLabel} onChange={e => setDisplayLabel(e.target.value)} placeholder="e.g. Studio account" autoFocus data-testid="input-account-label" /></div>
           <div className="field-group"><label className="field-label" htmlFor="account-handle">Phone / Username <span className="field-hint">optional</span></label><input id="account-handle" className="field-input" value={handle} onChange={e => setHandle(e.target.value)} placeholder="@yourhandle" data-testid="input-account-handle" /></div>
-          <div className="field-group"><label className="field-label" htmlFor="account-status">Label status</label><select id="account-status" className="field-select" style={{ width: '100%' }} value={accountStatus} onChange={e => setAccountStatus(e.target.value)} data-testid="select-account-status">{['Active label', 'Paused label'].includes(accountStatus) && <option>{accountStatus}</option>}<option>Active (simulated)</option><option>Paused (simulated)</option></select></div>
+          <div className="field-group"><label className="field-label" htmlFor="account-status">Label status</label><select id="account-status" className="field-select" style={{ width: '100%' }} value={accountStatus} onChange={e => setAccountStatus(e.target.value)} data-testid="select-account-status">{!['Active label', 'Paused label'].includes(accountStatus) && <option>{accountStatus}</option>}<option>Active label</option><option>Paused label</option></select></div>
           <div className="field-group"><label className="field-label" htmlFor="account-demo">Demo session reference <span className="field-hint">optional, fake only</span></label><input id="account-demo" className="field-input" value={demoSession} onChange={e => setDemoSession(e.target.value)} placeholder="demo-studio-01" autoComplete="off" data-testid="input-account-demo" /><div className="wa-hint">A made-up label that must start with demo-. Never paste a cookie, token, or password.</div></div>
           <div className="consent-note" style={{ marginBottom: 0 }}>Real credentials are not accepted. Do not enter a password, recovery code, cookie, or session detail.</div>
         </>}

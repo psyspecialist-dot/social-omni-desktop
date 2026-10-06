@@ -4,7 +4,7 @@ import path from "node:path";
 
 const router = Router();
 router.get("/socialomni/download", (req, res, next) => {
-  const relative = "artifacts/social-omni-desktop/public/downloads/socialomni-desktop.zip";
+  const relative = "artifacts/social-omni-desktop/public/downloads/social-najhin-desktop.zip";
   const archive = [
     path.resolve(relative),
     path.resolve("../../", relative),
@@ -16,7 +16,7 @@ router.get("/socialomni/download", (req, res, next) => {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("Content-Type", "application/zip");
   res.setHeader("X-Content-Type-Options", "nosniff");
-  res.download(archive, "socialomni-desktop.zip", error => {
+  res.download(archive, "social-najhin-desktop.zip", error => {
     if (error) next(error);
   });
 });

@@ -1,7 +1,7 @@
 const platforms = ['Instagram', 'Facebook', 'TikTok', 'WhatsApp'];
 const statuses = ['Draft', 'Scheduled', 'Ready for review', 'Paused', 'Sent', 'Failed'];
 const defaults = () => ({
-  theme: 'light', keywords: '', delayMin: 3, delayMax: 5,
+  theme: 'dark', keywords: '', delayMin: 5, delayMax: 12,
   phoneNumbers: '', messageContent: '', mediaId: null, accountId: null, licenseKey: '',
 });
 const bad = message => Object.assign(new Error(message), { status: 400 });

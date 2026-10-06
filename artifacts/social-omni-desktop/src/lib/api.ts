@@ -14,11 +14,15 @@ export interface SimulationSettings {
 export interface MediaAsset { id: string; name: string; mime: string; size: number }
 export interface SimulationTarget {
   id: string; name: string;
-  joinStatus: 'Pending' | 'Joined';
-  postStatus: 'Pending' | 'Posted';
+  joinStatus: 'Pending' | 'Joined' | 'Requested' | 'Needs review';
+  postStatus: 'Pending' | 'Posted' | 'Not posted';
   sendStatus: 'Pending' | 'Sent';
 }
 export interface SimulationJob {
+  mode?: 'live';
+  platform?: 'WhatsApp' | 'Facebook';
+  action?: string;
+  discoveredGroups?: { name: string; url: string }[];
   id: string;
   kind: 'campaign' | 'whatsapp' | 'leads';
   campaignId: string | null;
@@ -41,8 +45,9 @@ export interface Lead {
   keyword: string; city: string; jobId: string; createdAt: string; simulated: true;
 }
 export interface LeadWorkspace { keyword: string; city: string; targetCount: number; results: Lead[] }
-export interface SimulationAnalytics { messagesSent: number }
+export interface SimulationAnalytics { messagesSent: number; realMessagesSent?: number }
 export interface ApiState {
+  automationAvailable?: boolean;
   store: Store;
   settings: SimulationSettings;
   jobs: SimulationJob[];

@@ -8,6 +8,11 @@
 
 export interface SimulatorAnalytics {
   /**
+     * Cumulative server-accepted live WhatsApp sends; separate from simulations
+     * @minimum 0
+     */
+  realMessagesSent?: number;
+  /**
      * Cumulative simulated sends
      * @minimum 0
      */
