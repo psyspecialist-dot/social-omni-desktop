@@ -360,6 +360,25 @@ function Settings({ settings, saveSettings, theme, setTheme, store, clear }: { s
   const [license, setLicense] = useState(settings.licenseKey);
   const [licenseNote, setLicenseNote] = useState('');
   const [licenseBusy, setLicenseBusy] = useState(false);
+  const [downloadBusy, setDownloadBusy] = useState(false);
+  const [downloadNote, setDownloadNote] = useState('');
+  const downloadDesktop = async () => {
+    setDownloadBusy(true); setDownloadNote('');
+    try {
+      const response = await fetch('/api/socialomni/download', { cache: 'no-store' });
+      if (!response.ok) throw new Error(`Download unavailable (${response.status}). Please try again.`);
+      if (!response.headers.get('content-type')?.includes('application/zip')) throw new Error('The server did not return a ZIP file. Please try again.');
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url; link.download = 'socialomni-desktop.zip';
+      document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      setDownloadNote('ZIP sent to your browser. Check Downloads, unzip it, and follow README.md for macOS setup.');
+    } catch (error) {
+      setDownloadNote(error instanceof Error ? error.message : 'Download failed. Please try again.');
+    } finally { setDownloadBusy(false); }
+  };
   useEffect(() => { setLicense(settings.licenseKey); }, [settings.licenseKey]);
   useEffect(() => { setMin(settings.delayMin); setMax(settings.delayMax); }, [settings.delayMin, settings.delayMax]);
   const saveLicense = async () => {
@@ -390,7 +409,7 @@ function Settings({ settings, saveSettings, theme, setTheme, store, clear }: { s
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}><button className="button button-secondary" onClick={saveDelay} data-testid="button-save-delay">Save delay</button><Link href="/whatsapp" className="text-link" data-testid="link-settings-whatsapp">Open WhatsApp rehearsal</Link>{note && <span role="status" style={{ fontSize: 10, color: 'hsl(var(--muted-foreground))' }} data-testid="status-delay-saved">{note}</span>}</div>
         </section>
          <section className="setting-card" id="future-license"><div className="setting-head"><div><strong>Future license</strong><p>Placeholder only. The simulator is not license-gated and does not contact an activation service. Use a demo value, not a password or API token.</p></div><span className="mono-tag">NOT ACTIVATED</span></div><form onSubmit={e => { e.preventDefault(); void saveLicense(); }} style={{ marginTop: 15 }}><div className="field-group"><label className="field-label" htmlFor="license-key">License key placeholder</label><input id="license-key" className="field-input" maxLength={200} autoComplete="off" placeholder="DEMO-XXXX-XXXX-XXXX" value={license} onChange={e => { setLicense(e.target.value); setLicenseNote(''); }} data-testid="input-license-key" /></div><button type="submit" className="button button-secondary" disabled={licenseBusy} data-testid="button-save-license">{licenseBusy ? 'Saving…' : 'Save placeholder'}</button>{licenseNote && <p role="status" className="heading-sub" data-testid="status-license-saved">{licenseNote}</p>}</form></section>
-         <section className="setting-card"><div className="setting-head"><div><strong>{isDesktop ? 'Secure desktop bridge' : 'Run locally with Electron'}</strong><p>{isDesktop ? 'The renderer uses a restricted preload bridge and local SQLite. Platform logins stay in your default browser.' : 'Download the desktop source folder, unzip it, then run npm install and npm start inside it. It includes the built interface, main.js, preload.js, package.json, and instructions. This is source, not a signed installer.'}</p></div><ShieldCheck size={18} color="hsl(var(--primary))" /></div>{!isDesktop && <a className="button button-primary" style={{ marginTop: 16 }} href={`${import.meta.env.BASE_URL}downloads/socialomni-desktop.zip`} download data-testid="link-download-desktop"><Download size={14} /> Download desktop folder</a>}</section>
+         <section className="setting-card"><div className="setting-head"><div><strong>{isDesktop ? 'Secure desktop bridge' : 'Run locally with Electron'}</strong><p>{isDesktop ? 'The renderer uses a restricted preload bridge and local SQLite. Platform logins stay in your default browser.' : 'Download the complete application ZIP, unzip it, then run npm install and npm start inside the socialomni-desktop folder. Includes the built interface, frontend/backend source, main.js, preload.js, package.json, and a macOS README. This is source, not a signed installer.'}</p></div><ShieldCheck size={18} color="hsl(var(--primary))" /></div>{!isDesktop && <><button type="button" className="button button-primary" style={{ marginTop: 16 }} onClick={downloadDesktop} disabled={downloadBusy} data-testid="link-download-desktop"><Download size={14} /> {downloadBusy ? 'Downloading ZIP…' : 'Download desktop ZIP'}</button>{downloadNote && <p role="status" style={{ marginTop: 12 }}>{downloadNote}</p>}</>}</section>
       </div>
     </div>
   </main>;

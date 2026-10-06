@@ -2,10 +2,16 @@
 
 This is the local Electron edition of the SocialOmni Desktop simulation dashboard.
 
-## Run on your computer
+## Run on macOS (iMac)
 
-The downloadable desktop folder includes the built renderer. Install a current
-Node.js LTS release, open a terminal in this folder, and run:
+1. Install Node.js 24 LTS for macOS from https://nodejs.org. Choose Apple Silicon
+   for an M-series iMac, or x64 for an Intel iMac. npm is included.
+2. Download `socialomni-desktop.zip` and double-click it in Finder to unzip.
+3. Open Terminal (Applications → Utilities → Terminal). Enter `cd ` (with a
+   trailing space), drag the extracted `socialomni-desktop` folder from Finder
+   into Terminal, and press Return. This is the folder containing `package.json`,
+   `main.js`, and `preload.js`, not the nested `source` folder.
+4. Run these commands, one at a time:
 
 ```sh
 npm install
@@ -14,6 +20,25 @@ npm start
 
 Electron opens a native application window. It is not a signed installer.
 The Electron runtime cannot be launched or tested through the browser preview.
+The first install needs internet access to download Electron and dependencies;
+afterward `npm start` opens the local simulator. No Replit connection or separate
+backend command is needed. The interface is already built; the local backend
+starts automatically. Close the application window to quit.
+
+If Terminal says `npm: command not found`, install Node.js and reopen Terminal.
+If macOS asks for permission to open Electron, review it in System Settings →
+Privacy & Security. Do not disable macOS security protections.
+
+## Package contents
+
+- `package.json`, `main.js`, `preload.js`: standalone Electron entry point.
+- `renderer/`: complete prebuilt frontend, ready to run.
+- `api-service.cjs`, `validation.cjs`, `worker.cjs`, `leads.cjs`: local backend.
+- `source/`: frontend/backend project source and shared libraries for development.
+- `README.md`: these instructions.
+
+Dependencies, hosted database files, secrets, and saved contacts are deliberately
+not included. `npm install` supplies the dependencies on your iMac.
 
 ## Development from the full project
 

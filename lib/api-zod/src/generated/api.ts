@@ -8,6 +8,12 @@
 import * as zod from 'zod';
 
 
+/**
+ * @summary Download the complete standalone desktop application ZIP
+ */
+export const DownloadDesktopPackageResponse = zod.unknown()
+
+
 export const SaveSocialOmniLeadDraftHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
 })

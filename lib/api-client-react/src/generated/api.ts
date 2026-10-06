@@ -56,6 +56,83 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
+export const getDownloadDesktopPackageUrl = () => {
+
+
+
+
+  return `/api/socialomni/download`
+}
+
+/**
+ * @summary Download the complete standalone desktop application ZIP
+ */
+export const downloadDesktopPackage = async ( options?: Parameters<typeof customFetch>[1]): Promise<Blob> => {
+
+  return customFetch<Blob>(getDownloadDesktopPackageUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getDownloadDesktopPackageQueryKey = () => {
+    return [
+    `/api/socialomni/download`
+    ] as const;
+    }
+
+
+export const getDownloadDesktopPackageQueryOptions = <TData = Awaited<ReturnType<typeof downloadDesktopPackage>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof downloadDesktopPackage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getDownloadDesktopPackageQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof downloadDesktopPackage>>> = ({ signal }) => downloadDesktopPackage({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof downloadDesktopPackage>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type DownloadDesktopPackageQueryResult = NonNullable<Awaited<ReturnType<typeof downloadDesktopPackage>>>
+export type DownloadDesktopPackageQueryError = ErrorType<void>
+
+
+/**
+ * @summary Download the complete standalone desktop application ZIP
+ */
+
+export function useDownloadDesktopPackage<TData = Awaited<ReturnType<typeof downloadDesktopPackage>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof downloadDesktopPackage>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getDownloadDesktopPackageQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
 export const getSaveSocialOmniLeadDraftUrl = () => {
 
 

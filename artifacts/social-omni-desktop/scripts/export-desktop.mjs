@@ -26,3 +26,6 @@ for (const file of ['validation.cjs', 'worker.cjs', 'leads.cjs']) {
   cpSync(path.resolve(appDirectory, '..', '..', 'lib', 'socialomni-api', file), path.join(appDirectory, 'desktop', file));
 }
 process.stdout.write(`Desktop renderer exported to ${destination}\n`);
+const bundle = spawnSync(process.execPath, [path.resolve(appDirectory, '../api-server/scripts/bundle-desktop.mjs')], { stdio: 'inherit' });
+if (bundle.error) throw bundle.error;
+if (bundle.status !== 0) process.exit(bundle.status ?? 1);

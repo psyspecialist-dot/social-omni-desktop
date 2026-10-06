@@ -11,6 +11,24 @@ tags:
   - name: health
     description: Health operations
 paths:
+  /socialomni/download:
+    get:
+      operationId: downloadDesktopPackage
+      summary: Download the complete standalone desktop application ZIP
+      responses:
+        "200":
+          description: ZIP attachment with desktop runtime and application source
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+          content:
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        "503":
+          description: Desktop package has not been generated
   /socialomni/leads:
     put:
       operationId: saveSocialOmniLeadDraft
