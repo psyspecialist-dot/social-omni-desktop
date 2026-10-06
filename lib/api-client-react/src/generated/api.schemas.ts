@@ -5,6 +5,158 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export type WaSessionInputAction = typeof WaSessionInputAction[keyof typeof WaSessionInputAction];
+
+
+export const WaSessionInputAction = {
+  filter: 'filter',
+  inbox: 'inbox',
+} as const;
+
+export interface WaSessionInput {
+  action: WaSessionInputAction;
+  accountId: string;
+  approved: boolean;
+}
+
+export interface WaFilterInput {
+  /** @maxLength 10000 */
+  source: string;
+}
+
+export type CrmThreadInputStatus = typeof CrmThreadInputStatus[keyof typeof CrmThreadInputStatus];
+
+
+export const CrmThreadInputStatus = {
+  New: 'New',
+  'Follow-up': 'Follow-up',
+  'Closed/Won': 'Closed/Won',
+  Urgent: 'Urgent',
+} as const;
+
+export interface CrmThreadInput {
+  /** Set false on note-only edits to preserve concurrent opt-outs */
+  consentChanged?: boolean;
+  /** @maxLength 150 */
+  name: string;
+  /** @maxLength 30 */
+  phone: string;
+  status: CrmThreadInputStatus;
+  /** @maxLength 10000 */
+  notes: string;
+  optedIn: boolean;
+}
+
+export type ChatbotRuleInputMatch = typeof ChatbotRuleInputMatch[keyof typeof ChatbotRuleInputMatch];
+
+
+export const ChatbotRuleInputMatch = {
+  contains: 'contains',
+  exact: 'exact',
+} as const;
+
+export interface ChatbotRuleInput {
+  /** Set false on template-only edits to preserve concurrent rule disabling */
+  enabledChanged?: boolean;
+  /** @maxLength 100 */
+  name: string;
+  /** @maxLength 200 */
+  keyword: string;
+  match: ChatbotRuleInputMatch;
+  /** @maxLength 2000 */
+  template: string;
+  enabled: boolean;
+  /**
+     * @minimum 3
+     * @maximum 8
+     */
+  delayMin: number;
+  /**
+     * @minimum 3
+     * @maximum 8
+     */
+  delayMax: number;
+  /**
+     * @minimum 1
+     * @maximum 1440
+     */
+  cooldownMinutes: number;
+}
+
+export type ChatbotRule = ChatbotRuleInput & {
+  id: string;
+  createdAt: string;
+};
+
+export type CrmMessageDirection = typeof CrmMessageDirection[keyof typeof CrmMessageDirection];
+
+
+export const CrmMessageDirection = {
+  incoming: 'incoming',
+  outgoing: 'outgoing',
+} as const;
+
+export type CrmMessageStatus = typeof CrmMessageStatus[keyof typeof CrmMessageStatus];
+
+
+export const CrmMessageStatus = {
+  Received: 'Received',
+  Accepted: 'Accepted',
+  Unconfirmed: 'Unconfirmed',
+} as const;
+
+export interface CrmMessage {
+  id: string;
+  text: string;
+  direction: CrmMessageDirection;
+  timestamp: string;
+  status: CrmMessageStatus;
+  ruleId?: string;
+}
+
+export type CrmThread = CrmThreadInput & ({
+  id: string;
+  /** @nullable */
+  contactId: string | null;
+  /** @nullable */
+  accountId?: string | null;
+  /** @nullable */
+  remoteKey?: string | null;
+  updatedAt: string;
+  messages: CrmMessage[];
+});
+
+export type WaFilterResultStatus = typeof WaFilterResultStatus[keyof typeof WaFilterResultStatus];
+
+
+export const WaFilterResultStatus = {
+  Unverified: 'Unverified',
+  'Active/Valid': 'Active/Valid',
+  Inactive: 'Inactive',
+  Unknown: 'Unknown',
+} as const;
+
+export interface WaFilterResult {
+  id: string;
+  input: string;
+  phone: string;
+  status: WaFilterResultStatus;
+  reason: string;
+  /** @nullable */
+  checkedAt?: string | null;
+}
+
+export type WaSuiteFilter = {
+  source: string;
+  results: WaFilterResult[];
+};
+
+export interface WaSuite {
+  filter: WaSuiteFilter;
+  threads: CrmThread[];
+  rules: ChatbotRule[];
+}
+
 export type BrowserTaskInputAction = typeof BrowserTaskInputAction[keyof typeof BrowserTaskInputAction];
 
 
@@ -319,6 +471,7 @@ export type SimulatorStateStore = {
 
 export interface SimulatorState {
   automationAvailable?: boolean;
+  waSuite?: WaSuite;
   store: SimulatorStateStore;
   settings: SimulatorSettings;
   jobs: SimulatorJob[];

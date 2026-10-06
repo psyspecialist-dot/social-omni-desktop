@@ -8,6 +8,1646 @@
 import * as zod from 'zod';
 
 
+export const SaveWaFilterHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const saveWaFilterBodySourceMax = 10000;
+
+
+
+export const SaveWaFilterBody = zod.object({
+  "source": zod.string().max(saveWaFilterBodySourceMax)
+})
+
+export const saveWaFilterResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const saveWaFilterResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const saveWaFilterResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const saveWaFilterResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const saveWaFilterResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const saveWaFilterResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const saveWaFilterResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const saveWaFilterResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const saveWaFilterResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const saveWaFilterResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const saveWaFilterResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const saveWaFilterResponseSettingsKeywordsMax = 300;
+
+export const saveWaFilterResponseSettingsDelayMinMin = 5;
+export const saveWaFilterResponseSettingsDelayMinMax = 12;
+
+export const saveWaFilterResponseSettingsDelayMaxMin = 5;
+export const saveWaFilterResponseSettingsDelayMaxMax = 12;
+
+export const saveWaFilterResponseSettingsPhoneNumbersMax = 10000;
+
+export const saveWaFilterResponseSettingsMessageContentMax = 10000;
+
+export const saveWaFilterResponseSettingsLicenseKeyMax = 200;
+
+export const saveWaFilterResponseLeadsOneKeywordMax = 100;
+
+export const saveWaFilterResponseLeadsOneCityMax = 150;
+
+export const saveWaFilterResponseLeadsOneTargetCountMax = 200;
+
+export const saveWaFilterResponseAnalyticsRealMessagesSentMin = 0;
+
+export const saveWaFilterResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const SaveWaFilterResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(saveWaFilterResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(saveWaFilterResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(saveWaFilterResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(saveWaFilterResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(saveWaFilterResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(saveWaFilterResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(saveWaFilterResponseWaSuiteRulesItemOneDelayMinMin).max(saveWaFilterResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(saveWaFilterResponseWaSuiteRulesItemOneDelayMaxMin).max(saveWaFilterResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(saveWaFilterResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "keywords": zod.string().max(saveWaFilterResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(saveWaFilterResponseSettingsDelayMinMin).max(saveWaFilterResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(saveWaFilterResponseSettingsDelayMaxMin).max(saveWaFilterResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(saveWaFilterResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(saveWaFilterResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(saveWaFilterResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
+  "sendStatus": zod.enum(['Pending', 'Sent'])
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(saveWaFilterResponseLeadsOneKeywordMax),
+  "city": zod.string().max(saveWaFilterResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(saveWaFilterResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(saveWaFilterResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(saveWaFilterResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
+export const CreateCrmThreadHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const createCrmThreadBodyNameMax = 150;
+
+export const createCrmThreadBodyPhoneMax = 30;
+
+export const createCrmThreadBodyNotesMax = 10000;
+
+
+
+export const CreateCrmThreadBody = zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(createCrmThreadBodyNameMax),
+  "phone": zod.string().max(createCrmThreadBodyPhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(createCrmThreadBodyNotesMax),
+  "optedIn": zod.boolean()
+})
+
+export const createCrmThreadResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const createCrmThreadResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const createCrmThreadResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const createCrmThreadResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const createCrmThreadResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const createCrmThreadResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const createCrmThreadResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const createCrmThreadResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const createCrmThreadResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const createCrmThreadResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const createCrmThreadResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const createCrmThreadResponseSettingsKeywordsMax = 300;
+
+export const createCrmThreadResponseSettingsDelayMinMin = 5;
+export const createCrmThreadResponseSettingsDelayMinMax = 12;
+
+export const createCrmThreadResponseSettingsDelayMaxMin = 5;
+export const createCrmThreadResponseSettingsDelayMaxMax = 12;
+
+export const createCrmThreadResponseSettingsPhoneNumbersMax = 10000;
+
+export const createCrmThreadResponseSettingsMessageContentMax = 10000;
+
+export const createCrmThreadResponseSettingsLicenseKeyMax = 200;
+
+export const createCrmThreadResponseLeadsOneKeywordMax = 100;
+
+export const createCrmThreadResponseLeadsOneCityMax = 150;
+
+export const createCrmThreadResponseLeadsOneTargetCountMax = 200;
+
+export const createCrmThreadResponseAnalyticsRealMessagesSentMin = 0;
+
+export const createCrmThreadResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const CreateCrmThreadResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(createCrmThreadResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(createCrmThreadResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(createCrmThreadResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(createCrmThreadResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(createCrmThreadResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(createCrmThreadResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(createCrmThreadResponseWaSuiteRulesItemOneDelayMinMin).max(createCrmThreadResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(createCrmThreadResponseWaSuiteRulesItemOneDelayMaxMin).max(createCrmThreadResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(createCrmThreadResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "keywords": zod.string().max(createCrmThreadResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(createCrmThreadResponseSettingsDelayMinMin).max(createCrmThreadResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(createCrmThreadResponseSettingsDelayMaxMin).max(createCrmThreadResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(createCrmThreadResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(createCrmThreadResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(createCrmThreadResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
+  "sendStatus": zod.enum(['Pending', 'Sent'])
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(createCrmThreadResponseLeadsOneKeywordMax),
+  "city": zod.string().max(createCrmThreadResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(createCrmThreadResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(createCrmThreadResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(createCrmThreadResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
+export const EditCrmThreadParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const EditCrmThreadHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const editCrmThreadBodyNameMax = 150;
+
+export const editCrmThreadBodyPhoneMax = 30;
+
+export const editCrmThreadBodyNotesMax = 10000;
+
+
+
+export const EditCrmThreadBody = zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(editCrmThreadBodyNameMax),
+  "phone": zod.string().max(editCrmThreadBodyPhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(editCrmThreadBodyNotesMax),
+  "optedIn": zod.boolean()
+})
+
+export const editCrmThreadResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const editCrmThreadResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const editCrmThreadResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const editCrmThreadResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const editCrmThreadResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const editCrmThreadResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const editCrmThreadResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const editCrmThreadResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const editCrmThreadResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const editCrmThreadResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const editCrmThreadResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const editCrmThreadResponseSettingsKeywordsMax = 300;
+
+export const editCrmThreadResponseSettingsDelayMinMin = 5;
+export const editCrmThreadResponseSettingsDelayMinMax = 12;
+
+export const editCrmThreadResponseSettingsDelayMaxMin = 5;
+export const editCrmThreadResponseSettingsDelayMaxMax = 12;
+
+export const editCrmThreadResponseSettingsPhoneNumbersMax = 10000;
+
+export const editCrmThreadResponseSettingsMessageContentMax = 10000;
+
+export const editCrmThreadResponseSettingsLicenseKeyMax = 200;
+
+export const editCrmThreadResponseLeadsOneKeywordMax = 100;
+
+export const editCrmThreadResponseLeadsOneCityMax = 150;
+
+export const editCrmThreadResponseLeadsOneTargetCountMax = 200;
+
+export const editCrmThreadResponseAnalyticsRealMessagesSentMin = 0;
+
+export const editCrmThreadResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const EditCrmThreadResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(editCrmThreadResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(editCrmThreadResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(editCrmThreadResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(editCrmThreadResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(editCrmThreadResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(editCrmThreadResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(editCrmThreadResponseWaSuiteRulesItemOneDelayMinMin).max(editCrmThreadResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(editCrmThreadResponseWaSuiteRulesItemOneDelayMaxMin).max(editCrmThreadResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(editCrmThreadResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "keywords": zod.string().max(editCrmThreadResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(editCrmThreadResponseSettingsDelayMinMin).max(editCrmThreadResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(editCrmThreadResponseSettingsDelayMaxMin).max(editCrmThreadResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(editCrmThreadResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(editCrmThreadResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(editCrmThreadResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
+  "sendStatus": zod.enum(['Pending', 'Sent'])
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(editCrmThreadResponseLeadsOneKeywordMax),
+  "city": zod.string().max(editCrmThreadResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(editCrmThreadResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(editCrmThreadResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(editCrmThreadResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
+export const RemoveCrmThreadParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const RemoveCrmThreadHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const removeCrmThreadResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const removeCrmThreadResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const removeCrmThreadResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const removeCrmThreadResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const removeCrmThreadResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const removeCrmThreadResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const removeCrmThreadResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const removeCrmThreadResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const removeCrmThreadResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const removeCrmThreadResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const removeCrmThreadResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const removeCrmThreadResponseSettingsKeywordsMax = 300;
+
+export const removeCrmThreadResponseSettingsDelayMinMin = 5;
+export const removeCrmThreadResponseSettingsDelayMinMax = 12;
+
+export const removeCrmThreadResponseSettingsDelayMaxMin = 5;
+export const removeCrmThreadResponseSettingsDelayMaxMax = 12;
+
+export const removeCrmThreadResponseSettingsPhoneNumbersMax = 10000;
+
+export const removeCrmThreadResponseSettingsMessageContentMax = 10000;
+
+export const removeCrmThreadResponseSettingsLicenseKeyMax = 200;
+
+export const removeCrmThreadResponseLeadsOneKeywordMax = 100;
+
+export const removeCrmThreadResponseLeadsOneCityMax = 150;
+
+export const removeCrmThreadResponseLeadsOneTargetCountMax = 200;
+
+export const removeCrmThreadResponseAnalyticsRealMessagesSentMin = 0;
+
+export const removeCrmThreadResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const RemoveCrmThreadResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(removeCrmThreadResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(removeCrmThreadResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(removeCrmThreadResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(removeCrmThreadResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(removeCrmThreadResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(removeCrmThreadResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(removeCrmThreadResponseWaSuiteRulesItemOneDelayMinMin).max(removeCrmThreadResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(removeCrmThreadResponseWaSuiteRulesItemOneDelayMaxMin).max(removeCrmThreadResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(removeCrmThreadResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "keywords": zod.string().max(removeCrmThreadResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(removeCrmThreadResponseSettingsDelayMinMin).max(removeCrmThreadResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(removeCrmThreadResponseSettingsDelayMaxMin).max(removeCrmThreadResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(removeCrmThreadResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(removeCrmThreadResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(removeCrmThreadResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
+  "sendStatus": zod.enum(['Pending', 'Sent'])
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(removeCrmThreadResponseLeadsOneKeywordMax),
+  "city": zod.string().max(removeCrmThreadResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(removeCrmThreadResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(removeCrmThreadResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(removeCrmThreadResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
+export const CreateChatbotRuleHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const createChatbotRuleBodyNameMax = 100;
+
+export const createChatbotRuleBodyKeywordMax = 200;
+
+export const createChatbotRuleBodyTemplateMax = 2000;
+
+export const createChatbotRuleBodyDelayMinMin = 3;
+export const createChatbotRuleBodyDelayMinMax = 8;
+
+export const createChatbotRuleBodyDelayMaxMin = 3;
+export const createChatbotRuleBodyDelayMaxMax = 8;
+
+export const createChatbotRuleBodyCooldownMinutesMax = 1440;
+
+
+
+export const CreateChatbotRuleBody = zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(createChatbotRuleBodyNameMax),
+  "keyword": zod.string().max(createChatbotRuleBodyKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(createChatbotRuleBodyTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(createChatbotRuleBodyDelayMinMin).max(createChatbotRuleBodyDelayMinMax),
+  "delayMax": zod.number().int().min(createChatbotRuleBodyDelayMaxMin).max(createChatbotRuleBodyDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(createChatbotRuleBodyCooldownMinutesMax)
+})
+
+export const createChatbotRuleResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const createChatbotRuleResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const createChatbotRuleResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const createChatbotRuleResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const createChatbotRuleResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const createChatbotRuleResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const createChatbotRuleResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const createChatbotRuleResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const createChatbotRuleResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const createChatbotRuleResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const createChatbotRuleResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const createChatbotRuleResponseSettingsKeywordsMax = 300;
+
+export const createChatbotRuleResponseSettingsDelayMinMin = 5;
+export const createChatbotRuleResponseSettingsDelayMinMax = 12;
+
+export const createChatbotRuleResponseSettingsDelayMaxMin = 5;
+export const createChatbotRuleResponseSettingsDelayMaxMax = 12;
+
+export const createChatbotRuleResponseSettingsPhoneNumbersMax = 10000;
+
+export const createChatbotRuleResponseSettingsMessageContentMax = 10000;
+
+export const createChatbotRuleResponseSettingsLicenseKeyMax = 200;
+
+export const createChatbotRuleResponseLeadsOneKeywordMax = 100;
+
+export const createChatbotRuleResponseLeadsOneCityMax = 150;
+
+export const createChatbotRuleResponseLeadsOneTargetCountMax = 200;
+
+export const createChatbotRuleResponseAnalyticsRealMessagesSentMin = 0;
+
+export const createChatbotRuleResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const CreateChatbotRuleResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(createChatbotRuleResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(createChatbotRuleResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(createChatbotRuleResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(createChatbotRuleResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(createChatbotRuleResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(createChatbotRuleResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(createChatbotRuleResponseWaSuiteRulesItemOneDelayMinMin).max(createChatbotRuleResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(createChatbotRuleResponseWaSuiteRulesItemOneDelayMaxMin).max(createChatbotRuleResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(createChatbotRuleResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "keywords": zod.string().max(createChatbotRuleResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(createChatbotRuleResponseSettingsDelayMinMin).max(createChatbotRuleResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(createChatbotRuleResponseSettingsDelayMaxMin).max(createChatbotRuleResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(createChatbotRuleResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(createChatbotRuleResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(createChatbotRuleResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
+  "sendStatus": zod.enum(['Pending', 'Sent'])
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(createChatbotRuleResponseLeadsOneKeywordMax),
+  "city": zod.string().max(createChatbotRuleResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(createChatbotRuleResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(createChatbotRuleResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(createChatbotRuleResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
+export const EditChatbotRuleParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const EditChatbotRuleHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const editChatbotRuleBodyNameMax = 100;
+
+export const editChatbotRuleBodyKeywordMax = 200;
+
+export const editChatbotRuleBodyTemplateMax = 2000;
+
+export const editChatbotRuleBodyDelayMinMin = 3;
+export const editChatbotRuleBodyDelayMinMax = 8;
+
+export const editChatbotRuleBodyDelayMaxMin = 3;
+export const editChatbotRuleBodyDelayMaxMax = 8;
+
+export const editChatbotRuleBodyCooldownMinutesMax = 1440;
+
+
+
+export const EditChatbotRuleBody = zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(editChatbotRuleBodyNameMax),
+  "keyword": zod.string().max(editChatbotRuleBodyKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(editChatbotRuleBodyTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(editChatbotRuleBodyDelayMinMin).max(editChatbotRuleBodyDelayMinMax),
+  "delayMax": zod.number().int().min(editChatbotRuleBodyDelayMaxMin).max(editChatbotRuleBodyDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(editChatbotRuleBodyCooldownMinutesMax)
+})
+
+export const editChatbotRuleResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const editChatbotRuleResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const editChatbotRuleResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const editChatbotRuleResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const editChatbotRuleResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const editChatbotRuleResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const editChatbotRuleResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const editChatbotRuleResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const editChatbotRuleResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const editChatbotRuleResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const editChatbotRuleResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const editChatbotRuleResponseSettingsKeywordsMax = 300;
+
+export const editChatbotRuleResponseSettingsDelayMinMin = 5;
+export const editChatbotRuleResponseSettingsDelayMinMax = 12;
+
+export const editChatbotRuleResponseSettingsDelayMaxMin = 5;
+export const editChatbotRuleResponseSettingsDelayMaxMax = 12;
+
+export const editChatbotRuleResponseSettingsPhoneNumbersMax = 10000;
+
+export const editChatbotRuleResponseSettingsMessageContentMax = 10000;
+
+export const editChatbotRuleResponseSettingsLicenseKeyMax = 200;
+
+export const editChatbotRuleResponseLeadsOneKeywordMax = 100;
+
+export const editChatbotRuleResponseLeadsOneCityMax = 150;
+
+export const editChatbotRuleResponseLeadsOneTargetCountMax = 200;
+
+export const editChatbotRuleResponseAnalyticsRealMessagesSentMin = 0;
+
+export const editChatbotRuleResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const EditChatbotRuleResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(editChatbotRuleResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(editChatbotRuleResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(editChatbotRuleResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(editChatbotRuleResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(editChatbotRuleResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(editChatbotRuleResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(editChatbotRuleResponseWaSuiteRulesItemOneDelayMinMin).max(editChatbotRuleResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(editChatbotRuleResponseWaSuiteRulesItemOneDelayMaxMin).max(editChatbotRuleResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(editChatbotRuleResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "keywords": zod.string().max(editChatbotRuleResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(editChatbotRuleResponseSettingsDelayMinMin).max(editChatbotRuleResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(editChatbotRuleResponseSettingsDelayMaxMin).max(editChatbotRuleResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(editChatbotRuleResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(editChatbotRuleResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(editChatbotRuleResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
+  "sendStatus": zod.enum(['Pending', 'Sent'])
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(editChatbotRuleResponseLeadsOneKeywordMax),
+  "city": zod.string().max(editChatbotRuleResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(editChatbotRuleResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(editChatbotRuleResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(editChatbotRuleResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
+export const RemoveChatbotRuleParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const RemoveChatbotRuleHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const removeChatbotRuleResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const removeChatbotRuleResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const removeChatbotRuleResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const removeChatbotRuleResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const removeChatbotRuleResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const removeChatbotRuleResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const removeChatbotRuleResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const removeChatbotRuleResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const removeChatbotRuleResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const removeChatbotRuleResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const removeChatbotRuleResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const removeChatbotRuleResponseSettingsKeywordsMax = 300;
+
+export const removeChatbotRuleResponseSettingsDelayMinMin = 5;
+export const removeChatbotRuleResponseSettingsDelayMinMax = 12;
+
+export const removeChatbotRuleResponseSettingsDelayMaxMin = 5;
+export const removeChatbotRuleResponseSettingsDelayMaxMax = 12;
+
+export const removeChatbotRuleResponseSettingsPhoneNumbersMax = 10000;
+
+export const removeChatbotRuleResponseSettingsMessageContentMax = 10000;
+
+export const removeChatbotRuleResponseSettingsLicenseKeyMax = 200;
+
+export const removeChatbotRuleResponseLeadsOneKeywordMax = 100;
+
+export const removeChatbotRuleResponseLeadsOneCityMax = 150;
+
+export const removeChatbotRuleResponseLeadsOneTargetCountMax = 200;
+
+export const removeChatbotRuleResponseAnalyticsRealMessagesSentMin = 0;
+
+export const removeChatbotRuleResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const RemoveChatbotRuleResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(removeChatbotRuleResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(removeChatbotRuleResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(removeChatbotRuleResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(removeChatbotRuleResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(removeChatbotRuleResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(removeChatbotRuleResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(removeChatbotRuleResponseWaSuiteRulesItemOneDelayMinMin).max(removeChatbotRuleResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(removeChatbotRuleResponseWaSuiteRulesItemOneDelayMaxMin).max(removeChatbotRuleResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(removeChatbotRuleResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "keywords": zod.string().max(removeChatbotRuleResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(removeChatbotRuleResponseSettingsDelayMinMin).max(removeChatbotRuleResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(removeChatbotRuleResponseSettingsDelayMaxMin).max(removeChatbotRuleResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(removeChatbotRuleResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(removeChatbotRuleResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(removeChatbotRuleResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
+  "sendStatus": zod.enum(['Pending', 'Sent'])
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(removeChatbotRuleResponseLeadsOneKeywordMax),
+  "city": zod.string().max(removeChatbotRuleResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(removeChatbotRuleResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(removeChatbotRuleResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(removeChatbotRuleResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
+export const StartWaSuiteSessionHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const StartWaSuiteSessionBody = zod.object({
+  "action": zod.enum(['filter', 'inbox']),
+  "accountId": zod.string(),
+  "approved": zod.boolean()
+})
+
+export const startWaSuiteSessionResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const startWaSuiteSessionResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const startWaSuiteSessionResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const startWaSuiteSessionResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const startWaSuiteSessionResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const startWaSuiteSessionResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const startWaSuiteSessionResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const startWaSuiteSessionResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const startWaSuiteSessionResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const startWaSuiteSessionResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const startWaSuiteSessionResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const startWaSuiteSessionResponseSettingsKeywordsMax = 300;
+
+export const startWaSuiteSessionResponseSettingsDelayMinMin = 5;
+export const startWaSuiteSessionResponseSettingsDelayMinMax = 12;
+
+export const startWaSuiteSessionResponseSettingsDelayMaxMin = 5;
+export const startWaSuiteSessionResponseSettingsDelayMaxMax = 12;
+
+export const startWaSuiteSessionResponseSettingsPhoneNumbersMax = 10000;
+
+export const startWaSuiteSessionResponseSettingsMessageContentMax = 10000;
+
+export const startWaSuiteSessionResponseSettingsLicenseKeyMax = 200;
+
+export const startWaSuiteSessionResponseLeadsOneKeywordMax = 100;
+
+export const startWaSuiteSessionResponseLeadsOneCityMax = 150;
+
+export const startWaSuiteSessionResponseLeadsOneTargetCountMax = 200;
+
+export const startWaSuiteSessionResponseAnalyticsRealMessagesSentMin = 0;
+
+export const startWaSuiteSessionResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const StartWaSuiteSessionResponse = zod.object({
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(startWaSuiteSessionResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(startWaSuiteSessionResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(startWaSuiteSessionResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(startWaSuiteSessionResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(startWaSuiteSessionResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(startWaSuiteSessionResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(startWaSuiteSessionResponseWaSuiteRulesItemOneDelayMinMin).max(startWaSuiteSessionResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(startWaSuiteSessionResponseWaSuiteRulesItemOneDelayMaxMin).max(startWaSuiteSessionResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(startWaSuiteSessionResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "keywords": zod.string().max(startWaSuiteSessionResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(startWaSuiteSessionResponseSettingsDelayMinMin).max(startWaSuiteSessionResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(startWaSuiteSessionResponseSettingsDelayMaxMin).max(startWaSuiteSessionResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(startWaSuiteSessionResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(startWaSuiteSessionResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(startWaSuiteSessionResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
+  "sendStatus": zod.enum(['Pending', 'Sent'])
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(startWaSuiteSessionResponseLeadsOneKeywordMax),
+  "city": zod.string().max(startWaSuiteSessionResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(startWaSuiteSessionResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(startWaSuiteSessionResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(startWaSuiteSessionResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
 /**
  * @summary Start an explicitly approved desktop-only browser task
  */
@@ -29,6 +1669,26 @@ export const StartLocalBrowserTaskBody = zod.object({
   "groupUrls": zod.string().max(startLocalBrowserTaskBodyGroupUrlsMax).optional(),
   "approved": zod.boolean().optional().describe('Explicit recipient consent or group posting permission attestation')
 })
+
+export const startLocalBrowserTaskResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const startLocalBrowserTaskResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const startLocalBrowserTaskResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const startLocalBrowserTaskResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const startLocalBrowserTaskResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const startLocalBrowserTaskResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const startLocalBrowserTaskResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const startLocalBrowserTaskResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const startLocalBrowserTaskResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const startLocalBrowserTaskResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const startLocalBrowserTaskResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
 export const startLocalBrowserTaskResponseSettingsKeywordsMax = 300;
 
@@ -58,6 +1718,55 @@ export const startLocalBrowserTaskResponseAnalyticsMessagesSentMin = 0;
 
 export const StartLocalBrowserTaskResponse = zod.object({
   "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(startLocalBrowserTaskResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(startLocalBrowserTaskResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(startLocalBrowserTaskResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(startLocalBrowserTaskResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(startLocalBrowserTaskResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(startLocalBrowserTaskResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(startLocalBrowserTaskResponseWaSuiteRulesItemOneDelayMinMin).max(startLocalBrowserTaskResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(startLocalBrowserTaskResponseWaSuiteRulesItemOneDelayMaxMin).max(startLocalBrowserTaskResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(startLocalBrowserTaskResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -171,6 +1880,26 @@ export const SaveSocialOmniLeadDraftBody = zod.object({
   "targetCount": zod.number().int().min(1).max(saveSocialOmniLeadDraftBodyTargetCountMax)
 })
 
+export const saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
 export const saveSocialOmniLeadDraftResponseSettingsKeywordsMax = 300;
 
 export const saveSocialOmniLeadDraftResponseSettingsDelayMinMin = 5;
@@ -199,6 +1928,55 @@ export const saveSocialOmniLeadDraftResponseAnalyticsMessagesSentMin = 0;
 
 export const SaveSocialOmniLeadDraftResponse = zod.object({
   "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneDelayMinMin).max(saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneDelayMaxMin).max(saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -295,6 +2073,26 @@ export const ClearSocialOmniLeadsHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
 })
 
+export const clearSocialOmniLeadsResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const clearSocialOmniLeadsResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const clearSocialOmniLeadsResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const clearSocialOmniLeadsResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const clearSocialOmniLeadsResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const clearSocialOmniLeadsResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const clearSocialOmniLeadsResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const clearSocialOmniLeadsResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const clearSocialOmniLeadsResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const clearSocialOmniLeadsResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const clearSocialOmniLeadsResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
 export const clearSocialOmniLeadsResponseSettingsKeywordsMax = 300;
 
 export const clearSocialOmniLeadsResponseSettingsDelayMinMin = 5;
@@ -323,6 +2121,55 @@ export const clearSocialOmniLeadsResponseAnalyticsMessagesSentMin = 0;
 
 export const ClearSocialOmniLeadsResponse = zod.object({
   "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(clearSocialOmniLeadsResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(clearSocialOmniLeadsResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(clearSocialOmniLeadsResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(clearSocialOmniLeadsResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(clearSocialOmniLeadsResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(clearSocialOmniLeadsResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(clearSocialOmniLeadsResponseWaSuiteRulesItemOneDelayMinMin).max(clearSocialOmniLeadsResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(clearSocialOmniLeadsResponseWaSuiteRulesItemOneDelayMaxMin).max(clearSocialOmniLeadsResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(clearSocialOmniLeadsResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -416,6 +2263,26 @@ export const GetSocialOmniStateHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
 })
 
+export const getSocialOmniStateResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const getSocialOmniStateResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const getSocialOmniStateResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const getSocialOmniStateResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const getSocialOmniStateResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const getSocialOmniStateResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const getSocialOmniStateResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const getSocialOmniStateResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const getSocialOmniStateResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const getSocialOmniStateResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const getSocialOmniStateResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
 export const getSocialOmniStateResponseSettingsKeywordsMax = 300;
 
 export const getSocialOmniStateResponseSettingsDelayMinMin = 5;
@@ -444,6 +2311,55 @@ export const getSocialOmniStateResponseAnalyticsMessagesSentMin = 0;
 
 export const GetSocialOmniStateResponse = zod.object({
   "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(getSocialOmniStateResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(getSocialOmniStateResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(getSocialOmniStateResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(getSocialOmniStateResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(getSocialOmniStateResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(getSocialOmniStateResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(getSocialOmniStateResponseWaSuiteRulesItemOneDelayMinMin).max(getSocialOmniStateResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(getSocialOmniStateResponseWaSuiteRulesItemOneDelayMaxMin).max(getSocialOmniStateResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(getSocialOmniStateResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -537,6 +2453,26 @@ export const ClearSocialOmniStateHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
 })
 
+export const clearSocialOmniStateResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const clearSocialOmniStateResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const clearSocialOmniStateResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const clearSocialOmniStateResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const clearSocialOmniStateResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const clearSocialOmniStateResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const clearSocialOmniStateResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const clearSocialOmniStateResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const clearSocialOmniStateResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const clearSocialOmniStateResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const clearSocialOmniStateResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
 export const clearSocialOmniStateResponseSettingsKeywordsMax = 300;
 
 export const clearSocialOmniStateResponseSettingsDelayMinMin = 5;
@@ -565,6 +2501,55 @@ export const clearSocialOmniStateResponseAnalyticsMessagesSentMin = 0;
 
 export const ClearSocialOmniStateResponse = zod.object({
   "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(clearSocialOmniStateResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(clearSocialOmniStateResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(clearSocialOmniStateResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(clearSocialOmniStateResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(clearSocialOmniStateResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(clearSocialOmniStateResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(clearSocialOmniStateResponseWaSuiteRulesItemOneDelayMinMin).max(clearSocialOmniStateResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(clearSocialOmniStateResponseWaSuiteRulesItemOneDelayMaxMin).max(clearSocialOmniStateResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(clearSocialOmniStateResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -686,6 +2671,26 @@ export const UpdateSocialOmniSettingsBody = zod.object({
   "licenseKey": zod.string().max(updateSocialOmniSettingsBodyLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.')
 
+export const updateSocialOmniSettingsResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const updateSocialOmniSettingsResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const updateSocialOmniSettingsResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const updateSocialOmniSettingsResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const updateSocialOmniSettingsResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const updateSocialOmniSettingsResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const updateSocialOmniSettingsResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const updateSocialOmniSettingsResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const updateSocialOmniSettingsResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const updateSocialOmniSettingsResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const updateSocialOmniSettingsResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
 export const updateSocialOmniSettingsResponseSettingsKeywordsMax = 300;
 
 export const updateSocialOmniSettingsResponseSettingsDelayMinMin = 5;
@@ -714,6 +2719,55 @@ export const updateSocialOmniSettingsResponseAnalyticsMessagesSentMin = 0;
 
 export const UpdateSocialOmniSettingsResponse = zod.object({
   "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(updateSocialOmniSettingsResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(updateSocialOmniSettingsResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(updateSocialOmniSettingsResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(updateSocialOmniSettingsResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(updateSocialOmniSettingsResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(updateSocialOmniSettingsResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(updateSocialOmniSettingsResponseWaSuiteRulesItemOneDelayMinMin).max(updateSocialOmniSettingsResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(updateSocialOmniSettingsResponseWaSuiteRulesItemOneDelayMaxMin).max(updateSocialOmniSettingsResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(updateSocialOmniSettingsResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -815,6 +2869,26 @@ export const CreateSocialOmniJobBody = zod.object({
   "campaignId": zod.string().optional()
 })
 
+export const createSocialOmniJobResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const createSocialOmniJobResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const createSocialOmniJobResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const createSocialOmniJobResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const createSocialOmniJobResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const createSocialOmniJobResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const createSocialOmniJobResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const createSocialOmniJobResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const createSocialOmniJobResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const createSocialOmniJobResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const createSocialOmniJobResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
 export const createSocialOmniJobResponseSettingsKeywordsMax = 300;
 
 export const createSocialOmniJobResponseSettingsDelayMinMin = 5;
@@ -843,6 +2917,55 @@ export const createSocialOmniJobResponseAnalyticsMessagesSentMin = 0;
 
 export const CreateSocialOmniJobResponse = zod.object({
   "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(createSocialOmniJobResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(createSocialOmniJobResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(createSocialOmniJobResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(createSocialOmniJobResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(createSocialOmniJobResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(createSocialOmniJobResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(createSocialOmniJobResponseWaSuiteRulesItemOneDelayMinMin).max(createSocialOmniJobResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(createSocialOmniJobResponseWaSuiteRulesItemOneDelayMaxMin).max(createSocialOmniJobResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(createSocialOmniJobResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -940,6 +3063,26 @@ export const CancelSocialOmniJobHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
 })
 
+export const cancelSocialOmniJobResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const cancelSocialOmniJobResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const cancelSocialOmniJobResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const cancelSocialOmniJobResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const cancelSocialOmniJobResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const cancelSocialOmniJobResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const cancelSocialOmniJobResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const cancelSocialOmniJobResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const cancelSocialOmniJobResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const cancelSocialOmniJobResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const cancelSocialOmniJobResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
 export const cancelSocialOmniJobResponseSettingsKeywordsMax = 300;
 
 export const cancelSocialOmniJobResponseSettingsDelayMinMin = 5;
@@ -968,6 +3111,55 @@ export const cancelSocialOmniJobResponseAnalyticsMessagesSentMin = 0;
 
 export const CancelSocialOmniJobResponse = zod.object({
   "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(cancelSocialOmniJobResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(cancelSocialOmniJobResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(cancelSocialOmniJobResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(cancelSocialOmniJobResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(cancelSocialOmniJobResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(cancelSocialOmniJobResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(cancelSocialOmniJobResponseWaSuiteRulesItemOneDelayMinMin).max(cancelSocialOmniJobResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(cancelSocialOmniJobResponseWaSuiteRulesItemOneDelayMaxMin).max(cancelSocialOmniJobResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(cancelSocialOmniJobResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -1074,6 +3266,26 @@ export const UploadSocialOmniMediaBody = zod.object({
   "data": zod.string().describe('Base64 encoded file without a data URL prefix')
 })
 
+export const uploadSocialOmniMediaResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const uploadSocialOmniMediaResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const uploadSocialOmniMediaResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const uploadSocialOmniMediaResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const uploadSocialOmniMediaResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const uploadSocialOmniMediaResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const uploadSocialOmniMediaResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const uploadSocialOmniMediaResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const uploadSocialOmniMediaResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const uploadSocialOmniMediaResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const uploadSocialOmniMediaResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
 export const uploadSocialOmniMediaResponseSettingsKeywordsMax = 300;
 
 export const uploadSocialOmniMediaResponseSettingsDelayMinMin = 5;
@@ -1102,6 +3314,55 @@ export const uploadSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
 
 export const UploadSocialOmniMediaResponse = zod.object({
   "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(uploadSocialOmniMediaResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(uploadSocialOmniMediaResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(uploadSocialOmniMediaResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(uploadSocialOmniMediaResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(uploadSocialOmniMediaResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(uploadSocialOmniMediaResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(uploadSocialOmniMediaResponseWaSuiteRulesItemOneDelayMinMin).max(uploadSocialOmniMediaResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(uploadSocialOmniMediaResponseWaSuiteRulesItemOneDelayMaxMin).max(uploadSocialOmniMediaResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(uploadSocialOmniMediaResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -1199,6 +3460,26 @@ export const ReadSocialOmniMediaHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
 })
 
+export const readSocialOmniMediaResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const readSocialOmniMediaResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const readSocialOmniMediaResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const readSocialOmniMediaResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const readSocialOmniMediaResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const readSocialOmniMediaResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const readSocialOmniMediaResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const readSocialOmniMediaResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const readSocialOmniMediaResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const readSocialOmniMediaResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const readSocialOmniMediaResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
 export const readSocialOmniMediaResponseSettingsKeywordsMax = 300;
 
 export const readSocialOmniMediaResponseSettingsDelayMinMin = 5;
@@ -1227,6 +3508,55 @@ export const readSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
 
 export const ReadSocialOmniMediaResponse = zod.object({
   "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(readSocialOmniMediaResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(readSocialOmniMediaResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(readSocialOmniMediaResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(readSocialOmniMediaResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(readSocialOmniMediaResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(readSocialOmniMediaResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(readSocialOmniMediaResponseWaSuiteRulesItemOneDelayMinMin).max(readSocialOmniMediaResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(readSocialOmniMediaResponseWaSuiteRulesItemOneDelayMaxMin).max(readSocialOmniMediaResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(readSocialOmniMediaResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -1327,6 +3657,26 @@ export const DeleteSocialOmniMediaHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
 })
 
+export const deleteSocialOmniMediaResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const deleteSocialOmniMediaResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const deleteSocialOmniMediaResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const deleteSocialOmniMediaResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const deleteSocialOmniMediaResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const deleteSocialOmniMediaResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const deleteSocialOmniMediaResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const deleteSocialOmniMediaResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const deleteSocialOmniMediaResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const deleteSocialOmniMediaResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const deleteSocialOmniMediaResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
 export const deleteSocialOmniMediaResponseSettingsKeywordsMax = 300;
 
 export const deleteSocialOmniMediaResponseSettingsDelayMinMin = 5;
@@ -1355,6 +3705,55 @@ export const deleteSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
 
 export const DeleteSocialOmniMediaResponse = zod.object({
   "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(deleteSocialOmniMediaResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(deleteSocialOmniMediaResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(deleteSocialOmniMediaResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(deleteSocialOmniMediaResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(deleteSocialOmniMediaResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(deleteSocialOmniMediaResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(deleteSocialOmniMediaResponseWaSuiteRulesItemOneDelayMinMin).max(deleteSocialOmniMediaResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(deleteSocialOmniMediaResponseWaSuiteRulesItemOneDelayMaxMin).max(deleteSocialOmniMediaResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(deleteSocialOmniMediaResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -1478,6 +3877,26 @@ export const CreateSocialOmniRecordBody = zod.object({
   "list": zod.string().optional()
 }).describe('Campaign fields title/platform/caption/scheduledAt/status; account fields displayLabel/platform/handle/status; contact fields name/channel/value/optedIn/list.')
 
+export const createSocialOmniRecordResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const createSocialOmniRecordResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const createSocialOmniRecordResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const createSocialOmniRecordResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const createSocialOmniRecordResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const createSocialOmniRecordResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const createSocialOmniRecordResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const createSocialOmniRecordResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const createSocialOmniRecordResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const createSocialOmniRecordResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const createSocialOmniRecordResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
 export const createSocialOmniRecordResponseSettingsKeywordsMax = 300;
 
 export const createSocialOmniRecordResponseSettingsDelayMinMin = 5;
@@ -1506,6 +3925,55 @@ export const createSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
 
 export const CreateSocialOmniRecordResponse = zod.object({
   "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(createSocialOmniRecordResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(createSocialOmniRecordResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(createSocialOmniRecordResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(createSocialOmniRecordResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(createSocialOmniRecordResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(createSocialOmniRecordResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(createSocialOmniRecordResponseWaSuiteRulesItemOneDelayMinMin).max(createSocialOmniRecordResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(createSocialOmniRecordResponseWaSuiteRulesItemOneDelayMaxMin).max(createSocialOmniRecordResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(createSocialOmniRecordResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -1633,6 +4101,26 @@ export const UpdateSocialOmniRecordBody = zod.object({
   "list": zod.string().optional()
 }).describe('Campaign fields title/platform/caption/scheduledAt/status; account fields displayLabel/platform/handle/status; contact fields name/channel/value/optedIn/list.')
 
+export const updateSocialOmniRecordResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const updateSocialOmniRecordResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const updateSocialOmniRecordResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const updateSocialOmniRecordResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const updateSocialOmniRecordResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const updateSocialOmniRecordResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const updateSocialOmniRecordResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const updateSocialOmniRecordResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const updateSocialOmniRecordResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const updateSocialOmniRecordResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const updateSocialOmniRecordResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
 export const updateSocialOmniRecordResponseSettingsKeywordsMax = 300;
 
 export const updateSocialOmniRecordResponseSettingsDelayMinMin = 5;
@@ -1661,6 +4149,55 @@ export const updateSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
 
 export const UpdateSocialOmniRecordResponse = zod.object({
   "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(updateSocialOmniRecordResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(updateSocialOmniRecordResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(updateSocialOmniRecordResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(updateSocialOmniRecordResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(updateSocialOmniRecordResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(updateSocialOmniRecordResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(updateSocialOmniRecordResponseWaSuiteRulesItemOneDelayMinMin).max(updateSocialOmniRecordResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(updateSocialOmniRecordResponseWaSuiteRulesItemOneDelayMaxMin).max(updateSocialOmniRecordResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(updateSocialOmniRecordResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -1759,6 +4296,26 @@ export const DeleteSocialOmniRecordHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
 })
 
+export const deleteSocialOmniRecordResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const deleteSocialOmniRecordResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const deleteSocialOmniRecordResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const deleteSocialOmniRecordResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const deleteSocialOmniRecordResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const deleteSocialOmniRecordResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const deleteSocialOmniRecordResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const deleteSocialOmniRecordResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const deleteSocialOmniRecordResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const deleteSocialOmniRecordResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const deleteSocialOmniRecordResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
 export const deleteSocialOmniRecordResponseSettingsKeywordsMax = 300;
 
 export const deleteSocialOmniRecordResponseSettingsDelayMinMin = 5;
@@ -1787,6 +4344,55 @@ export const deleteSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
 
 export const DeleteSocialOmniRecordResponse = zod.object({
   "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(deleteSocialOmniRecordResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(deleteSocialOmniRecordResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(deleteSocialOmniRecordResponseWaSuiteThreadsItemOneNotesMax),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(deleteSocialOmniRecordResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(deleteSocialOmniRecordResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(deleteSocialOmniRecordResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(deleteSocialOmniRecordResponseWaSuiteRulesItemOneDelayMinMin).max(deleteSocialOmniRecordResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(deleteSocialOmniRecordResponseWaSuiteRulesItemOneDelayMaxMin).max(deleteSocialOmniRecordResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(deleteSocialOmniRecordResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+})))
+}).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
   "accounts": zod.array(zod.record(zod.string(), zod.unknown())),

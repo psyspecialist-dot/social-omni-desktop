@@ -4,6 +4,8 @@ A local-first desktop social-management suite with a React browser preview, a st
 
 ## Run & Operate
 
+WhatsApp modules: `/wafilter` imports and verifies authorized phone lists; `/wa-crm` persists client notes, status, consent and watched-chat messages; `/chatbots` manages keyword replies. Suite data is in the existing workspace SQLite payload, not a replacement database. Inbox monitoring deliberately covers only the visible open direct conversation, baselines history without replies, and requires CRM consent for new-message automation. Chatbot reply delay is 3–8s; other browser actions stay 5–12s. Delays are not ban protection.
+
 - `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
@@ -14,6 +16,8 @@ A local-first desktop social-management suite with a React browser preview, a st
 - Desktop launch: inside `artifacts/social-omni-desktop/desktop`, run `npm install` then `npm start`
 
 ## Stack
+
+Primary local target: macOS on an iMac. Hosted-preview and fake-browser tests do not establish native macOS compatibility or real WhatsApp behavior.
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
 - API: Express 5

@@ -2,3 +2,4 @@
 - [SQLite runtime compatibility](sqlite-runtime.md) — the backend uses Node's experimental built-in SQLite; verify host and Electron runtime support before upgrades.
 - [OpenAPI generation quirks](openapi-generation.md) — named request schemas avoid inline-body export collisions in the split Zod generator.
 - [Analytics semantics](analytics-semantics.md) — distinguish cumulative simulated actions from currently saved records; bounded job history is not a lifetime ledger.
+- [WhatsApp automation safety](whatsapp-automation-safety.md) — virtualized chat history is not a new-message event; keep reply pacing and durable cooldowns separate.

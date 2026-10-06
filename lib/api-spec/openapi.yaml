@@ -11,6 +11,82 @@ tags:
   - name: health
     description: Health operations
 paths:
+  /socialomni/suite/filter:
+    put:
+      operationId: saveWaFilter
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/WaFilterInput"}
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/suite/threads:
+    post:
+      operationId: createCrmThread
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/CrmThreadInput"}
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/suite/threads/{id}:
+    patch:
+      operationId: editCrmThread
+      parameters: [{$ref: "#/components/parameters/Workspace"}, {$ref: "#/components/parameters/RecordId"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/CrmThreadInput"}
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+    delete:
+      operationId: removeCrmThread
+      parameters: [{$ref: "#/components/parameters/Workspace"}, {$ref: "#/components/parameters/RecordId"}]
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/suite/rules:
+    post:
+      operationId: createChatbotRule
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/ChatbotRuleInput"}
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/suite/rules/{id}:
+    patch:
+      operationId: editChatbotRule
+      parameters: [{$ref: "#/components/parameters/Workspace"}, {$ref: "#/components/parameters/RecordId"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/ChatbotRuleInput"}
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+    delete:
+      operationId: removeChatbotRule
+      parameters: [{$ref: "#/components/parameters/Workspace"}, {$ref: "#/components/parameters/RecordId"}]
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/suite/session:
+    post:
+      operationId: startWaSuiteSession
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/WaSessionInput"}
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
   /socialomni/browser/jobs:
     post:
       operationId: startLocalBrowserTask
@@ -216,6 +292,93 @@ components:
         application/json:
           schema: {$ref: "#/components/schemas/SimulatorState"}
   schemas:
+    WaSessionInput:
+      type: object
+      required: [action, accountId, approved]
+      properties:
+        action: {type: string, enum: [filter, inbox]}
+        accountId: {type: string}
+        approved: {type: boolean}
+    WaFilterInput:
+      type: object
+      required: [source]
+      properties:
+        source: {type: string, maxLength: 10000}
+    CrmThreadInput:
+      type: object
+      required: [name, phone, status, notes, optedIn]
+      properties:
+        consentChanged: {type: boolean, description: Set false on note-only edits to preserve concurrent opt-outs}
+        name: {type: string, maxLength: 150}
+        phone: {type: string, maxLength: 30}
+        status: {type: string, enum: [New, Follow-up, Closed/Won, Urgent]}
+        notes: {type: string, maxLength: 10000}
+        optedIn: {type: boolean}
+    ChatbotRuleInput:
+      type: object
+      required: [name, keyword, match, template, enabled, delayMin, delayMax, cooldownMinutes]
+      properties:
+        enabledChanged: {type: boolean, description: Set false on template-only edits to preserve concurrent rule disabling}
+        name: {type: string, maxLength: 100}
+        keyword: {type: string, maxLength: 200}
+        match: {type: string, enum: [contains, exact]}
+        template: {type: string, maxLength: 2000}
+        enabled: {type: boolean}
+        delayMin: {type: integer, minimum: 3, maximum: 8}
+        delayMax: {type: integer, minimum: 3, maximum: 8}
+        cooldownMinutes: {type: integer, minimum: 1, maximum: 1440}
+    ChatbotRule:
+      allOf:
+        - {$ref: "#/components/schemas/ChatbotRuleInput"}
+        - type: object
+          required: [id, createdAt]
+          properties:
+            id: {type: string}
+            createdAt: {type: string}
+    CrmMessage:
+      type: object
+      required: [id, text, direction, timestamp, status]
+      properties:
+        id: {type: string}
+        text: {type: string}
+        direction: {type: string, enum: [incoming, outgoing]}
+        timestamp: {type: string}
+        status: {type: string, enum: [Received, Accepted, Unconfirmed]}
+        ruleId: {type: string}
+    CrmThread:
+      allOf:
+        - {$ref: "#/components/schemas/CrmThreadInput"}
+        - type: object
+          required: [id, contactId, messages, updatedAt]
+          properties:
+            id: {type: string}
+            contactId: {type: [string, "null"]}
+            accountId: {type: [string, "null"]}
+            remoteKey: {type: [string, "null"]}
+            updatedAt: {type: string}
+            messages: {type: array, items: {$ref: "#/components/schemas/CrmMessage"}}
+    WaFilterResult:
+      type: object
+      required: [id, input, phone, status, reason]
+      properties:
+        id: {type: string}
+        input: {type: string}
+        phone: {type: string}
+        status: {type: string, enum: [Unverified, Active/Valid, Inactive, Unknown]}
+        reason: {type: string}
+        checkedAt: {type: [string, "null"]}
+    WaSuite:
+      type: object
+      required: [filter, threads, rules]
+      properties:
+        filter:
+          type: object
+          required: [source, results]
+          properties:
+            source: {type: string}
+            results: {type: array, items: {$ref: "#/components/schemas/WaFilterResult"}}
+        threads: {type: array, items: {$ref: "#/components/schemas/CrmThread"}}
+        rules: {type: array, items: {$ref: "#/components/schemas/ChatbotRule"}}
     BrowserTaskInput:
       type: object
       required: [action, accountId]
@@ -356,6 +519,7 @@ components:
       required: [store, settings, jobs, initialized, media, leads, analytics]
       properties:
         automationAvailable: {type: boolean}
+        waSuite: {$ref: "#/components/schemas/WaSuite"}
         store:
           type: object
           required: [campaigns, accounts, contacts, lists, activity]

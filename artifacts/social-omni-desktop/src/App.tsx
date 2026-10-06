@@ -9,6 +9,8 @@ import Leads from '@/Leads';
 import MediaUpload from '@/components/MediaUpload';
 import SimQueue from '@/components/SimQueue';
 import LiveAutomation from '@/components/LiveAutomation';
+import WhatsAppSuite from '@/modules/WhatsAppSuite';
+import type { WaSuite } from '@workspace/api-client-react';
 import { STORAGE_KEY, THEME_KEY, platforms, statuses, isoIn, seedStore, parseStore, type CampaignStatus, type Campaign, type Account, type Contact, type Store } from '@/lib/workspace';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -32,7 +34,7 @@ const formatTime = (value: string) => {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('en', { hour: 'numeric', minute: '2-digit' }).format(date);
 };
-const titleForPath: Record<string, string> = { '/': 'Overview & Analytics', '/campaigns': 'Campaigns', '/automation': 'Facebook & Instagram Automation', '/accounts': 'Accounts Manager', '/whatsapp': 'WhatsApp Marketing', '/leads': 'Google Maps Lead Extractor', '/contacts': 'Contacts', '/settings': 'Settings & Future License' };
+const titleForPath: Record<string, string> = { '/': 'Overview & Analytics', '/campaigns': 'Campaigns', '/automation': 'Facebook & Instagram Automation', '/accounts': 'Accounts Manager', '/whatsapp': 'WhatsApp Marketing', '/leads': 'Google Maps Lead Extractor', '/contacts': 'Contacts', '/settings': 'Settings & Future License', '/wafilter': 'WaFilter', '/wa-crm': 'WA-CRM', '/chatbots': 'Auto-Reply / Chatbot' };
 
 function Workspace() {
   const [store, setStore] = useState<Store>(seedStore);
@@ -45,6 +47,7 @@ function Workspace() {
   const [analytics, setAnalytics] = useState<SimulationAnalytics>({ messagesSent: 0 });
   const [media, setMedia] = useState<MediaAsset[]>([]);
   const [jobs, setJobs] = useState<SimulationJob[]>([]);
+  const [waSuite, setWaSuite] = useState<WaSuite>({ filter: { source: '', results: [] }, threads: [], rules: [] });
   const writes = useRef(0);
   const revision = useRef(0);
   const [toast, setToast] = useState('');
@@ -56,6 +59,7 @@ function Workspace() {
     setStore(data.store);
     setSettings(data.settings);
     setJobs(data.jobs);
+    setWaSuite(data.waSuite || { filter: { source: '', results: [] }, threads: [], rules: [] });
     setMedia(data.media || []);
     setLeads(data.leads);
     setAnalytics(data.analytics);
@@ -111,7 +115,7 @@ function Workspace() {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
-  useEffect(() => { document.title = `${titleForPath[path] || 'Workspace'} | Social Najhin`; }, [path]);
+  useEffect(() => { document.title = 'Social Najhin'; }, []);
   useEffect(() => { if (!toast) return; const timer = window.setTimeout(() => setToast(''), 2800); return () => window.clearTimeout(timer); }, [toast]);
   const handoff = (platform: string) => {
     openOfficialPlatform(platform).then(() => perform('POST', '/activity', { platform }))
@@ -145,7 +149,7 @@ function Workspace() {
     }
     void perform('PATCH', `/campaigns/${id}/status`, { status }).catch(report);
   };
-  const clearWorkspace = () => setConfirm({ title: 'Clear local workspace?', body: 'This permanently removes campaigns, accounts, contacts, media, inputs, leads, counters, license placeholder, jobs, activity, and local browser profiles from this workspace. It cannot be undone.', onConfirm: () => {
+  const clearWorkspace = () => setConfirm({ title: 'Clear local workspace?', body: 'This permanently removes campaigns, accounts, contacts, media, inputs, leads, WaFilter results, CRM notes and chats, chatbot rules, counters, license placeholder, jobs, activity, and local browser profiles from this workspace. It cannot be undone.', onConfirm: () => {
     void perform('DELETE', '/state').then(() => setConfirm(null)).catch(report);
   } });
   const runTask = (kind: 'campaign' | 'whatsapp', campaignId?: string) =>
@@ -175,6 +179,9 @@ function Workspace() {
                     <Route path="/automation"><Campaigns automation jobs={jobs} store={store} perform={perform} open={item => setDialog({ type: 'campaign', item })} create={() => setDialog({ type: 'campaign' })} remove={item => remove('campaign', item)} status={saveStatus} handoff={handoff} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
                    <Route path="/accounts"><Accounts store={store} open={item => setDialog({ type: 'account', item })} create={() => setDialog({ type: 'account' })} remove={item => remove('account', item)} handoff={handoff} /></Route>
                    <Route path="/whatsapp"><WhatsApp settings={settings} media={media} accounts={store.accounts} jobs={jobs} perform={perform} onSave={async value => { await perform('PUT', '/settings', value); }} onRun={() => runTask('whatsapp')} onCancel={cancelTask} /></Route>
+                   <Route path="/wafilter"><WhatsAppSuite view="filter" suite={waSuite} accounts={store.accounts} contacts={store.contacts} jobs={jobs} perform={perform} /></Route>
+                   <Route path="/wa-crm"><WhatsAppSuite view="crm" suite={waSuite} accounts={store.accounts} contacts={store.contacts} jobs={jobs} perform={perform} /></Route>
+                   <Route path="/chatbots"><WhatsAppSuite view="chatbots" suite={waSuite} accounts={store.accounts} contacts={store.contacts} jobs={jobs} perform={perform} /></Route>
                    <Route path="/leads"><Leads leads={leads} jobs={jobs} perform={perform} onCancel={cancelTask} /></Route>
                   <Route path="/contacts"><Contacts store={store} open={item => setDialog({ type: 'contact', item })} create={() => setDialog({ type: 'contact' })} remove={item => remove('contact', item)} /></Route>
                   <Route path="/settings"><Settings settings={settings} saveSettings={async value => { await perform('PUT', '/settings', value); }} theme={theme} setTheme={value => { void perform('PUT', '/settings', { theme: value }).catch(report); }} store={store} clear={clearWorkspace} /></Route>
@@ -208,6 +215,9 @@ function Sidebar({ active, open, close }: { active: string; open: boolean; close
     { href: '/automation', title: 'Facebook & Instagram', icon: ClipboardList },
     { href: '/leads', title: 'Google Maps Leads', icon: MapPin },
     { href: '/contacts', title: 'Contacts', icon: Users },
+    { href: '/wafilter', title: 'WaFilter', icon: ListFilter },
+    { href: '/wa-crm', title: 'WA-CRM', icon: MessageCircle },
+    { href: '/chatbots', title: 'Auto-Reply / Chatbot', icon: Activity },
   ];
   return <aside className={`sidebar ${open ? 'open' : ''}`}>
     <div className="brand"><div className="brand-mark">SN</div><div><div className="brand-name">Social Najhin</div><div className="brand-sub">desktop management suite</div></div>
@@ -264,7 +274,7 @@ function Dashboard({ jobs, store, leads, analytics, onStatus, run }: { jobs: Sim
       </section>
     </div>
     <section className="panel" style={{ marginBottom: 16 }} data-testid="panel-live-queues"><div className="panel-head"><div><div className="panel-title">Live queues</div><div className="panel-caption">Simulated runs only. Nothing is sent or posted.</div></div></div><div className="panel-body">
-      {jobs.filter(j => ['Pending', 'Running'].includes(j.status)).length ? jobs.filter(j => ['Pending', 'Running'].includes(j.status)).map(j => <div key={j.id}><div className="sq-title">{j.kind === 'whatsapp' ? 'WhatsApp message run' : j.kind === 'leads' ? 'Google Maps lead simulation' : `Campaign: ${store.campaigns.find(c => c.id === j.campaignId)?.title || 'removed campaign'}`}</div>{j.kind === 'leads' ? <p role="status">{j.completedCount}/{j.totalCount} synthetic leads · {j.status} · {j.progress}%</p> : <SimQueue job={j} testId={`dash-${j.id}`} />}</div>) : <Empty symbol={<Activity />} title="No simulation running" text="Start a campaign, WhatsApp, or lead extraction simulation to watch its queue here." />}
+      {jobs.filter(j => ['Pending', 'Running'].includes(j.status)).length ? jobs.filter(j => ['Pending', 'Running'].includes(j.status)).map(j => <div key={j.id}><div className="sq-title">{j.action === 'filter' ? 'WaFilter verification' : j.action === 'inbox' ? 'WA-CRM / Chatbot listener' : j.kind === 'whatsapp' ? 'WhatsApp message run' : j.kind === 'leads' ? 'Google Maps lead simulation' : `Campaign: ${store.campaigns.find(c => c.id === j.campaignId)?.title || 'removed campaign'}`}</div>{j.kind === 'leads' ? <p role="status">{j.completedCount}/{j.totalCount} synthetic leads · {j.status} · {j.progress}%</p> : <SimQueue job={j} testId={`dash-${j.id}`} />}</div>) : <Empty symbol={<Activity />} title="No task running" text="Start an approved local browser task or a clearly labelled rehearsal to watch its queue here." />}
     </div></section>
     <div className="console" data-testid="status-local-console"><div className="console-orb"><ShieldCheck size={17} /></div><div className="console-copy"><b>{isDesktop ? 'Local workspace is ready' : 'Preview workspace is ready'}</b><span>Data is in {isDesktop ? 'SQLite on this computer. Live browser actions require your approval.' : 'SQLite on the preview server. Live automation requires the downloaded Social Najhin desktop app.'}</span></div><div className="console-state">Standing by</div></div>
   </main>;

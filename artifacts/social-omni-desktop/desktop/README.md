@@ -1,5 +1,14 @@
 # Social Najhin
 
+## WhatsApp modules
+
+- **WaFilter:** paste numbers or import TXT/CSV/XLSX (up to 200 unique entries). Include country codes; store Excel phone cells as text. Save the list, select a WhatsApp account, confirm authorization, then start live verification. Format-only results remain Unverified; only an actual WhatsApp composer enables Active/Valid export. CSV and Excel exports include active numbers only. Inactive can mean invalid format or an explicit platform rejection; inspect the reason. Network failures remain Unknown and stop the run.
+- **WA-CRM:** add clients or import saved phone contacts. Notes, statuses, consent and observed text messages persist in local SQLite. Editing CRM consent also updates its linked contact. Deleting a thread retains that contact. Sync requires starting the Inbox listener and opening a direct client conversation in the browser yourself. Only the open, visible conversation is monitored; it is not an all-chat background inbox. Message times are local observation times, not the original platform timestamps.
+- **Auto-Reply / Chatbot:** manage exact/contains keyword rules, response templates (`{{name}}` supported), enabled state, 3–8-second delays and a 1–1440-minute cooldown per client/rule. Newest matching enabled rule wins. Start the same Inbox listener and complete the initial conversation sync before testing a new incoming text. Initial history never triggers replies; only opted-in direct chats qualify. Groups, media messages and background conversations do not trigger replies. STOP/unsubscribe opts a client out.
+- Other browser actions retain 5–12-second pacing. Random delays are rate controls, not ban protection. Challenges/restrictions, ambiguous sends, browser closure and unavailable selectors stop execution. Never automatically retry an Unconfirmed reply; inspect WhatsApp first.
+- Stop the listener before starting other browser tasks or deleting a CRM thread. Changing consent or disabling a rule suppresses a queued response. The visible browser must stay open; this is not a macOS background service.
+- Live platform controls require English WhatsApp controls and the locally downloaded application. The hosted preview supports local module CRUD/imports but cannot verify numbers or run chatbot replies on your computer.
+
 Social Najhin is a local Electron social-management suite with approved browser
 automation and separate, clearly labeled rehearsal tools.
 

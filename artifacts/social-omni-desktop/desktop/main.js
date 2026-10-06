@@ -6,6 +6,10 @@ const { randomBytes } = require('node:crypto');
 const initSqlJs = require('sql.js');
 const express = require('express');
 const createService = require('./api-service.cjs');
+// Visible macOS app name changes independently of the existing storage location.
+const existingUserDataPath = app.getPath('userData');
+app.setName('Social Najhin');
+app.setPath('userData', existingUserDataPath);
 
 const platformUrls = Object.freeze({
   facebook: 'https://www.facebook.com/',

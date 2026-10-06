@@ -1,4 +1,5 @@
 import type { Store } from './workspace';
+import type { WaSuite } from '@workspace/api-client-react';
 
 export interface SimulationSettings {
   theme: 'light' | 'dark';
@@ -47,6 +48,7 @@ export interface Lead {
 export interface LeadWorkspace { keyword: string; city: string; targetCount: number; results: Lead[] }
 export interface SimulationAnalytics { messagesSent: number; realMessagesSent?: number }
 export interface ApiState {
+  waSuite?: WaSuite;
   automationAvailable?: boolean;
   store: Store;
   settings: SimulationSettings;

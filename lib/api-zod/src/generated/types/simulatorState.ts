@@ -11,9 +11,11 @@ import type { SimulatorLeadWorkspace } from './simulatorLeadWorkspace';
 import type { SimulatorMedia } from './simulatorMedia';
 import type { SimulatorSettings } from './simulatorSettings';
 import type { SimulatorStateStore } from './simulatorStateStore';
+import type { WaSuite } from './waSuite';
 
 export interface SimulatorState {
   automationAvailable?: boolean;
+  waSuite?: WaSuite;
   store: SimulatorStateStore;
   settings: SimulatorSettings;
   jobs: SimulatorJob[];

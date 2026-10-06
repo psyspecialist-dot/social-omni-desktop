@@ -21,12 +21,16 @@ import type {
 
 import type {
   BrowserTaskInput,
+  ChatbotRuleInput,
+  CrmThreadInput,
   HealthStatus,
   SimulatorJobInput,
   SimulatorLeadInput,
   SimulatorRecord,
   SimulatorSettings,
   SimulatorUploadInput,
+  WaFilterInput,
+  WaSessionInput,
   WorkspaceStateResponse
 } from './api.schemas';
 
@@ -56,6 +60,636 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getSaveWaFilterUrl = () => {
+
+
+
+
+  return `/api/socialomni/suite/filter`
+}
+
+export const saveWaFilter = async (waFilterInput: WaFilterInput, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<WorkspaceStateResponse>(getSaveWaFilterUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(waFilterInput)
+  }
+);}
+
+
+
+
+
+export const getSaveWaFilterMutationKey = () => ['saveWaFilter'] as const;
+
+export const getSaveWaFilterMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveWaFilter>>, TError,SaveWaFilterMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof saveWaFilter>>, TError,SaveWaFilterMutationVariables, TContext> => {
+
+const mutationKey = getSaveWaFilterMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof saveWaFilter>>, SaveWaFilterMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  saveWaFilter(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SaveWaFilterMutationResult = NonNullable<Awaited<ReturnType<typeof saveWaFilter>>>
+    export type SaveWaFilterMutationBody = BodyType<WaFilterInput>
+    export type SaveWaFilterMutationError = ErrorType<unknown>
+    export type SaveWaFilterMutationVariables = {data: BodyType<WaFilterInput>}
+
+    export const useSaveWaFilter = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveWaFilter>>, TError,SaveWaFilterMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof saveWaFilter>>,
+        TError,
+        SaveWaFilterMutationVariables,
+        TContext
+      > => {
+      return useMutation(getSaveWaFilterMutationOptions(options));
+    }
+
+export const getCreateCrmThreadUrl = () => {
+
+
+
+
+  return `/api/socialomni/suite/threads`
+}
+
+export const createCrmThread = async (crmThreadInput: CrmThreadInput, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<WorkspaceStateResponse>(getCreateCrmThreadUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(crmThreadInput)
+  }
+);}
+
+
+
+
+
+export const getCreateCrmThreadMutationKey = () => ['createCrmThread'] as const;
+
+export const getCreateCrmThreadMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCrmThread>>, TError,CreateCrmThreadMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCrmThread>>, TError,CreateCrmThreadMutationVariables, TContext> => {
+
+const mutationKey = getCreateCrmThreadMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCrmThread>>, CreateCrmThreadMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  createCrmThread(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateCrmThreadMutationResult = NonNullable<Awaited<ReturnType<typeof createCrmThread>>>
+    export type CreateCrmThreadMutationBody = BodyType<CrmThreadInput>
+    export type CreateCrmThreadMutationError = ErrorType<unknown>
+    export type CreateCrmThreadMutationVariables = {data: BodyType<CrmThreadInput>}
+
+    export const useCreateCrmThread = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCrmThread>>, TError,CreateCrmThreadMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createCrmThread>>,
+        TError,
+        CreateCrmThreadMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCreateCrmThreadMutationOptions(options));
+    }
+
+export const getEditCrmThreadUrl = (id: string,) => {
+
+
+
+
+  return `/api/socialomni/suite/threads/${id}`
+}
+
+export const editCrmThread = async (id: string,
+    crmThreadInput: CrmThreadInput, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<WorkspaceStateResponse>(getEditCrmThreadUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(crmThreadInput)
+  }
+);}
+
+
+
+
+
+export const getEditCrmThreadMutationKey = () => ['editCrmThread'] as const;
+
+export const getEditCrmThreadMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof editCrmThread>>, TError,EditCrmThreadMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof editCrmThread>>, TError,EditCrmThreadMutationVariables, TContext> => {
+
+const mutationKey = getEditCrmThreadMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof editCrmThread>>, EditCrmThreadMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  editCrmThread(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type EditCrmThreadMutationResult = NonNullable<Awaited<ReturnType<typeof editCrmThread>>>
+    export type EditCrmThreadMutationBody = BodyType<CrmThreadInput>
+    export type EditCrmThreadMutationError = ErrorType<unknown>
+    export type EditCrmThreadMutationVariables = {id: string;data: BodyType<CrmThreadInput>}
+
+    export const useEditCrmThread = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof editCrmThread>>, TError,EditCrmThreadMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof editCrmThread>>,
+        TError,
+        EditCrmThreadMutationVariables,
+        TContext
+      > => {
+      return useMutation(getEditCrmThreadMutationOptions(options));
+    }
+
+export const getRemoveCrmThreadUrl = (id: string,) => {
+
+
+
+
+  return `/api/socialomni/suite/threads/${id}`
+}
+
+export const removeCrmThread = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+  return customFetch<WorkspaceStateResponse>(getRemoveCrmThreadUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getRemoveCrmThreadMutationKey = () => ['removeCrmThread'] as const;
+
+export const getRemoveCrmThreadMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeCrmThread>>, TError,RemoveCrmThreadMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof removeCrmThread>>, TError,RemoveCrmThreadMutationVariables, TContext> => {
+
+const mutationKey = getRemoveCrmThreadMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof removeCrmThread>>, RemoveCrmThreadMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  removeCrmThread(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RemoveCrmThreadMutationResult = NonNullable<Awaited<ReturnType<typeof removeCrmThread>>>
+
+    export type RemoveCrmThreadMutationError = ErrorType<unknown>
+    export type RemoveCrmThreadMutationVariables = {id: string}
+
+    export const useRemoveCrmThread = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeCrmThread>>, TError,RemoveCrmThreadMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof removeCrmThread>>,
+        TError,
+        RemoveCrmThreadMutationVariables,
+        TContext
+      > => {
+      return useMutation(getRemoveCrmThreadMutationOptions(options));
+    }
+
+export const getCreateChatbotRuleUrl = () => {
+
+
+
+
+  return `/api/socialomni/suite/rules`
+}
+
+export const createChatbotRule = async (chatbotRuleInput: ChatbotRuleInput, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<WorkspaceStateResponse>(getCreateChatbotRuleUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(chatbotRuleInput)
+  }
+);}
+
+
+
+
+
+export const getCreateChatbotRuleMutationKey = () => ['createChatbotRule'] as const;
+
+export const getCreateChatbotRuleMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createChatbotRule>>, TError,CreateChatbotRuleMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createChatbotRule>>, TError,CreateChatbotRuleMutationVariables, TContext> => {
+
+const mutationKey = getCreateChatbotRuleMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createChatbotRule>>, CreateChatbotRuleMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  createChatbotRule(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateChatbotRuleMutationResult = NonNullable<Awaited<ReturnType<typeof createChatbotRule>>>
+    export type CreateChatbotRuleMutationBody = BodyType<ChatbotRuleInput>
+    export type CreateChatbotRuleMutationError = ErrorType<unknown>
+    export type CreateChatbotRuleMutationVariables = {data: BodyType<ChatbotRuleInput>}
+
+    export const useCreateChatbotRule = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createChatbotRule>>, TError,CreateChatbotRuleMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createChatbotRule>>,
+        TError,
+        CreateChatbotRuleMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCreateChatbotRuleMutationOptions(options));
+    }
+
+export const getEditChatbotRuleUrl = (id: string,) => {
+
+
+
+
+  return `/api/socialomni/suite/rules/${id}`
+}
+
+export const editChatbotRule = async (id: string,
+    chatbotRuleInput: ChatbotRuleInput, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<WorkspaceStateResponse>(getEditChatbotRuleUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(chatbotRuleInput)
+  }
+);}
+
+
+
+
+
+export const getEditChatbotRuleMutationKey = () => ['editChatbotRule'] as const;
+
+export const getEditChatbotRuleMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof editChatbotRule>>, TError,EditChatbotRuleMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof editChatbotRule>>, TError,EditChatbotRuleMutationVariables, TContext> => {
+
+const mutationKey = getEditChatbotRuleMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof editChatbotRule>>, EditChatbotRuleMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  editChatbotRule(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type EditChatbotRuleMutationResult = NonNullable<Awaited<ReturnType<typeof editChatbotRule>>>
+    export type EditChatbotRuleMutationBody = BodyType<ChatbotRuleInput>
+    export type EditChatbotRuleMutationError = ErrorType<unknown>
+    export type EditChatbotRuleMutationVariables = {id: string;data: BodyType<ChatbotRuleInput>}
+
+    export const useEditChatbotRule = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof editChatbotRule>>, TError,EditChatbotRuleMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof editChatbotRule>>,
+        TError,
+        EditChatbotRuleMutationVariables,
+        TContext
+      > => {
+      return useMutation(getEditChatbotRuleMutationOptions(options));
+    }
+
+export const getRemoveChatbotRuleUrl = (id: string,) => {
+
+
+
+
+  return `/api/socialomni/suite/rules/${id}`
+}
+
+export const removeChatbotRule = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+  return customFetch<WorkspaceStateResponse>(getRemoveChatbotRuleUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getRemoveChatbotRuleMutationKey = () => ['removeChatbotRule'] as const;
+
+export const getRemoveChatbotRuleMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeChatbotRule>>, TError,RemoveChatbotRuleMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof removeChatbotRule>>, TError,RemoveChatbotRuleMutationVariables, TContext> => {
+
+const mutationKey = getRemoveChatbotRuleMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof removeChatbotRule>>, RemoveChatbotRuleMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  removeChatbotRule(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RemoveChatbotRuleMutationResult = NonNullable<Awaited<ReturnType<typeof removeChatbotRule>>>
+
+    export type RemoveChatbotRuleMutationError = ErrorType<unknown>
+    export type RemoveChatbotRuleMutationVariables = {id: string}
+
+    export const useRemoveChatbotRule = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeChatbotRule>>, TError,RemoveChatbotRuleMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof removeChatbotRule>>,
+        TError,
+        RemoveChatbotRuleMutationVariables,
+        TContext
+      > => {
+      return useMutation(getRemoveChatbotRuleMutationOptions(options));
+    }
+
+export const getStartWaSuiteSessionUrl = () => {
+
+
+
+
+  return `/api/socialomni/suite/session`
+}
+
+export const startWaSuiteSession = async (waSessionInput: WaSessionInput, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<WorkspaceStateResponse>(getStartWaSuiteSessionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(waSessionInput)
+  }
+);}
+
+
+
+
+
+export const getStartWaSuiteSessionMutationKey = () => ['startWaSuiteSession'] as const;
+
+export const getStartWaSuiteSessionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startWaSuiteSession>>, TError,StartWaSuiteSessionMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof startWaSuiteSession>>, TError,StartWaSuiteSessionMutationVariables, TContext> => {
+
+const mutationKey = getStartWaSuiteSessionMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof startWaSuiteSession>>, StartWaSuiteSessionMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  startWaSuiteSession(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StartWaSuiteSessionMutationResult = NonNullable<Awaited<ReturnType<typeof startWaSuiteSession>>>
+    export type StartWaSuiteSessionMutationBody = BodyType<WaSessionInput>
+    export type StartWaSuiteSessionMutationError = ErrorType<unknown>
+    export type StartWaSuiteSessionMutationVariables = {data: BodyType<WaSessionInput>}
+
+    export const useStartWaSuiteSession = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof startWaSuiteSession>>, TError,StartWaSuiteSessionMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof startWaSuiteSession>>,
+        TError,
+        StartWaSuiteSessionMutationVariables,
+        TContext
+      > => {
+      return useMutation(getStartWaSuiteSessionMutationOptions(options));
+    }
 
 export const getStartLocalBrowserTaskUrl = () => {
 
