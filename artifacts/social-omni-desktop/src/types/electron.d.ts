@@ -8,6 +8,7 @@ declare global {
       setItem(key: string, value: string): Promise<void>;
       removeItem(key: string): Promise<void>;
       openPlatform(platform: string): Promise<void>;
+      apiRequest(method: string, route: string, body?: unknown): Promise<unknown>;
     };
   }
 }

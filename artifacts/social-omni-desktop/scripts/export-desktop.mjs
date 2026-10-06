@@ -21,4 +21,5 @@ if (!existsSync(path.join(output, 'index.html'))) throw new Error('No renderer b
 const destination = path.join(appDirectory, 'desktop', 'renderer');
 rmSync(destination, { recursive: true, force: true });
 cpSync(output, destination, { recursive: true, filter: (source) => !source.includes(`${path.sep}downloads`) });
+cpSync(path.resolve(appDirectory, '..', '..', 'lib', 'socialomni-api', 'service.cjs'), path.join(appDirectory, 'desktop', 'api-service.cjs'));
 process.stdout.write(`Desktop renderer exported to ${destination}\n`);

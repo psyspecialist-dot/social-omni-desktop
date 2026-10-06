@@ -11,6 +11,7 @@
     "check": "node --check main.js && node --check preload.js"
   },
   "dependencies": {
+    "express": "^5.2.1",
     "sql.js": "^1.13.0"
   },
   "devDependencies": {

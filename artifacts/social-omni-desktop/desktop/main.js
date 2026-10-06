@@ -2,7 +2,10 @@ const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
+const { randomBytes } = require('node:crypto');
 const initSqlJs = require('sql.js');
+const express = require('express');
+const createService = require('./api-service.cjs');
 
 const platformUrls = Object.freeze({
   facebook: 'https://www.facebook.com/',
@@ -16,6 +19,11 @@ const maxValueBytes = 10 * 1024 * 1024;
 let database;
 let databasePath;
 let window;
+let apiServer;
+let apiService;
+let apiPort;
+const apiSecret = randomBytes(32).toString('hex');
+const desktopWorkspace = '00000000-0000-4000-8000-000000000001';
 
 if (!app.requestSingleInstanceLock()) app.quit();
 
@@ -52,6 +60,20 @@ async function openDatabase() {
 }
 
 function registerIpc() {
+  ipcMain.handle('socialomni:api-request', async (event, method, route, body) => {
+    assertTrustedSender(event);
+    if (!['GET', 'POST', 'PATCH', 'PUT', 'DELETE'].includes(method) || typeof route !== 'string' || !/^\/[a-z0-9/-]{1,120}$/i.test(route)) {
+      throw new Error('Invalid local API request.');
+    }
+    const result = await fetch(`http://127.0.0.1:${apiPort}/api/socialomni${route}`, {
+      method,
+      headers: { 'content-type': 'application/json', 'x-socialomni-secret': apiSecret, 'x-socialomni-workspace': desktopWorkspace },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    const data = await result.json();
+    if (!result.ok) throw new Error(data.error || `Local request failed (${result.status}).`);
+    return data;
+  });
   ipcMain.handle('socialomni:get-item', (event, key) => {
     assertTrustedSender(event);
     assertKey(key);
@@ -86,6 +108,19 @@ function registerIpc() {
     if (!Object.hasOwn(platformUrls, platform)) throw new Error('Unknown platform.');
     await shell.openExternal(platformUrls[platform]);
   });
+}
+
+async function startApi() {
+  apiService = createService({ express, dbPath: path.join(app.getPath('userData'), 'socialomni-workspace.sqlite'), secret: apiSecret });
+  const localApp = express();
+  localApp.disable('x-powered-by');
+  localApp.use(express.json({ limit: '1mb' }));
+  localApp.use('/api/socialomni', apiService.router);
+  apiServer = await new Promise((resolve, reject) => {
+    const server = localApp.listen(0, '127.0.0.1', () => resolve(server));
+    server.once('error', reject);
+  });
+  apiPort = apiServer.address().port;
 }
 
 function createWindow() {
@@ -129,6 +164,7 @@ app.on('second-instance', () => {
 app.whenReady().then(async () => {
   try {
     await openDatabase();
+    await startApi();
     registerIpc();
     createWindow();
     app.on('activate', () => {
@@ -143,6 +179,8 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 app.on('will-quit', () => {
+  if (apiServer) apiServer.close();
+  if (apiService) apiService.close();
   if (database) {
     database.close();
   }

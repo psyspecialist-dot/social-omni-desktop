@@ -2,8 +2,10 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { Form } from '@/components/ui/form';
 import { useHashLocation } from 'wouter/use-hash-location';
-import { isDesktop, openOfficialPlatform, readLocal, writeLocal } from '@/lib/persistence';
-import { STORAGE_KEY, THEME_KEY, platforms, statuses, newId, isoIn, seedStore, parseStore, type CampaignStatus, type Campaign, type Account, type Contact, type ActivityEntry, type Store } from '@/lib/workspace';
+import { isDesktop, openOfficialPlatform, readLocal } from '@/lib/persistence';
+import { apiRequest, type ApiState, type SimulationJob, type SimulationSettings } from '@/lib/api';
+import WhatsApp from '@/WhatsApp';
+import { STORAGE_KEY, THEME_KEY, platforms, statuses, isoIn, seedStore, parseStore, type CampaignStatus, type Campaign, type Account, type Contact, type Store } from '@/lib/workspace';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Toaster } from '@/components/ui/toaster';
@@ -14,7 +16,7 @@ import {
   Activity, AlertCircle, ArrowUpRight, AtSign, CalendarClock, Check,
   CheckCircle2, CircleHelp, ClipboardList, ExternalLink, FileText,
   LayoutDashboard, ListFilter, Menu, Moon,
-   Download, Pause, Play, Pencil, Plus, Search, Settings2, ShieldCheck, Sun, Trash2, Users, X,
+   Download, MessageCircle, Pause, Play, Pencil, Plus, Search, Settings2, ShieldCheck, Sun, Trash2, Users, X,
 } from 'lucide-react';
 
 const queryClient = new QueryClient();
@@ -26,7 +28,7 @@ const formatTime = (value: string) => {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('en', { hour: 'numeric', minute: '2-digit' }).format(date);
 };
-const titleForPath: Record<string, string> = { '/': 'Dashboard', '/campaigns': 'Campaigns', '/accounts': 'Accounts', '/contacts': 'Contacts', '/settings': 'Settings' };
+const titleForPath: Record<string, string> = { '/': 'Dashboard', '/campaigns': 'Campaigns', '/accounts': 'Accounts', '/whatsapp': 'WhatsApp', '/contacts': 'Contacts', '/settings': 'Settings' };
 
 function Workspace() {
   const [store, setStore] = useState<Store>(seedStore);
@@ -34,99 +36,94 @@ function Workspace() {
   const [ready, setReady] = useState(false);
   const [storageError, setStorageError] = useState('');
   const [saving, setSaving] = useState(false);
-  const saveGeneration = useRef(0);
+  const [settings, setSettings] = useState<SimulationSettings>({ theme: 'light', keywords: '', delayMin: 3, delayMax: 5 });
+  const [jobs, setJobs] = useState<SimulationJob[]>([]);
+  const writes = useRef(0);
+  const revision = useRef(0);
   const [toast, setToast] = useState('');
   const [mobileNav, setMobileNav] = useState(false);
   const [dialog, setDialog] = useState<{ type: 'campaign' | 'account' | 'contact'; item?: Campaign | Account | Contact } | null>(null);
   const [confirm, setConfirm] = useState<{ title: string; body: string; onConfirm: () => void } | null>(null);
   const [path] = useLocation();
-  const addActivity = (message: string, level: ActivityEntry['level'] = 'info') => ({ id: newId(), timestamp: new Date().toISOString(), level, message });
+  const applyState = (data: ApiState) => {
+    setStore(data.store);
+    setSettings(data.settings);
+    setJobs(data.jobs);
+    setTheme(data.settings.theme);
+  };
   useEffect(() => {
     let cancelled = false;
-    Promise.all([readLocal(STORAGE_KEY), readLocal(THEME_KEY)]).then(([records, savedTheme]) => {
-      if (cancelled) return;
-      setStore(parseStore(records));
-      setTheme(savedTheme === 'dark' ? 'dark' : 'light');
-      setReady(true);
-    }).catch(error => {
+    (async () => {
+      let data = await apiRequest('GET', '/state');
+      if (!data.initialized) {
+        const [records, oldTheme] = await Promise.all([readLocal(STORAGE_KEY), readLocal(THEME_KEY)]);
+        data = records === null
+          ? await apiRequest('POST', '/initialize')
+          : await apiRequest('POST', '/import', { store: parseStore(records), theme: oldTheme });
+      }
+      if (!cancelled) { applyState(data); setReady(true); }
+    })().catch(error => {
       if (!cancelled) setStorageError(`Cannot load local records: ${error instanceof Error ? error.message : 'Storage is unavailable.'}`);
     });
     return () => { cancelled = true; };
   }, []);
-  useEffect(() => {
-    if (!ready) return;
-    const generation = ++saveGeneration.current;
+  const perform = async (method: 'POST' | 'PUT' | 'PATCH' | 'DELETE', route: string, body?: unknown) => {
+    writes.current++;
     setSaving(true);
-    writeLocal(STORAGE_KEY, JSON.stringify(store)).then(() => {
-      if (generation === saveGeneration.current) { setSaving(false); setStorageError(''); }
-    }).catch(error => {
-      if (generation === saveGeneration.current) {
-        setSaving(false);
-        setStorageError(`Changes are not saved: ${error instanceof Error ? error.message : 'Storage is unavailable.'} Keep this window open and try again.`);
-      }
-    });
-  }, [store, ready]);
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-    if (ready) writeLocal(THEME_KEY, theme).catch(() => setStorageError('The appearance preference could not be saved.'));
-  }, [theme, ready]);
-  useEffect(() => { document.title = `${titleForPath[path] || 'Workspace'} | SocialOmni Desktop`; }, [path]);
-  useEffect(() => {
-    if (!ready) return;
-    const promoteDueItems = () => {
-      const dueIds = new Set(store.campaigns.filter(c => c.status === 'Scheduled' && new Date(c.scheduledAt).getTime() <= Date.now()).map(c => c.id));
-      if (!dueIds.size) return;
-      setStore(prev => {
-        const due = prev.campaigns.filter(c => dueIds.has(c.id) && c.status === 'Scheduled');
-        if (!due.length) return prev;
-        return {
-          ...prev,
-          campaigns: prev.campaigns.map(c => dueIds.has(c.id) && c.status === 'Scheduled' ? { ...c, status: 'Ready for review', updatedAt: new Date().toISOString() } : c),
-          activity: [...due.map(c => addActivity(`“${c.title}” is due and ready for your review.`, 'warning')), ...prev.activity].slice(0, 50),
-        };
-      });
-    };
-    promoteDueItems();
-    const timer = window.setInterval(promoteDueItems, 30_000);
-    return () => window.clearInterval(timer);
-  }, [store.campaigns, ready]);
-  useEffect(() => { if (!toast) return; const timer = window.setTimeout(() => setToast(''), 2800); return () => window.clearTimeout(timer); }, [toast]);
-  const mutate = (next: (current: Store) => Store, message: string, level: ActivityEntry['level'] = 'info') => {
-    setStore(prev => ({ ...next(prev), activity: [addActivity(message, level), ...prev.activity].slice(0, 50) }));
+    try {
+      const data = await apiRequest(method, route, body);
+      revision.current++;
+      applyState(data);
+      setStorageError('');
+      return data;
+    } finally {
+      writes.current--;
+      if (!writes.current) setSaving(false);
+    }
+  };
+  const report = (error: unknown) => {
+    const message = error instanceof Error ? error.message : 'The local request failed.';
+    setStorageError(`Changes were not saved: ${message}`);
     setToast(message);
   };
+  useEffect(() => {
+    if (!ready) return;
+    let cancelled = false;
+    const timer = window.setInterval(() => {
+      if (writes.current) return;
+      const start = revision.current;
+      apiRequest('GET', '/state').then(data => {
+        if (!cancelled && !writes.current && start === revision.current) applyState(data);
+      }).catch(error => { if (!cancelled) setStorageError(`Live updates unavailable: ${String(error)}. Saved records have not been replaced.`); });
+    }, 1000);
+    return () => { cancelled = true; window.clearInterval(timer); };
+  }, [ready]);
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
+  useEffect(() => { document.title = `${titleForPath[path] || 'Workspace'} | SocialOmni Desktop`; }, [path]);
+  useEffect(() => { if (!toast) return; const timer = window.setTimeout(() => setToast(''), 2800); return () => window.clearTimeout(timer); }, [toast]);
   const handoff = (platform: string) => {
-    openOfficialPlatform(platform).then(() => mutate(current => current, `Opened official ${platform}. Review and publish there yourself.`))
-      .catch(error => setToast(error instanceof Error ? error.message : 'Could not open the platform.'));
+    openOfficialPlatform(platform).then(() => perform('POST', '/activity', { platform }))
+      .catch(report);
   };
-  const saveCampaign = (draft: Omit<Campaign, 'id' | 'createdAt' | 'updatedAt'>, id?: string) => {
-    const timestamp = new Date().toISOString();
-    mutate(prev => ({ ...prev, campaigns: id
-      ? prev.campaigns.map(c => c.id === id ? { ...c, ...draft, updatedAt: timestamp } : c)
-      : [{ ...draft, id: newId(), createdAt: timestamp, updatedAt: timestamp }, ...prev.campaigns] }),
-    id ? `Updated “${draft.title}”.` : `Created “${draft.title}”.`, 'success');
+  const saveCampaign = async (draft: Omit<Campaign, 'id' | 'createdAt' | 'updatedAt'>, id?: string) => {
+    await perform(id ? 'PATCH' : 'POST', id ? `/campaigns/${id}` : '/campaigns', draft);
     setDialog(null);
   };
-  const saveAccount = (draft: Omit<Account, 'id'>, id?: string) => {
-    mutate(prev => ({ ...prev, accounts: id ? prev.accounts.map(a => a.id === id ? { ...a, ...draft } : a) : [{ ...draft, id: newId() }, ...prev.accounts] }),
-      id ? `Updated ${draft.displayLabel}.` : `Added ${draft.displayLabel}.`, 'success');
+  const saveAccount = async (draft: Omit<Account, 'id'>, id?: string) => {
+    await perform(id ? 'PATCH' : 'POST', id ? `/accounts/${id}` : '/accounts', draft);
     setDialog(null);
   };
-  const saveContact = (draft: Omit<Contact, 'id' | 'createdAt'>, id?: string) => {
-    mutate(prev => ({
-      ...prev,
-      lists: draft.list && !prev.lists.includes(draft.list) ? [...prev.lists, draft.list] : prev.lists,
-      contacts: id ? prev.contacts.map(c => c.id === id ? { ...c, ...draft } : c) : [{ ...draft, id: newId(), createdAt: new Date().toISOString() }, ...prev.contacts],
-    }), id ? `Updated ${draft.name}’s contact record.` : `Added ${draft.name} to your local contacts.`, 'success');
+  const saveContact = async (draft: Omit<Contact, 'id' | 'createdAt'>, id?: string) => {
+    await perform(id ? 'PATCH' : 'POST', id ? `/contacts/${id}` : '/contacts', draft);
     setDialog(null);
   };
   const remove = (kind: 'campaign' | 'account' | 'contact', item: Campaign | Account | Contact) => {
     const name = 'title' in item ? item.title : 'displayLabel' in item ? item.displayLabel : item.name;
     setConfirm({ title: `Remove ${name}?`, body: 'This record will be removed from this device. This cannot be undone.', onConfirm: () => {
-      mutate(prev => ({ ...prev, [kind === 'campaign' ? 'campaigns' : kind === 'account' ? 'accounts' : 'contacts']:
-        prev[kind === 'campaign' ? 'campaigns' : kind === 'account' ? 'accounts' : 'contacts'].filter(entry => entry.id !== item.id) }) as Store,
-      `Removed ${name}.`, 'warning');
-      setConfirm(null);
+      void perform('DELETE', `/${kind === 'campaign' ? 'campaigns' : kind === 'account' ? 'accounts' : 'contacts'}/${item.id}`)
+        .then(() => setConfirm(null)).catch(report);
     } });
   };
   const saveStatus = (id: string, status: CampaignStatus) => {
@@ -136,14 +133,14 @@ function Workspace() {
       setToast('Edit this campaign and choose a valid planned handoff time first.');
       return;
     }
-    mutate(prev => ({ ...prev, campaigns: prev.campaigns.map(c => c.id === id ? { ...c, status, updatedAt: new Date().toISOString() } : c) }),
-      status === 'Sent' ? `Recorded “${campaign.title}” as sent after your manual handoff.` : `Moved “${campaign.title}” to ${status}.`,
-      status === 'Sent' ? 'success' : status === 'Failed' ? 'warning' : 'info');
+    void perform('PATCH', `/campaigns/${id}/status`, { status }).catch(report);
   };
-  const clearWorkspace = () => setConfirm({ title: 'Clear local workspace?', body: 'This removes campaigns, account labels, contacts, lists, and activity from this device. The workspace will be left empty.', onConfirm: () => {
-    const clean = { campaigns: [], accounts: [], contacts: [], lists: [], activity: [addActivity('Local workspace cleared.', 'warning')] };
-    setStore(clean); setConfirm(null); setToast('Workspace cleared from this device.');
+  const clearWorkspace = () => setConfirm({ title: 'Clear local workspace?', body: 'This permanently removes campaigns, account labels, contacts, lists, jobs, and activity from this workspace. It cannot be undone.', onConfirm: () => {
+    void perform('DELETE', '/state').then(() => setConfirm(null)).catch(report);
   } });
+  const runTask = (kind: 'campaign' | 'whatsapp', campaignId?: string) =>
+    perform('POST', '/jobs', { kind, campaignId }).then(() => undefined);
+  const cancelTask = (id: string) => { void perform('POST', `/jobs/${id}/cancel`).catch(report); };
   if (!ready) return <main className="page" data-testid="status-storage-loading"><h1>SocialOmni Desktop</h1><p role={storageError ? 'alert' : 'status'}>{storageError || 'Loading local workspace…'}</p>{storageError && <button className="button button-secondary" onClick={() => window.location.reload()} data-testid="button-retry-load">Retry without changing saved records</button>}</main>;
   return (
     <QueryClientProvider client={queryClient}>
@@ -156,22 +153,25 @@ function Workspace() {
                 <button className="icon-button mobile-menu" onClick={() => setMobileNav(true)} aria-label="Open navigation" data-testid="button-open-navigation"><Menu /></button>
                 <div className="crumb">WORKSPACE <span style={{ opacity: .5, padding: '0 6px' }}>/</span> {titleForPath[path] || 'Workspace'}</div>
                 <div className="top-actions">
-                  <button className="icon-button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`} data-testid="button-toggle-theme-top">{theme === 'dark' ? <Sun size={16} /> : <Moon size={15} />}</button>
+                  <button className="icon-button" onClick={() => { void perform('PUT', '/settings', { theme: theme === 'dark' ? 'light' : 'dark' }).catch(report); }} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`} data-testid="button-toggle-theme-top">{theme === 'dark' ? <Sun size={16} /> : <Moon size={15} />}</button>
                    <div className="profile-chip"><span className="profile-avatar">SO</span><span>Local workspace</span></div>
                 </div>
               </header>
-               {storageError && <div className="storage-alert" role="alert" data-testid="error-storage-save">{storageError}<button className="button button-secondary" onClick={() => { writeLocal(STORAGE_KEY, JSON.stringify(store)).then(() => setStorageError('')).catch(error => setStorageError(`Still not saved: ${String(error)}`)); }} data-testid="button-retry-save">Retry save</button></div>}
+               {storageError && <div className="storage-alert" role="alert" data-testid="error-storage-save">{storageError}<button className="button button-secondary" onClick={() => { apiRequest('GET', '/state').then(data => { applyState(data); setStorageError(''); }).catch(report); }} data-testid="button-retry-save">Reconnect</button></div>}
               <ErrorBoundary resetKey={path}>
                 <Switch>
-                  <Route path="/"><Dashboard store={store} onStatus={saveStatus} /></Route>
-                   <Route path="/campaigns"><Campaigns store={store} open={item => setDialog({ type: 'campaign', item })} create={() => setDialog({ type: 'campaign' })} remove={item => remove('campaign', item)} status={saveStatus} handoff={handoff} /></Route>
+                  <Route path="/"><Dashboard store={store} onStatus={saveStatus} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
+                   <Route path="/campaigns"><Campaigns store={store} open={item => setDialog({ type: 'campaign', item })} create={() => setDialog({ type: 'campaign' })} remove={item => remove('campaign', item)} status={saveStatus} handoff={handoff} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
                    <Route path="/accounts"><Accounts store={store} open={item => setDialog({ type: 'account', item })} create={() => setDialog({ type: 'account' })} remove={item => remove('account', item)} handoff={handoff} /></Route>
+                   <Route path="/whatsapp"><WhatsApp settings={settings} onSave={async value => { await perform('PUT', '/settings', value); }} onRun={() => runTask('whatsapp')} jobs={jobs} /></Route>
                   <Route path="/contacts"><Contacts store={store} open={item => setDialog({ type: 'contact', item })} create={() => setDialog({ type: 'contact' })} remove={item => remove('contact', item)} /></Route>
-                  <Route path="/settings"><Settings theme={theme} setTheme={setTheme} store={store} clear={clearWorkspace} /></Route>
+                  <Route path="/settings"><Settings theme={theme} setTheme={value => { void perform('PUT', '/settings', { theme: value }).catch(report); }} store={store} clear={clearWorkspace} /></Route>
                   <Route component={NotFound} />
                 </Switch>
               </ErrorBoundary>
-               <section className="activity-console" aria-label="Live local activity log" data-testid="console-activity"><div className="activity-console-head"><strong><Activity size={13} /> Local activity log</strong><span data-testid="status-storage">{storageError ? 'Not saved' : saving ? 'Saving…' : isDesktop ? 'Saved · SQLite' : 'Saved · browser storage'}</span></div><div role="log" aria-live="polite">{store.activity.slice(0, 4).map(entry => <div className="console-log" key={entry.id}><time>{formatTime(entry.timestamp)}</time><span className={`log-level log-${entry.level}`}>{entry.level}</span><span>{entry.message}</span></div>)}</div></section>
+               <section className="activity-console" aria-label="Live local activity log" data-testid="console-activity"><div className="activity-console-head"><strong><Activity size={13} /> Live simulation &amp; activity</strong><span data-testid="status-storage">{storageError ? 'Connection issue' : saving ? 'Saving…' : isDesktop ? 'Saved · local SQLite' : 'Saved · preview SQLite'}</span></div>
+                 {jobs.slice(0, 3).map(job => <div key={job.id} className="job-line"><span>{job.kind === 'whatsapp' ? 'WhatsApp' : 'Campaign'} · {job.status}</span><div className="job-progress" role="progressbar" aria-label={`${job.kind} simulation progress`} aria-valuenow={job.progress} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${job.progress}%` }} /></div><span>{job.progress}%</span>{['Pending', 'Running'].includes(job.status) && <button type="button" className="button button-quiet" onClick={() => cancelTask(job.id)} aria-label="Cancel simulation">Cancel</button>}</div>)}
+                 <div role="log" aria-live="polite">{store.activity.slice(0, 6).map(entry => <div className="console-log" key={entry.id}><time>{formatTime(entry.timestamp)}</time><span className={`log-level log-${entry.level}`}>{entry.level}</span><span>{entry.message}</span></div>)}</div></section>
             </div>
           </div>
           {dialog && <EditorDialog key={`${dialog.type}-${dialog.item?.id || 'new'}`} kind={dialog.type} item={dialog.item} store={store}
@@ -201,11 +201,12 @@ function Sidebar({ active, open, close }: { active: string; open: boolean; close
     </div>
     <div className="nav-label">Your workspace</div>
     {nav.map(({ href, title, icon: Icon }) => <Link key={href} href={href} onClick={close} className={`nav-link ${active === href ? 'active' : ''}`} data-testid={`link-nav-${title.toLowerCase()}`}><Icon /><span>{title}</span></Link>)}
+    <Link href="/whatsapp" onClick={close} className={`nav-link ${active === '/whatsapp' ? 'active' : ''}`} data-testid="link-nav-whatsapp"><MessageCircle /><span>WhatsApp</span></Link>
     <div className="nav-label" style={{ marginTop: 18 }}>Preferences</div>
     <Link href="/settings" onClick={close} className={`nav-link ${active === '/settings' ? 'active' : ''}`} data-testid="link-nav-settings"><Settings2 /><span>Settings</span></Link>
     <div className="side-bottom">
       <div className="nav-label">Privacy by default</div>
-      <div className="local-indicator"><i className="local-dot" /><div><strong>Stored on this device</strong><span>No remote sync</span></div></div>
+       <div className="local-indicator"><i className="local-dot" /><div><strong>{isDesktop ? 'Stored on this device' : 'Preview workspace'}</strong><span>{isDesktop ? 'No remote sync' : 'On Replit’s server'}</span></div></div>
     </div>
   </aside>;
 }
@@ -217,7 +218,7 @@ function StatusPill({ value }: { value: CampaignStatus }) {
   const styles: Record<CampaignStatus, string> = { 'Ready for review': 'status-ready', Scheduled: 'status-scheduled', Draft: 'status-draft', Paused: 'status-paused', Sent: 'status-sent', Failed: 'status-failed' };
   return <span className={`status ${styles[value]}`} data-testid={`status-campaign-${value.toLowerCase().replaceAll(' ', '-')}`}>{value}</span>;
 }
-function Dashboard({ store, onStatus }: { store: Store; onStatus: (id: string, status: CampaignStatus) => void }) {
+function Dashboard({ store, onStatus, run }: { store: Store; onStatus: (id: string, status: CampaignStatus) => void; run: (id: string) => void }) {
   const pending = store.campaigns.filter(c => c.status === 'Ready for review').length;
   const scheduled = store.campaigns.filter(c => c.status === 'Scheduled').length;
   const active = store.campaigns.filter(c => !['Sent', 'Failed', 'Paused'].includes(c.status)).length;
@@ -238,7 +239,7 @@ function Dashboard({ store, onStatus }: { store: Store; onStatus: (id: string, s
           {upcoming.length ? upcoming.map(item => <div className="schedule-row" key={item.id} data-testid={`row-upcoming-${item.id}`}>
             <div className="date-block"><b>{formatDate(item.scheduledAt, { day: '2-digit' })}</b><span>{formatDate(item.scheduledAt, { month: 'short' })}</span></div>
             <div><div className="row-title">{item.title}</div><div className="row-meta"><i className="platform-dot" />{item.platform}<span>·</span>{formatTime(item.scheduledAt)}</div></div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><StatusPill value={item.status} />{item.status === 'Ready for review' && <button title="Record as sent after manual handoff" className="small-icon" onClick={() => onStatus(item.id, 'Sent')} data-testid={`button-record-sent-${item.id}`}><Check /></button>}</div>
+             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><StatusPill value={item.status} /><button type="button" className="small-icon" title="Start Campaign simulation" aria-label={`Start Campaign simulation for ${item.title}`} onClick={() => run(item.id)} data-testid={`button-start-campaign-${item.id}`}><Play /></button>{item.status === 'Ready for review' && <button title="Record as sent after manual handoff" className="small-icon" onClick={() => onStatus(item.id, 'Sent')} data-testid={`button-record-sent-${item.id}`}><Check /></button>}</div>
           </div>) : <Empty symbol={<CalendarClock />} title="Your calendar is clear" text="New planned campaigns will appear here when they are ready for review." />}
         </div>
       </section>
@@ -252,7 +253,7 @@ function Dashboard({ store, onStatus }: { store: Store; onStatus: (id: string, s
         </div>
       </section>
     </div>
-    <div className="console" data-testid="status-local-console"><div className="console-orb"><ShieldCheck size={17} /></div><div className="console-copy"><b>Local workspace is ready</b><span>Data stays {isDesktop ? 'in local SQLite' : 'in this browser'}. SocialOmni never publishes or contacts anyone for you.</span></div><div className="console-state">Standing by</div></div>
+    <div className="console" data-testid="status-local-console"><div className="console-orb"><ShieldCheck size={17} /></div><div className="console-copy"><b>{isDesktop ? 'Local workspace is ready' : 'Preview workspace is ready'}</b><span>Data is in {isDesktop ? 'SQLite on this computer' : 'SQLite on the Replit preview server (not your device)'}. SocialOmni never publishes or contacts anyone for you.</span></div><div className="console-state">Standing by</div></div>
   </main>;
 }
 function Stat({ title, value, note, icon, trend }: { title: string; value: number; note: string; icon: ReactNode; trend: string }) {
@@ -262,7 +263,7 @@ function Empty({ symbol, title, text, action }: { symbol: ReactNode; title: stri
   return <div className="empty-state"><div className="empty-symbol">{symbol}</div><b>{title}</b><p>{text}</p>{action}</div>;
 }
 
-function Campaigns({ store, open, create, remove, status, handoff }: { store: Store; open: (c: Campaign) => void; create: () => void; remove: (c: Campaign) => void; status: (id: string, s: CampaignStatus) => void; handoff: (platform: string) => void }) {
+function Campaigns({ store, open, create, remove, status, handoff, run }: { store: Store; open: (c: Campaign) => void; create: () => void; remove: (c: Campaign) => void; status: (id: string, s: CampaignStatus) => void; handoff: (platform: string) => void; run: (id: string) => void }) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('All statuses');
   const [tab, setTab] = useState<'all' | 'review'>('all');
@@ -289,11 +290,11 @@ function Campaigns({ store, open, create, remove, status, handoff }: { store: St
           <div className="list-cell-main" style={{ fontSize: 11, fontWeight: 500 }}>{c.platform}</div>
           <div className="list-cell-main" style={{ fontSize: 11, fontWeight: 500 }}>{formatDate(c.scheduledAt)}<div className="list-cell-sub">{formatTime(c.scheduledAt)}</div></div>
           <div><select className="field-select" style={{ minWidth: 110, maxWidth: 155, padding: '7px 8px', fontSize: 10 }} value={c.status} onChange={e => status(c.id, e.target.value as CampaignStatus)} aria-label={`Change status for ${c.title}`} data-testid={`select-status-${c.id}`}>{statuses.map(s => <option key={s}>{s}</option>)}</select></div>
-          <div className="row-actions"><button className="small-icon" aria-label={`Open official ${c.platform}`} onClick={() => handoff(c.platform)} data-testid={`button-handoff-${c.id}`}><ExternalLink /></button>{['Scheduled', 'Ready for review', 'Paused'].includes(c.status) && <button className="small-icon" aria-label={`${c.status === 'Paused' ? 'Resume' : 'Pause'} review reminder for ${c.title}`} onClick={() => status(c.id, c.status === 'Paused' ? new Date(c.scheduledAt).getTime() > Date.now() ? 'Scheduled' : 'Ready for review' : 'Paused')} data-testid={`button-pause-resume-${c.id}`}>{c.status === 'Paused' ? <Play /> : <Pause />}</button>}<button className="small-icon" aria-label={`Edit ${c.title}`} onClick={() => open(c)} data-testid={`button-edit-campaign-${c.id}`}><Pencil /></button><button className="small-icon" aria-label={`Delete ${c.title}`} onClick={() => remove(c)} data-testid={`button-delete-campaign-${c.id}`}><Trash2 /></button></div>
+           <div className="row-actions"><button className="small-icon" aria-label={`Start Campaign simulation for ${c.title}`} title="Start Campaign simulation" onClick={() => run(c.id)} data-testid={`button-start-campaign-${c.id}`}><Play /></button><button className="small-icon" aria-label={`Open official ${c.platform}`} onClick={() => handoff(c.platform)} data-testid={`button-handoff-${c.id}`}><ExternalLink /></button>{['Scheduled', 'Ready for review', 'Paused'].includes(c.status) && <button className="small-icon" aria-label={`${c.status === 'Paused' ? 'Resume' : 'Pause'} review reminder for ${c.title}`} onClick={() => status(c.id, c.status === 'Paused' ? new Date(c.scheduledAt).getTime() > Date.now() ? 'Scheduled' : 'Ready for review' : 'Paused')} data-testid={`button-pause-resume-${c.id}`}>{c.status === 'Paused' ? <Play /> : <Pause />}</button>}<button className="small-icon" aria-label={`Edit ${c.title}`} onClick={() => open(c)} data-testid={`button-edit-campaign-${c.id}`}><Pencil /></button><button className="small-icon" aria-label={`Delete ${c.title}`} onClick={() => remove(c)} data-testid={`button-delete-campaign-${c.id}`}><Trash2 /></button></div>
         </div>)}
       </> : <Empty symbol={<FileText />} title={query || filter !== 'All statuses' || tab === 'review' ? 'No matching campaigns' : 'Start with a small plan'} text={query || filter !== 'All statuses' || tab === 'review' ? 'Try a different search or status filter.' : 'Keep your upcoming social work clear, intentional, and on your terms.'} action={<button className="button button-primary" onClick={create} data-testid="button-empty-create-campaign"><Plus /> Create campaign</button>} />}
     </div>
-    <div style={{ marginTop: 13, color: 'hsl(var(--muted-foreground))', fontSize: 10, display: 'flex', alignItems: 'center', gap: 6 }}><CircleHelp size={13} /> When a scheduled time arrives, an item moves to Ready for review. It is never published automatically.</div>
+     <div style={{ marginTop: 13, color: 'hsl(var(--muted-foreground))', fontSize: 10, display: 'flex', alignItems: 'center', gap: 6 }}><CircleHelp size={13} /> Start Campaign runs a local progress simulation. It never joins groups or publishes anything. Scheduled items move to Ready for review.</div>
   </main>;
 }
 
@@ -351,7 +352,7 @@ function Settings({ theme, setTheme, store, clear }: { theme: 'light' | 'dark'; 
           <button className={theme === 'light' ? 'selected' : ''} onClick={() => setTheme('light')} data-testid="button-theme-light"><Sun size={14} /> Light</button>
           <button className={theme === 'dark' ? 'selected' : ''} onClick={() => setTheme('dark')} data-testid="button-theme-dark"><Moon size={14} /> Dark</button>
         </div></div></section>
-         <section className="setting-card" id="local-data"><div className="setting-head"><div><strong>Local data</strong><p>Your campaign plan, account labels, contact records, lists, and activity live {isDesktop ? 'in SQLite on this computer' : 'in this browser’s local storage'}. No remote sync is connected. Example records are included for exploring the app; edit or clear them to start your own workspace.</p></div><span className="mono-tag">THIS DEVICE</span></div>
+         <section className="setting-card" id="local-data"><div className="setting-head"><div><strong>Local data</strong><p>Your campaign plan, account labels, contact records, lists, jobs, and activity live {isDesktop ? 'in SQLite on this computer' : 'in SQLite on the Replit preview server, separated by an anonymous browser workspace ID. Do not enter private contacts in this shared hosted preview'}. The browser preview and desktop application do not sync. Old records are imported once when first opened.</p></div><span className="mono-tag">{isDesktop ? 'THIS DEVICE' : 'PREVIEW SERVER'}</span></div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 17 }}><span className="mono-tag">{store.campaigns.length} campaigns</span><span className="mono-tag">{store.accounts.length} account labels</span><span className="mono-tag">{store.contacts.length} contact records</span><span className="mono-tag">{store.lists.length} lists</span></div>
            <div style={{ marginTop: 18, borderTop: '1px solid hsl(var(--border))', paddingTop: 15, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 18 }}><div style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))' }}>Remove all local records from this workspace.</div><button className="button button-danger" onClick={clear} data-testid="button-clear-local-data"><Trash2 size={14} /> Clear workspace</button></div>
         </section>
@@ -369,9 +370,9 @@ type EditorFields = { title: string; platform: string; caption: string; schedule
 
 function EditorDialog({ kind, item, store, close, saveCampaign, saveAccount, saveContact }: {
   kind: 'campaign' | 'account' | 'contact'; item?: Campaign | Account | Contact; store: Store; close: () => void;
-  saveCampaign: (c: Omit<Campaign, 'id' | 'createdAt' | 'updatedAt'>, id?: string) => void;
-  saveAccount: (a: Omit<Account, 'id'>, id?: string) => void;
-  saveContact: (c: Omit<Contact, 'id' | 'createdAt'>, id?: string) => void;
+  saveCampaign: (c: Omit<Campaign, 'id' | 'createdAt' | 'updatedAt'>, id?: string) => Promise<void>;
+  saveAccount: (a: Omit<Account, 'id'>, id?: string) => Promise<void>;
+  saveContact: (c: Omit<Contact, 'id' | 'createdAt'>, id?: string) => Promise<void>;
 }) {
   const isEdit = Boolean(item);
   const initialCampaign = item && 'title' in item ? item : null;
@@ -400,21 +401,28 @@ function EditorDialog({ kind, item, store, close, saveCampaign, saveAccount, sav
   const setOptedIn = (v: boolean) => form.setValue('optedIn', v);
   const setList = (v: string) => form.setValue('list', v);
   const [error, setError] = useState('');
-  const submit = () => {
+  const [submitting, setSubmitting] = useState(false);
+  const submit = async () => {
     if ([title, caption, displayLabel, handle, name, value, list].some(v => v.length > 1000)) { setError('Each text field must be 1,000 characters or fewer.'); return; }
+    setSubmitting(true);
+    setError('');
+    try {
     if (kind === 'campaign') {
       if (!title.trim()) { setError('Give this campaign a title.'); return; }
       if (campaignStatus === 'Scheduled' && (!scheduledAt || Number.isNaN(new Date(scheduledAt).getTime()))) { setError('Choose a valid planned handoff time for a scheduled reminder.'); return; }
-      saveCampaign({ title: title.trim(), platform, caption: caption.trim(), scheduledAt, status: campaignStatus }, initialCampaign?.id);
+      await saveCampaign({ title: title.trim(), platform, caption: caption.trim(), scheduledAt, status: campaignStatus }, initialCampaign?.id);
     } else if (kind === 'account') {
       if (!displayLabel.trim()) { setError('Add a recognizable label.'); return; }
-      saveAccount({ platform, displayLabel: displayLabel.trim(), handle: handle.trim(), status: accountStatus }, initialAccount?.id);
+      await saveAccount({ platform, displayLabel: displayLabel.trim(), handle: handle.trim(), status: accountStatus }, initialAccount?.id);
     } else {
       if (!name.trim() || !value.trim()) { setError('Name and contact value are required.'); return; }
       if (channel === 'Email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) { setError('Enter a valid email address.'); return; }
       if (channel === 'Phone' && !/^\+?[\d\s().-]{7,30}$/.test(value.trim())) { setError('Enter a valid phone number.'); return; }
-      saveContact({ name: name.trim(), channel, value: value.trim(), optedIn, list: list.trim() || 'Unlisted' }, initialContact?.id);
+      await saveContact({ name: name.trim(), channel, value: value.trim(), optedIn, list: list.trim() || 'Unlisted' }, initialContact?.id);
     }
+    } catch (failure) {
+      setError(failure instanceof Error ? failure.message : 'Could not save this record.');
+    } finally { setSubmitting(false); }
   };
   const heading = kind === 'campaign' ? `${isEdit ? 'Edit' : 'Plan a'} campaign` : kind === 'account' ? `${isEdit ? 'Edit' : 'Add'} account label` : `${isEdit ? 'Edit' : 'Add'} contact`;
   return <div className="dialog-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) close(); }}>
@@ -443,7 +451,7 @@ function EditorDialog({ kind, item, store, close, saveCampaign, saveAccount, sav
           <label className="check-row"><input type="checkbox" checked={optedIn} onChange={e => setOptedIn(e.target.checked)} data-testid="checkbox-contact-opt-in" /><span>I have explicit permission to keep this contact record for its intended purpose. Consent can be withdrawn at any time.</span></label>
         </>}
         {error && <div role="alert" style={{ color: 'hsl(var(--destructive))', fontSize: 11, marginTop: 8 }} data-testid="error-dialog-form">{error}</div>}
-        <div className="form-actions"><button type="button" className="button button-secondary" onClick={close} data-testid="button-cancel-form">Cancel</button><button type="submit" className="button button-primary" data-testid="button-save-form"><Check size={14} /> {isEdit ? 'Save changes' : 'Save locally'}</button></div>
+        <div className="form-actions"><button type="button" className="button button-secondary" onClick={close} data-testid="button-cancel-form">Cancel</button><button type="submit" className="button button-primary" disabled={submitting} data-testid="button-save-form"><Check size={14} /> {submitting ? 'Saving…' : isEdit ? 'Save changes' : 'Save to SQLite'}</button></div>
       </form></Form>
     </section>
   </div>;
