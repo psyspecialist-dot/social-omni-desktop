@@ -1,0 +1,19 @@
+{
+  "name": "socialomni-desktop",
+  "productName": "SocialOmni Desktop",
+  "version": "1.0.0",
+  "description": "Local-first social campaign planning and manual platform handoff.",
+  "main": "main.js",
+  "type": "commonjs",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "check": "node --check main.js && node --check preload.js"
+  },
+  "dependencies": {
+    "sql.js": "^1.13.0"
+  },
+  "devDependencies": {
+    "electron": "^40.0.0"
+  }
+}

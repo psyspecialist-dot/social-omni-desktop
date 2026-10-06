@@ -1,0 +1,29 @@
+Build a complete Desktop Automation Application (Electron.js + Node.js + Tailwind CSS) named "SocialOmniDesktop". The app must run locally on the user's computer to handle social media automation safely.
+
+### 1. User Interface & Architecture:
+- Modern Dashboard UI with Sidebar Navigation, Dark/Light Mode, and live status logs console at the bottom.
+- Built using Electron (Main process + Renderer process with local Node.js integration enabled).
+- Local SQLite database (via better-sqlite3 or sqlite3) to store accounts, message queues, and campaign logs.
+
+### 2. Core Modules to Implement:
+A. Multi-Platform Account & Session Manager:
+   - Interface to securely save and load local browser sessions/cookies for Facebook, Instagram, TikTok, and WhatsApp Web.
+B. Facebook & Instagram Automation:
+   - Keyword group finder interface.
+   - Auto-join queue manager with configurable human-like random delays.
+   - Bulk auto-poster (text, images, video) to multiple groups (e.g., 50, 100+).
+   - Auto-commenting, post sharing, and sending posts to group members.
+C. TikTok Automation Module:
+   - Bulk video uploader and engagement tools.
+D. WhatsApp Marketing Module:
+   - Sequential bulk message sender to custom contact lists or group members.
+   - Strict human-like interval timer (configurable random delay of 3 to 5+ seconds between messages to prevent bans).
+   - Campaign tracker (Sent, Pending, Failed logs).
+E. Future License Placeholder:
+   - A modular settings tab with a "License Activation" placeholder input field (License Key) that currently accepts any key for testing, ready to be integrated with Keygen.sh or Lemon Squeezy later.
+
+### 3. Safety & Execution Requirements:
+- Use Puppeteer or Playwright running in non-headless or managed mode locally on the user's machine to execute browser tasks.
+- Implement robust error handling, pause/resume controls for all running campaigns, and clear status feedback in the UI.
+
+Please generate the file structure, package.json, main.js, preload.js, and frontend components for this application.

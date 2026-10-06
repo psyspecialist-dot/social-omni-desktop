@@ -1,0 +1,1 @@
+- [Desktop distribution](desktop-distribution.md) — ship a self-contained Electron folder with a prebuilt renderer, not instructions to rebuild the entire workspace locally.

@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "SocialOmni Desktop"
+description = "A local-first social campaign planner for organizing drafts, contact lists, and campaign status across social platforms. The desktop shell stores records locally and hands off publishing to official platform flows for human review."
+version = "1.0.0"
+id = "artifacts/social-omni-desktop"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24944
+
+[services.development]
+run = "pnpm --filter @workspace/social-omni-desktop run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/social-omni-desktop", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/social-omni-desktop/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24944"
+BASE_PATH = "/"
