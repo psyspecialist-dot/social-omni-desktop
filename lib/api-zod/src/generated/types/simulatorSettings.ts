@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { SimulatorSettingsLanguage } from './simulatorSettingsLanguage';
 import type { SimulatorSettingsTheme } from './simulatorSettingsTheme';
 
 /**
@@ -12,6 +13,8 @@ import type { SimulatorSettingsTheme } from './simulatorSettingsTheme';
  */
 export interface SimulatorSettings {
   theme?: SimulatorSettingsTheme;
+  /** Persisted display language; API enum values and user content remain unchanged. */
+  language?: SimulatorSettingsLanguage;
   /** @maxLength 300 */
   keywords?: string;
   /**

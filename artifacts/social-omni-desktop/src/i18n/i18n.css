@@ -1,0 +1,68 @@
+/* Offline-safe Arabic-capable system font stacks (no web fonts required). */
+html[dir='rtl'] {
+  --app-font-sans: 'DM Sans', 'Segoe UI', 'Noto Sans Arabic', 'Noto Naskh Arabic', 'Geeza Pro', 'SF Arabic', 'Al Bayan', 'Tahoma', 'Dubai', 'Traditional Arabic', sans-serif;
+  --app-font-mono: 'Segoe UI', 'Noto Sans Arabic', 'Geeza Pro', 'SF Arabic', 'Tahoma', sans-serif;
+}
+html[dir='rtl'] body { font-family: var(--app-font-sans); }
+html[dir='rtl'] h1, html[dir='rtl'] h2, html[dir='rtl'] h3, html[dir='rtl'] .brand-name, html[dir='rtl'] .stat-value { letter-spacing: 0; }
+html[dir='rtl'] .eyebrow, html[dir='rtl'] .nav-label, html[dir='rtl'] .brand-sub, html[dir='rtl'] .crumb, html[dir='rtl'] .list-header,
+html[dir='rtl'] .mono-tag, html[dir='rtl'] .status, html[dir='rtl'] .field-hint, html[dir='rtl'] .section-label,
+html[dir='rtl'] .console-state, html[dir='rtl'] .log-level, html[dir='rtl'] .date-block span, html[dir='rtl'] .nj-txt em { letter-spacing: 0; text-transform: none; }
+html[dir='rtl'] body { line-height: 1.7; }
+.ltr-iso { unicode-bidi: isolate; direction: ltr; display: inline-block; text-align: left; }
+html[dir='rtl'] input[type='email'], html[dir='rtl'] input[type='tel'], html[dir='rtl'] input[type='url'] { direction: ltr; text-align: right; }
+
+/* Mirrored chrome */
+html[dir='rtl'] .sidebar { border-right: 0; border-left: 1px solid hsl(var(--sidebar-border)); }
+html[dir='rtl'] .nav-link.active { box-shadow: inset -3px 0 hsl(var(--sidebar-primary)); }
+html[dir='rtl'] .profile-chip { border-left: 0; border-right: 1px solid hsl(var(--border)); padding-left: 0; padding-right: 15px; }
+html[dir='rtl'] .search-wrap svg { left: auto; right: 12px; }
+html[dir='rtl'] .search-input { padding-left: 12px; padding-right: 36px; }
+html[dir='rtl'] .settings-nav button { text-align: right; }
+html[dir='rtl'] .toast { right: auto; left: 23px; }
+html[dir='rtl'] .live-panel { border-left: 1px solid hsl(var(--border)); border-right: 3px solid hsl(var(--accent)); }
+html[dir='rtl'] .stat-card:after { right: auto; left: -24px; }
+html[dir='rtl'] .nj-dot { right: auto; left: 7px; }
+html[dir='rtl'] .row-actions { justify-content: flex-start; }
+html[dir='rtl'] .list-header > *:last-child { text-align: left !important; }
+html[dir='rtl'] .dialog-header, html[dir='rtl'] .form-actions { direction: rtl; }
+html[dir='rtl'] .heading-sub, html[dir='rtl'] .panel-caption { max-width: none; }
+@media (max-width: 760px) {
+  html[dir='rtl'] .sidebar { left: auto; right: 0; transform: translateX(100%); box-shadow: -20px 0 60px rgba(0, 0, 0, .15); }
+  html[dir='rtl'] .sidebar.open { transform: translateX(0); }
+  html[dir='rtl'] .topbar .crumb { margin-right: 12px; margin-left: auto; }
+}
+
+/* Header controls */
+.lang-toggle { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 12px; border-radius: 9px; border: 1px solid hsl(var(--primary) / .55); background: hsl(var(--primary) / .12); color: hsl(var(--foreground)); font: 600 12px var(--app-font-sans); cursor: pointer; }
+.lang-toggle:hover { background: hsl(var(--primary) / .22); }
+.lang-toggle:focus-visible, .help-link-top:focus-visible { outline: 2px solid hsl(var(--primary)); outline-offset: 2px; }
+.help-link-top { display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 12px; border-radius: 9px; border: 1px solid hsl(160 84% 40% / .55); background: hsl(160 84% 40% / .12); font: 600 12px var(--app-font-sans); color: inherit; text-decoration: none; }
+.nav-link.nav-help { border: 1px solid hsl(160 84% 40% / .5); background: hsl(160 84% 40% / .12); margin-bottom: 6px; font-weight: 700; }
+
+.lang-code { display: inline-flex; gap: 4px; font: 700 11px var(--app-font-sans); letter-spacing: .04em; }
+.lang-code b { opacity: .5; font-weight: 600; padding: 1px 4px; border-radius: 4px; }
+.lang-code b.on { opacity: 1; background: hsl(var(--primary)); color: #fff; }
+@media (max-width: 760px) { .lang-toggle .lang-name, .help-link-top span { display: none; } .lang-toggle, .help-link-top { padding: 0 9px; } }
+
+/* Help page */
+.help-hero { border: 1px solid hsl(var(--primary) / .4); border-radius: 16px; padding: 26px 28px; margin-bottom: 18px; background: linear-gradient(135deg, hsl(214 90% 52% / .14), hsl(160 84% 40% / .1)); }
+.help-hero p { margin: 10px 0 0; max-width: 70ch; line-height: 1.7; font-size: 13px; color: hsl(var(--muted-foreground)); }
+.help-toc { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.help-toc a { padding: 7px 12px; border-radius: 99px; border: 1px solid hsl(var(--border)); font-size: 11px; text-decoration: none; color: inherit; background: hsl(var(--card)); }
+.help-toc a:hover, .help-toc a:focus-visible { border-color: hsl(var(--primary)); outline: none; }
+.help-section { border: 1px solid hsl(var(--border)); background: hsl(var(--card)); border-radius: 14px; padding: 20px 22px; margin-bottom: 14px; scroll-margin-top: 80px; }
+.help-section h2 { font-size: 17px; margin: 0 0 10px; display: flex; align-items: center; gap: 9px; }
+.help-section h2 svg { color: hsl(160 84% 42%); flex: none; }
+.help-section p, .help-section li { font-size: 13px; line-height: 1.75; }
+.help-section ul, .help-section ol { margin: 8px 0 0; padding-inline-start: 22px; }
+.help-notice { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; font-size: 12px; line-height: 1.65; margin-top: 12px; }
+.help-notice.warn { border: 1px solid rgba(245, 158, 11, .55); background: rgba(245, 158, 11, .1); }
+.help-notice.stop { border: 1px solid rgba(239, 68, 68, .55); background: rgba(239, 68, 68, .1); }
+.help-notice.ok { border: 1px solid hsl(160 84% 40% / .5); background: hsl(160 84% 40% / .1); }
+.help-notice svg { flex: none; margin-top: 2px; }
+.help-notice.warn svg { color: #d99a06; } .help-notice.stop svg { color: #ef4444; } .help-notice.ok svg { color: hsl(160 84% 42%); }
+.help-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+.help-compare > div { border: 1px solid hsl(var(--border)); border-radius: 10px; padding: 12px 14px; }
+.help-compare h3 { margin: 0 0 6px; font-size: 13px; }
+@media (max-width: 760px) { .help-compare { grid-template-columns: 1fr; } .help-hero { padding: 20px 16px; } }

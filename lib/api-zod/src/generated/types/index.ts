@@ -45,6 +45,7 @@ export * from './simulatorRecord';
 export * from './simulatorRecordChannel';
 export * from './simulatorRecordPlatform';
 export * from './simulatorSettings';
+export * from './simulatorSettingsLanguage';
 export * from './simulatorSettingsTheme';
 export * from './simulatorState';
 export * from './simulatorStateStore';

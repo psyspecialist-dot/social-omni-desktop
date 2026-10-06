@@ -22,6 +22,6 @@ export const MODULES: Record<ModuleId, { eyebrow: string; title: string; sub: st
   email: { eyebrow: 'Email', title: 'Email Marketing', sub: 'Plain-text campaigns to people who agreed to hear from you, through your own SMTP server.', kinds: ['email-send', 'verify-email'], results: ['email-send', 'verify-email'] },
 };
 export const NATIVE_NOTE = 'Live runs need the downloaded Social Najhin desktop app and are disabled in this hosted preview. Drafts still save here.';
-export const msg = (e: unknown) => (e instanceof Error ? e.message : 'Request failed.');
-export const when = (v?: string | null) => { const d = v ? new Date(v) : null; return d && !Number.isNaN(d.getTime()) ? d.toLocaleString('en', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '—'; };
+export const msg = (e: unknown, t: (key: string) => string) => t(e instanceof Error ? e.message : 'Request failed.');
+export const when = (v: string | null | undefined, locale = 'en') => { const d = v ? new Date(v) : null; return d && !Number.isNaN(d.getTime()) ? d.toLocaleString(locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '—'; };
 export const ACTIVE = ['Queued', 'Running', 'Scheduled'];

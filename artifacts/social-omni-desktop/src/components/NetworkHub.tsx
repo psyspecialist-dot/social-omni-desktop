@@ -1,6 +1,7 @@
 import { useMemo, useState, type ComponentType } from 'react';
 import { Link } from 'wouter';
-import { Activity, AtSign, ClipboardList, Database, Mail, MapPin, MessageCircle, Send, Settings2, Users, Bot, ListFilter, MessagesSquare } from 'lucide-react';
+import { Activity, AtSign, ClipboardList, Database, Mail, MapPin, MessageCircle, Send, Settings2, Users, Bot, ListFilter, MessagesSquare, BookOpen } from 'lucide-react';
+import { useI18n } from '@/i18n';
 import './network.css';
 
 export interface HubNode { href: string; label: string; meta: string; icon: ComponentType<{ size?: number }>; tone?: 'live' | 'review' | 'fail' }
@@ -20,9 +21,11 @@ const BASE: Omit<HubNode, 'meta' | 'tone'>[] = [
   { href: '/contacts', label: 'Contacts', icon: Users },
   { href: '/accounts', label: 'Accounts Manager', icon: AtSign },
   { href: '/settings', label: 'Settings & License', icon: Settings2 },
+  { href: '/help', label: 'Help & Guidelines', icon: BookOpen },
 ];
 
 export default function NetworkHub({ data }: { data: HubData }) {
+  const { t } = useI18n();
   const [hot, setHot] = useState<string | null>(null);
   const layout = useMemo(() => BASE.map((n, i) => {
     const a = (-90 + (360 / BASE.length) * i) * Math.PI / 180;
@@ -32,16 +35,16 @@ export default function NetworkHub({ data }: { data: HubData }) {
     const cx = mx - Math.sin(a) * bend, cy = my + Math.cos(a) * bend;
     return { ...n, x, y, d: `M50 50 Q${cx.toFixed(2)} ${cy.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)}` };
   }), []);
-  return <section className="nj-stage" aria-label="Social Najhin module network" data-testid="network-hub">
+  return <section className="nj-stage" aria-label={t('Social Najhin module network')} data-testid="network-hub">
     <svg className="nj-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
       {layout.map(n => <g key={n.href}><path d={n.d} className={`nj-line ${hot === n.href ? 'hot' : ''}`} /><path d={n.d} className={`nj-flow tone-${data.tones[n.href] || 'none'} ${hot === n.href ? 'hot' : ''}`} /></g>)}
     </svg>
     <div className="nj-hub" aria-hidden="false"><i className="nj-ring r1" /><i className="nj-ring r2" /><i className="nj-ring r3" />
-      <div className="nj-core"><span className="nj-mono">SN</span><h2>Social Najhin</h2><small>all modules · one local workspace</small></div></div>
+      <div className="nj-core"><span className="nj-mono">SN</span><h2>Social Najhin</h2><small>{t('all modules · one local workspace')}</small></div></div>
     <ul className="nj-nodes">{layout.map(n => { const Icon = n.icon; const tone = data.tones[n.href];
       return <li key={n.href} style={{ left: `${n.x}%`, top: `${n.y}%` }} className="nj-li">
         <Link href={n.href} className={`nj-node ${tone ? `tone-${tone}` : ''}`} onMouseEnter={() => setHot(n.href)} onMouseLeave={() => setHot(null)} onFocus={() => setHot(n.href)} onBlur={() => setHot(null)} data-testid={`node-${n.href.slice(1)}`}>
-          <span className="nj-ico"><Icon size={16} /></span><span className="nj-txt"><b>{n.label}</b><em>{data.counts[n.href] || 'Open'}</em></span>{tone && <i className="nj-dot" />}
+          <span className="nj-ico"><Icon size={16} /></span><span className="nj-txt"><b>{t(n.label)}</b><em>{data.counts[n.href] || t('Open')}</em></span>{tone && <i className="nj-dot" />}
         </Link></li>; })}</ul>
   </section>;
 }

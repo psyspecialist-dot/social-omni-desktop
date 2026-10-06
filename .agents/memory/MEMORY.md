@@ -5,3 +5,4 @@
 - [WhatsApp automation safety](whatsapp-automation-safety.md) — virtualized chat history is not a new-message event; keep reply pacing and durable cooldowns separate.
 - [Advanced provider scope](advanced-provider-scope.md) — personal Telegram API, own SMTP and public business sites; native verification and uncertain outcomes need explicit limits.
 - [Optional dependency bundling](optional-dependency-bundling.md) — esbuild expands variable require paths as globs, including non-JavaScript pnpm shims.
+- [Bilingual product scope](bilingual-product-scope.md) — AR/EN covers every module and guide; Arabic RTL, English LTR, without rewriting user content or API values.

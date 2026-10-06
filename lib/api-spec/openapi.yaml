@@ -570,6 +570,7 @@ components:
       description: Partial updates preserve omitted fields.
       properties:
         theme: {type: string, enum: [light, dark]}
+        language: {type: string, enum: [en, ar], default: en, description: Persisted display language; API enum values and user content remain unchanged.}
         keywords: {type: string, maxLength: 300}
         delayMin: {type: integer, minimum: 5, maximum: 12}
         delayMax: {type: integer, minimum: 5, maximum: 12}

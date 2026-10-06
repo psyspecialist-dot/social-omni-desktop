@@ -72,6 +72,7 @@ export const createAdvancedTaskResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const createAdvancedTaskResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const createAdvancedTaskResponseSettingsLanguageDefault = `en`;
 export const createAdvancedTaskResponseSettingsKeywordsMax = 300;
 
 export const createAdvancedTaskResponseSettingsDelayMinMin = 5;
@@ -206,6 +207,7 @@ export const CreateAdvancedTaskResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(createAdvancedTaskResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(createAdvancedTaskResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(createAdvancedTaskResponseSettingsDelayMinMin).max(createAdvancedTaskResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(createAdvancedTaskResponseSettingsDelayMaxMin).max(createAdvancedTaskResponseSettingsDelayMaxMax).optional(),
@@ -354,6 +356,7 @@ export const editAdvancedTaskResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const editAdvancedTaskResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const editAdvancedTaskResponseSettingsLanguageDefault = `en`;
 export const editAdvancedTaskResponseSettingsKeywordsMax = 300;
 
 export const editAdvancedTaskResponseSettingsDelayMinMin = 5;
@@ -488,6 +491,7 @@ export const EditAdvancedTaskResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(editAdvancedTaskResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(editAdvancedTaskResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(editAdvancedTaskResponseSettingsDelayMinMin).max(editAdvancedTaskResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(editAdvancedTaskResponseSettingsDelayMaxMin).max(editAdvancedTaskResponseSettingsDelayMaxMax).optional(),
@@ -608,6 +612,7 @@ export const deleteAdvancedTaskResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const deleteAdvancedTaskResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const deleteAdvancedTaskResponseSettingsLanguageDefault = `en`;
 export const deleteAdvancedTaskResponseSettingsKeywordsMax = 300;
 
 export const deleteAdvancedTaskResponseSettingsDelayMinMin = 5;
@@ -742,6 +747,7 @@ export const DeleteAdvancedTaskResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(deleteAdvancedTaskResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(deleteAdvancedTaskResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(deleteAdvancedTaskResponseSettingsDelayMinMin).max(deleteAdvancedTaskResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(deleteAdvancedTaskResponseSettingsDelayMaxMin).max(deleteAdvancedTaskResponseSettingsDelayMaxMax).optional(),
@@ -866,6 +872,7 @@ export const runAdvancedTaskResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const runAdvancedTaskResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const runAdvancedTaskResponseSettingsLanguageDefault = `en`;
 export const runAdvancedTaskResponseSettingsKeywordsMax = 300;
 
 export const runAdvancedTaskResponseSettingsDelayMinMin = 5;
@@ -1000,6 +1007,7 @@ export const RunAdvancedTaskResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(runAdvancedTaskResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(runAdvancedTaskResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(runAdvancedTaskResponseSettingsDelayMinMin).max(runAdvancedTaskResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(runAdvancedTaskResponseSettingsDelayMaxMin).max(runAdvancedTaskResponseSettingsDelayMaxMax).optional(),
@@ -1120,6 +1128,7 @@ export const cancelAdvancedTaskResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const cancelAdvancedTaskResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const cancelAdvancedTaskResponseSettingsLanguageDefault = `en`;
 export const cancelAdvancedTaskResponseSettingsKeywordsMax = 300;
 
 export const cancelAdvancedTaskResponseSettingsDelayMinMin = 5;
@@ -1254,6 +1263,7 @@ export const CancelAdvancedTaskResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(cancelAdvancedTaskResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(cancelAdvancedTaskResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(cancelAdvancedTaskResponseSettingsDelayMinMin).max(cancelAdvancedTaskResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(cancelAdvancedTaskResponseSettingsDelayMaxMin).max(cancelAdvancedTaskResponseSettingsDelayMaxMax).optional(),
@@ -1385,6 +1395,7 @@ export const saveAdvancedConnectionResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const saveAdvancedConnectionResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const saveAdvancedConnectionResponseSettingsLanguageDefault = `en`;
 export const saveAdvancedConnectionResponseSettingsKeywordsMax = 300;
 
 export const saveAdvancedConnectionResponseSettingsDelayMinMin = 5;
@@ -1519,6 +1530,7 @@ export const SaveAdvancedConnectionResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(saveAdvancedConnectionResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(saveAdvancedConnectionResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(saveAdvancedConnectionResponseSettingsDelayMinMin).max(saveAdvancedConnectionResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(saveAdvancedConnectionResponseSettingsDelayMaxMin).max(saveAdvancedConnectionResponseSettingsDelayMaxMax).optional(),
@@ -1639,6 +1651,7 @@ export const deleteAdvancedConnectionResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const deleteAdvancedConnectionResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const deleteAdvancedConnectionResponseSettingsLanguageDefault = `en`;
 export const deleteAdvancedConnectionResponseSettingsKeywordsMax = 300;
 
 export const deleteAdvancedConnectionResponseSettingsDelayMinMin = 5;
@@ -1773,6 +1786,7 @@ export const DeleteAdvancedConnectionResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(deleteAdvancedConnectionResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(deleteAdvancedConnectionResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(deleteAdvancedConnectionResponseSettingsDelayMinMin).max(deleteAdvancedConnectionResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(deleteAdvancedConnectionResponseSettingsDelayMaxMin).max(deleteAdvancedConnectionResponseSettingsDelayMaxMax).optional(),
@@ -1898,6 +1912,7 @@ export const authorizeTelegramResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const authorizeTelegramResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const authorizeTelegramResponseSettingsLanguageDefault = `en`;
 export const authorizeTelegramResponseSettingsKeywordsMax = 300;
 
 export const authorizeTelegramResponseSettingsDelayMinMin = 5;
@@ -2032,6 +2047,7 @@ export const AuthorizeTelegramResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(authorizeTelegramResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(authorizeTelegramResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(authorizeTelegramResponseSettingsDelayMinMin).max(authorizeTelegramResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(authorizeTelegramResponseSettingsDelayMaxMin).max(authorizeTelegramResponseSettingsDelayMaxMax).optional(),
@@ -2152,6 +2168,7 @@ export const deleteAdvancedResultResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const deleteAdvancedResultResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const deleteAdvancedResultResponseSettingsLanguageDefault = `en`;
 export const deleteAdvancedResultResponseSettingsKeywordsMax = 300;
 
 export const deleteAdvancedResultResponseSettingsDelayMinMin = 5;
@@ -2286,6 +2303,7 @@ export const DeleteAdvancedResultResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(deleteAdvancedResultResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(deleteAdvancedResultResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(deleteAdvancedResultResponseSettingsDelayMinMin).max(deleteAdvancedResultResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(deleteAdvancedResultResponseSettingsDelayMaxMin).max(deleteAdvancedResultResponseSettingsDelayMaxMax).optional(),
@@ -2410,6 +2428,7 @@ export const saveWaFilterResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const saveWaFilterResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const saveWaFilterResponseSettingsLanguageDefault = `en`;
 export const saveWaFilterResponseSettingsKeywordsMax = 300;
 
 export const saveWaFilterResponseSettingsDelayMinMin = 5;
@@ -2544,6 +2563,7 @@ export const SaveWaFilterResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(saveWaFilterResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(saveWaFilterResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(saveWaFilterResponseSettingsDelayMinMin).max(saveWaFilterResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(saveWaFilterResponseSettingsDelayMaxMin).max(saveWaFilterResponseSettingsDelayMaxMax).optional(),
@@ -2677,6 +2697,7 @@ export const createCrmThreadResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const createCrmThreadResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const createCrmThreadResponseSettingsLanguageDefault = `en`;
 export const createCrmThreadResponseSettingsKeywordsMax = 300;
 
 export const createCrmThreadResponseSettingsDelayMinMin = 5;
@@ -2811,6 +2832,7 @@ export const CreateCrmThreadResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(createCrmThreadResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(createCrmThreadResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(createCrmThreadResponseSettingsDelayMinMin).max(createCrmThreadResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(createCrmThreadResponseSettingsDelayMaxMin).max(createCrmThreadResponseSettingsDelayMaxMax).optional(),
@@ -2948,6 +2970,7 @@ export const editCrmThreadResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const editCrmThreadResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const editCrmThreadResponseSettingsLanguageDefault = `en`;
 export const editCrmThreadResponseSettingsKeywordsMax = 300;
 
 export const editCrmThreadResponseSettingsDelayMinMin = 5;
@@ -3082,6 +3105,7 @@ export const EditCrmThreadResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(editCrmThreadResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(editCrmThreadResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(editCrmThreadResponseSettingsDelayMinMin).max(editCrmThreadResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(editCrmThreadResponseSettingsDelayMaxMin).max(editCrmThreadResponseSettingsDelayMaxMax).optional(),
@@ -3202,6 +3226,7 @@ export const removeCrmThreadResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const removeCrmThreadResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const removeCrmThreadResponseSettingsLanguageDefault = `en`;
 export const removeCrmThreadResponseSettingsKeywordsMax = 300;
 
 export const removeCrmThreadResponseSettingsDelayMinMin = 5;
@@ -3336,6 +3361,7 @@ export const RemoveCrmThreadResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(removeCrmThreadResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(removeCrmThreadResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(removeCrmThreadResponseSettingsDelayMinMin).max(removeCrmThreadResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(removeCrmThreadResponseSettingsDelayMaxMin).max(removeCrmThreadResponseSettingsDelayMaxMax).optional(),
@@ -3480,6 +3506,7 @@ export const createChatbotRuleResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const createChatbotRuleResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const createChatbotRuleResponseSettingsLanguageDefault = `en`;
 export const createChatbotRuleResponseSettingsKeywordsMax = 300;
 
 export const createChatbotRuleResponseSettingsDelayMinMin = 5;
@@ -3614,6 +3641,7 @@ export const CreateChatbotRuleResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(createChatbotRuleResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(createChatbotRuleResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(createChatbotRuleResponseSettingsDelayMinMin).max(createChatbotRuleResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(createChatbotRuleResponseSettingsDelayMaxMin).max(createChatbotRuleResponseSettingsDelayMaxMax).optional(),
@@ -3762,6 +3790,7 @@ export const editChatbotRuleResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const editChatbotRuleResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const editChatbotRuleResponseSettingsLanguageDefault = `en`;
 export const editChatbotRuleResponseSettingsKeywordsMax = 300;
 
 export const editChatbotRuleResponseSettingsDelayMinMin = 5;
@@ -3896,6 +3925,7 @@ export const EditChatbotRuleResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(editChatbotRuleResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(editChatbotRuleResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(editChatbotRuleResponseSettingsDelayMinMin).max(editChatbotRuleResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(editChatbotRuleResponseSettingsDelayMaxMin).max(editChatbotRuleResponseSettingsDelayMaxMax).optional(),
@@ -4016,6 +4046,7 @@ export const removeChatbotRuleResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const removeChatbotRuleResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const removeChatbotRuleResponseSettingsLanguageDefault = `en`;
 export const removeChatbotRuleResponseSettingsKeywordsMax = 300;
 
 export const removeChatbotRuleResponseSettingsDelayMinMin = 5;
@@ -4150,6 +4181,7 @@ export const RemoveChatbotRuleResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(removeChatbotRuleResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(removeChatbotRuleResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(removeChatbotRuleResponseSettingsDelayMinMin).max(removeChatbotRuleResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(removeChatbotRuleResponseSettingsDelayMaxMin).max(removeChatbotRuleResponseSettingsDelayMaxMax).optional(),
@@ -4272,6 +4304,7 @@ export const startWaSuiteSessionResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const startWaSuiteSessionResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const startWaSuiteSessionResponseSettingsLanguageDefault = `en`;
 export const startWaSuiteSessionResponseSettingsKeywordsMax = 300;
 
 export const startWaSuiteSessionResponseSettingsDelayMinMin = 5;
@@ -4406,6 +4439,7 @@ export const StartWaSuiteSessionResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(startWaSuiteSessionResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(startWaSuiteSessionResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(startWaSuiteSessionResponseSettingsDelayMinMin).max(startWaSuiteSessionResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(startWaSuiteSessionResponseSettingsDelayMaxMin).max(startWaSuiteSessionResponseSettingsDelayMaxMax).optional(),
@@ -4540,6 +4574,7 @@ export const startLocalBrowserTaskResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const startLocalBrowserTaskResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const startLocalBrowserTaskResponseSettingsLanguageDefault = `en`;
 export const startLocalBrowserTaskResponseSettingsKeywordsMax = 300;
 
 export const startLocalBrowserTaskResponseSettingsDelayMinMin = 5;
@@ -4674,6 +4709,7 @@ export const StartLocalBrowserTaskResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(startLocalBrowserTaskResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(startLocalBrowserTaskResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(startLocalBrowserTaskResponseSettingsDelayMinMin).max(startLocalBrowserTaskResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(startLocalBrowserTaskResponseSettingsDelayMaxMin).max(startLocalBrowserTaskResponseSettingsDelayMaxMax).optional(),
@@ -4810,6 +4846,7 @@ export const saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const saveSocialOmniLeadDraftResponseSettingsLanguageDefault = `en`;
 export const saveSocialOmniLeadDraftResponseSettingsKeywordsMax = 300;
 
 export const saveSocialOmniLeadDraftResponseSettingsDelayMinMin = 5;
@@ -4944,6 +4981,7 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(saveSocialOmniLeadDraftResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(saveSocialOmniLeadDraftResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(saveSocialOmniLeadDraftResponseSettingsDelayMinMin).max(saveSocialOmniLeadDraftResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(saveSocialOmniLeadDraftResponseSettingsDelayMaxMin).max(saveSocialOmniLeadDraftResponseSettingsDelayMaxMax).optional(),
@@ -5063,6 +5101,7 @@ export const clearSocialOmniLeadsResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const clearSocialOmniLeadsResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const clearSocialOmniLeadsResponseSettingsLanguageDefault = `en`;
 export const clearSocialOmniLeadsResponseSettingsKeywordsMax = 300;
 
 export const clearSocialOmniLeadsResponseSettingsDelayMinMin = 5;
@@ -5197,6 +5236,7 @@ export const ClearSocialOmniLeadsResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(clearSocialOmniLeadsResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(clearSocialOmniLeadsResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(clearSocialOmniLeadsResponseSettingsDelayMinMin).max(clearSocialOmniLeadsResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(clearSocialOmniLeadsResponseSettingsDelayMaxMin).max(clearSocialOmniLeadsResponseSettingsDelayMaxMax).optional(),
@@ -5313,6 +5353,7 @@ export const getSocialOmniStateResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const getSocialOmniStateResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const getSocialOmniStateResponseSettingsLanguageDefault = `en`;
 export const getSocialOmniStateResponseSettingsKeywordsMax = 300;
 
 export const getSocialOmniStateResponseSettingsDelayMinMin = 5;
@@ -5447,6 +5488,7 @@ export const GetSocialOmniStateResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(getSocialOmniStateResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(getSocialOmniStateResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(getSocialOmniStateResponseSettingsDelayMinMin).max(getSocialOmniStateResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(getSocialOmniStateResponseSettingsDelayMaxMin).max(getSocialOmniStateResponseSettingsDelayMaxMax).optional(),
@@ -5563,6 +5605,7 @@ export const clearSocialOmniStateResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const clearSocialOmniStateResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const clearSocialOmniStateResponseSettingsLanguageDefault = `en`;
 export const clearSocialOmniStateResponseSettingsKeywordsMax = 300;
 
 export const clearSocialOmniStateResponseSettingsDelayMinMin = 5;
@@ -5697,6 +5740,7 @@ export const ClearSocialOmniStateResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(clearSocialOmniStateResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(clearSocialOmniStateResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(clearSocialOmniStateResponseSettingsDelayMinMin).max(clearSocialOmniStateResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(clearSocialOmniStateResponseSettingsDelayMaxMin).max(clearSocialOmniStateResponseSettingsDelayMaxMax).optional(),
@@ -5781,6 +5825,7 @@ export const UpdateSocialOmniSettingsHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
 })
 
+export const updateSocialOmniSettingsBodyLanguageDefault = `en`;
 export const updateSocialOmniSettingsBodyKeywordsMax = 300;
 
 export const updateSocialOmniSettingsBodyDelayMinMin = 5;
@@ -5799,6 +5844,7 @@ export const updateSocialOmniSettingsBodyLicenseKeyMax = 200;
 
 export const UpdateSocialOmniSettingsBody = zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(updateSocialOmniSettingsBodyLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(updateSocialOmniSettingsBodyKeywordsMax).optional(),
   "delayMin": zod.number().int().min(updateSocialOmniSettingsBodyDelayMinMin).max(updateSocialOmniSettingsBodyDelayMinMax).optional(),
   "delayMax": zod.number().int().min(updateSocialOmniSettingsBodyDelayMaxMin).max(updateSocialOmniSettingsBodyDelayMaxMax).optional(),
@@ -5841,6 +5887,7 @@ export const updateSocialOmniSettingsResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const updateSocialOmniSettingsResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const updateSocialOmniSettingsResponseSettingsLanguageDefault = `en`;
 export const updateSocialOmniSettingsResponseSettingsKeywordsMax = 300;
 
 export const updateSocialOmniSettingsResponseSettingsDelayMinMin = 5;
@@ -5975,6 +6022,7 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(updateSocialOmniSettingsResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(updateSocialOmniSettingsResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(updateSocialOmniSettingsResponseSettingsDelayMinMin).max(updateSocialOmniSettingsResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(updateSocialOmniSettingsResponseSettingsDelayMaxMin).max(updateSocialOmniSettingsResponseSettingsDelayMaxMax).optional(),
@@ -6099,6 +6147,7 @@ export const createSocialOmniJobResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const createSocialOmniJobResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const createSocialOmniJobResponseSettingsLanguageDefault = `en`;
 export const createSocialOmniJobResponseSettingsKeywordsMax = 300;
 
 export const createSocialOmniJobResponseSettingsDelayMinMin = 5;
@@ -6233,6 +6282,7 @@ export const CreateSocialOmniJobResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(createSocialOmniJobResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(createSocialOmniJobResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(createSocialOmniJobResponseSettingsDelayMinMin).max(createSocialOmniJobResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(createSocialOmniJobResponseSettingsDelayMaxMin).max(createSocialOmniJobResponseSettingsDelayMaxMax).optional(),
@@ -6353,6 +6403,7 @@ export const cancelSocialOmniJobResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const cancelSocialOmniJobResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const cancelSocialOmniJobResponseSettingsLanguageDefault = `en`;
 export const cancelSocialOmniJobResponseSettingsKeywordsMax = 300;
 
 export const cancelSocialOmniJobResponseSettingsDelayMinMin = 5;
@@ -6487,6 +6538,7 @@ export const CancelSocialOmniJobResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(cancelSocialOmniJobResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(cancelSocialOmniJobResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(cancelSocialOmniJobResponseSettingsDelayMinMin).max(cancelSocialOmniJobResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(cancelSocialOmniJobResponseSettingsDelayMaxMin).max(cancelSocialOmniJobResponseSettingsDelayMaxMax).optional(),
@@ -6616,6 +6668,7 @@ export const uploadSocialOmniMediaResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const uploadSocialOmniMediaResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const uploadSocialOmniMediaResponseSettingsLanguageDefault = `en`;
 export const uploadSocialOmniMediaResponseSettingsKeywordsMax = 300;
 
 export const uploadSocialOmniMediaResponseSettingsDelayMinMin = 5;
@@ -6750,6 +6803,7 @@ export const UploadSocialOmniMediaResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(uploadSocialOmniMediaResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(uploadSocialOmniMediaResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(uploadSocialOmniMediaResponseSettingsDelayMinMin).max(uploadSocialOmniMediaResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(uploadSocialOmniMediaResponseSettingsDelayMaxMin).max(uploadSocialOmniMediaResponseSettingsDelayMaxMax).optional(),
@@ -6870,6 +6924,7 @@ export const readSocialOmniMediaResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const readSocialOmniMediaResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const readSocialOmniMediaResponseSettingsLanguageDefault = `en`;
 export const readSocialOmniMediaResponseSettingsKeywordsMax = 300;
 
 export const readSocialOmniMediaResponseSettingsDelayMinMin = 5;
@@ -7004,6 +7059,7 @@ export const ReadSocialOmniMediaResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(readSocialOmniMediaResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(readSocialOmniMediaResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(readSocialOmniMediaResponseSettingsDelayMinMin).max(readSocialOmniMediaResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(readSocialOmniMediaResponseSettingsDelayMaxMin).max(readSocialOmniMediaResponseSettingsDelayMaxMax).optional(),
@@ -7127,6 +7183,7 @@ export const deleteSocialOmniMediaResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const deleteSocialOmniMediaResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const deleteSocialOmniMediaResponseSettingsLanguageDefault = `en`;
 export const deleteSocialOmniMediaResponseSettingsKeywordsMax = 300;
 
 export const deleteSocialOmniMediaResponseSettingsDelayMinMin = 5;
@@ -7261,6 +7318,7 @@ export const DeleteSocialOmniMediaResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(deleteSocialOmniMediaResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(deleteSocialOmniMediaResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(deleteSocialOmniMediaResponseSettingsDelayMinMin).max(deleteSocialOmniMediaResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(deleteSocialOmniMediaResponseSettingsDelayMaxMin).max(deleteSocialOmniMediaResponseSettingsDelayMaxMax).optional(),
@@ -7407,6 +7465,7 @@ export const createSocialOmniRecordResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const createSocialOmniRecordResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const createSocialOmniRecordResponseSettingsLanguageDefault = `en`;
 export const createSocialOmniRecordResponseSettingsKeywordsMax = 300;
 
 export const createSocialOmniRecordResponseSettingsDelayMinMin = 5;
@@ -7541,6 +7600,7 @@ export const CreateSocialOmniRecordResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(createSocialOmniRecordResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(createSocialOmniRecordResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(createSocialOmniRecordResponseSettingsDelayMinMin).max(createSocialOmniRecordResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(createSocialOmniRecordResponseSettingsDelayMaxMin).max(createSocialOmniRecordResponseSettingsDelayMaxMax).optional(),
@@ -7691,6 +7751,7 @@ export const updateSocialOmniRecordResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const updateSocialOmniRecordResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const updateSocialOmniRecordResponseSettingsLanguageDefault = `en`;
 export const updateSocialOmniRecordResponseSettingsKeywordsMax = 300;
 
 export const updateSocialOmniRecordResponseSettingsDelayMinMin = 5;
@@ -7825,6 +7886,7 @@ export const UpdateSocialOmniRecordResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(updateSocialOmniRecordResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(updateSocialOmniRecordResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(updateSocialOmniRecordResponseSettingsDelayMinMin).max(updateSocialOmniRecordResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(updateSocialOmniRecordResponseSettingsDelayMaxMin).max(updateSocialOmniRecordResponseSettingsDelayMaxMax).optional(),
@@ -7946,6 +8008,7 @@ export const deleteSocialOmniRecordResponseWaSuiteRulesItemOneDelayMaxMax = 8;
 
 export const deleteSocialOmniRecordResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
 
+export const deleteSocialOmniRecordResponseSettingsLanguageDefault = `en`;
 export const deleteSocialOmniRecordResponseSettingsKeywordsMax = 300;
 
 export const deleteSocialOmniRecordResponseSettingsDelayMinMin = 5;
@@ -8080,6 +8143,7 @@ export const DeleteSocialOmniRecordResponse = zod.object({
 }),
   "settings": zod.object({
   "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(deleteSocialOmniRecordResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
   "keywords": zod.string().max(deleteSocialOmniRecordResponseSettingsKeywordsMax).optional(),
   "delayMin": zod.number().int().min(deleteSocialOmniRecordResponseSettingsDelayMinMin).max(deleteSocialOmniRecordResponseSettingsDelayMinMax).optional(),
   "delayMax": zod.number().int().min(deleteSocialOmniRecordResponseSettingsDelayMaxMin).max(deleteSocialOmniRecordResponseSettingsDelayMaxMax).optional(),

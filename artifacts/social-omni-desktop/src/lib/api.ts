@@ -11,6 +11,7 @@ export interface SimulationSettings {
   mediaId: string | null;
   accountId: string | null;
   licenseKey: string;
+  language?: 'en' | 'ar';
 }
 export interface MediaAsset { id: string; name: string; mime: string; size: number }
 export interface SimulationTarget {

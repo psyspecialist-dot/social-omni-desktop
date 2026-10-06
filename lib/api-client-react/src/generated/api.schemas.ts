@@ -358,10 +358,23 @@ export const SimulatorSettingsTheme = {
 } as const;
 
 /**
+ * Persisted display language; API enum values and user content remain unchanged.
+ */
+export type SimulatorSettingsLanguage = typeof SimulatorSettingsLanguage[keyof typeof SimulatorSettingsLanguage];
+
+
+export const SimulatorSettingsLanguage = {
+  en: 'en',
+  ar: 'ar',
+} as const;
+
+/**
  * Partial updates preserve omitted fields.
  */
 export interface SimulatorSettings {
   theme?: SimulatorSettingsTheme;
+  /** Persisted display language; API enum values and user content remain unchanged. */
+  language?: SimulatorSettingsLanguage;
   /** @maxLength 300 */
   keywords?: string;
   /**

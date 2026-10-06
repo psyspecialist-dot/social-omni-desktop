@@ -66,6 +66,29 @@ ID and username columns, not hidden phone/email data or presumed consent.
 
 ### Setup and honest outcomes
 
+### Language and built-in guide / اللغة ودليل الاستخدام
+
+Use the **AR / EN** switch in the app header to change the display language
+immediately. Arabic uses right-to-left layout; English uses left-to-right.
+The choice is saved in local SQLite and restored when the application opens.
+Existing messages, contact names, campaign contents and API status values are
+not rewritten when the language changes.
+
+Open **Guide / Help** from the dashboard network or sidebar for the built-in
+WhatsApp QR setup, extraction/export, WaFilter/WA-CRM and safety instructions.
+
+استخدم مفتاح **AR / EN** في أعلى التطبيق لتغيير اللغة مباشرةً. تظهر الواجهة
+العربية من اليمين إلى اليسار، والإنجليزية من اليسار إلى اليمين. يُحفظ اختيار
+اللغة في قاعدة SQLite المحلية، ولا تتغير الرسائل أو أسماء العملاء أو محتوى
+الحملات عند تبديل اللغة.
+
+افتح **دليل الاستخدام والإرشادات** من لوحة شبكة الوحدات أو القائمة الجانبية
+للاطلاع على خطوات اتصال واتساب برمز QR، واستخراج البيانات وتصديرها، وفحص
+الأرقام وتنظيم العملاء، وإرشادات السلامة. التأخيرات العشوائية بين 5 و12 ثانية
+تقلل سرعة العمليات ولا تضمن منع الحظر؛ يلزم احترام الموافقة وقواعد المنصات.
+
+### Provider setup
+
 In the downloaded desktop app, open Email Marketing and save/test your SMTP
 connection. For Telegram, obtain your own api_id/api_hash at my.telegram.org,
 save them in the connection panel, then enter your phone, login code and 2FA
