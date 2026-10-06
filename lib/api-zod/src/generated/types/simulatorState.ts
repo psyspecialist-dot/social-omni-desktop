@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { AdvancedSuite } from './advancedSuite';
 import type { SimulatorAnalytics } from './simulatorAnalytics';
 import type { SimulatorJob } from './simulatorJob';
 import type { SimulatorLeadWorkspace } from './simulatorLeadWorkspace';
@@ -14,6 +15,7 @@ import type { SimulatorStateStore } from './simulatorStateStore';
 import type { WaSuite } from './waSuite';
 
 export interface SimulatorState {
+  advanced?: AdvancedSuite;
   automationAvailable?: boolean;
   waSuite?: WaSuite;
   store: SimulatorStateStore;

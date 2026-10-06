@@ -10,7 +10,9 @@ import MediaUpload from '@/components/MediaUpload';
 import SimQueue from '@/components/SimQueue';
 import LiveAutomation from '@/components/LiveAutomation';
 import WhatsAppSuite from '@/modules/WhatsAppSuite';
-import type { WaSuite } from '@workspace/api-client-react';
+import type { WaSuite, AdvancedSuite } from '@workspace/api-client-react';
+import AdvancedModule from '@/modules/advanced/AdvancedModule';
+import NetworkHub, { type HubData } from '@/components/NetworkHub';
 import { STORAGE_KEY, THEME_KEY, platforms, statuses, isoIn, seedStore, parseStore, type CampaignStatus, type Campaign, type Account, type Contact, type Store } from '@/lib/workspace';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -22,7 +24,7 @@ import {
   Activity, AlertCircle, ArrowUpRight, AtSign, CalendarClock, Check,
   CheckCircle2, CircleHelp, ClipboardList, ExternalLink, FileText,
    LayoutDashboard, ListFilter, Menu, Moon, MapPin,
-   Download, MessageCircle, Pause, Play, Pencil, Plus, Search, Settings2, ShieldCheck, Sun, Trash2, Users, X,
+   Database, Download, Mail, MessageCircle, Send, Pause, Play, Pencil, Plus, Search, Settings2, ShieldCheck, Sun, Trash2, Users, X,
 } from 'lucide-react';
 
 const queryClient = new QueryClient();
@@ -34,7 +36,7 @@ const formatTime = (value: string) => {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('en', { hour: 'numeric', minute: '2-digit' }).format(date);
 };
-const titleForPath: Record<string, string> = { '/': 'Overview & Analytics', '/campaigns': 'Campaigns', '/automation': 'Facebook & Instagram Automation', '/accounts': 'Accounts Manager', '/whatsapp': 'WhatsApp Marketing', '/leads': 'Google Maps Lead Extractor', '/contacts': 'Contacts', '/settings': 'Settings & Future License', '/wafilter': 'WaFilter', '/wa-crm': 'WA-CRM', '/chatbots': 'Auto-Reply / Chatbot' };
+const titleForPath: Record<string, string> = { '/': 'Overview & Analytics', '/campaigns': 'Campaigns', '/automation': 'Facebook & Instagram Automation', '/accounts': 'Accounts Manager', '/whatsapp': 'WhatsApp Marketing', '/leads': 'Google Maps Lead Extractor', '/contacts': 'Contacts', '/settings': 'Settings & Future License', '/wafilter': 'WaFilter', '/wa-crm': 'WA-CRM', '/chatbots': 'Auto-Reply / Chatbot', '/extractors': 'B2B & Data Extractors', '/multi-platform': 'Telegram & Facebook Automation', '/email': 'Email Marketing' };
 
 function Workspace() {
   const [store, setStore] = useState<Store>(seedStore);
@@ -48,6 +50,7 @@ function Workspace() {
   const [media, setMedia] = useState<MediaAsset[]>([]);
   const [jobs, setJobs] = useState<SimulationJob[]>([]);
   const [waSuite, setWaSuite] = useState<WaSuite>({ filter: { source: '', results: [] }, threads: [], rules: [] });
+  const [advanced, setAdvanced] = useState<AdvancedSuite>({ tasks: [], results: [], connections: [] });
   const writes = useRef(0);
   const revision = useRef(0);
   const [toast, setToast] = useState('');
@@ -60,6 +63,7 @@ function Workspace() {
     setSettings(data.settings);
     setJobs(data.jobs);
     setWaSuite(data.waSuite || { filter: { source: '', results: [] }, threads: [], rules: [] });
+    setAdvanced(data.advanced || { tasks: [], results: [], connections: [] });
     setMedia(data.media || []);
     setLeads(data.leads);
     setAnalytics(data.analytics);
@@ -149,12 +153,28 @@ function Workspace() {
     }
     void perform('PATCH', `/campaigns/${id}/status`, { status }).catch(report);
   };
-  const clearWorkspace = () => setConfirm({ title: 'Clear local workspace?', body: 'This permanently removes campaigns, accounts, contacts, media, inputs, leads, WaFilter results, CRM notes and chats, chatbot rules, counters, license placeholder, jobs, activity, and local browser profiles from this workspace. It cannot be undone.', onConfirm: () => {
+  const clearWorkspace = () => setConfirm({ title: 'Clear local workspace?', body: 'This permanently removes campaigns, accounts, contacts, media, inputs, leads, WaFilter results, CRM notes and chats, chatbot rules, counters, license placeholder, jobs, advanced tasks and results, encrypted SMTP and Telegram connections, activity, and local browser profiles from this workspace. It cannot be undone.', onConfirm: () => {
     void perform('DELETE', '/state').then(() => setConfirm(null)).catch(report);
   } });
   const runTask = (kind: 'campaign' | 'whatsapp', campaignId?: string) =>
     perform('POST', '/jobs', { kind, campaignId }).then(() => undefined);
   const cancelTask = (id: string) => { void perform('POST', `/jobs/${id}/cancel`).catch(report); };
+  const hub: HubData = (() => {
+    const count = (kinds: string[]) => advanced.tasks.filter(t => kinds.includes(t.kind));
+    const tone = (kinds: string[]): HubData['tones'][string] => { const t = count(kinds); return t.some(x => x.status === 'Failed') ? 'fail' : t.some(x => x.status === 'Needs review') ? 'review' : t.some(x => ['Running', 'Queued'].includes(x.status)) ? 'live' : undefined; };
+    const res = (kinds: string[]) => advanced.results.filter(r => kinds.includes(r.kind)).length;
+    const ex = ['maps', 'b2b', 'verify-email'], mp = ['telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post'], em = ['email-send', 'verify-email'];
+    const live = (p: string, a?: string) => jobs.some(j => j.platform === p && (!a || j.action === a) && ['Pending', 'Running'].includes(j.status)) ? 'live' as const : undefined;
+    return {
+      counts: {
+        '/whatsapp': `${analytics.realMessagesSent || 0} live sends`, '/wafilter': `${waSuite.filter.results.length} numbers`, '/wa-crm': `${waSuite.threads.length} chats`, '/chatbots': `${waSuite.rules.length} rules`,
+        '/campaigns': `${store.campaigns.length} plans`, '/automation': `${store.campaigns.filter(c => ['Facebook', 'Instagram'].includes(c.platform)).length} plans`,
+        '/multi-platform': `${count(mp).length} tasks · ${res(mp)} results`, '/email': `${count(['email-send']).length} campaigns`, '/extractors': `${count(ex).length} tasks · ${res(ex)} results`,
+        '/leads': `${leads.results.length} saved`, '/contacts': `${store.contacts.length} contacts`, '/accounts': `${store.accounts.length} accounts`, '/settings': 'Theme · license',
+      },
+      tones: { '/extractors': tone(ex), '/multi-platform': tone(mp), '/email': tone(em), '/whatsapp': live('WhatsApp'), '/wa-crm': live('WhatsApp', 'inbox'), '/wafilter': live('WhatsApp', 'filter'), '/automation': live('Facebook') },
+    };
+  })();
   if (!ready) return <main className="page" data-testid="status-storage-loading"><h1>Social Najhin</h1><p role={storageError ? 'alert' : 'status'}>{storageError || 'Loading local workspace…'}</p>{storageError && <button className="button button-secondary" onClick={() => window.location.reload()} data-testid="button-retry-load">Retry without changing saved records</button>}</main>;
   return (
     <QueryClientProvider client={queryClient}>
@@ -174,7 +194,10 @@ function Workspace() {
                {storageError && <div className="storage-alert" role="alert" data-testid="error-storage-save">{storageError}<button className="button button-secondary" onClick={() => { apiRequest('GET', '/state').then(data => { applyState(data); setStorageError(''); }).catch(report); }} data-testid="button-retry-save">Reconnect</button></div>}
               <ErrorBoundary resetKey={path}>
                 <Switch>
-                  <Route path="/"><Dashboard jobs={jobs} store={store} leads={leads} analytics={analytics} onStatus={saveStatus} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
+                  <Route path="/"><NetworkHub data={hub} /><Dashboard jobs={jobs} store={store} leads={leads} analytics={analytics} onStatus={saveStatus} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
+                   <Route path="/extractors"><AdvancedModule module="extractors" advanced={advanced} accounts={store.accounts} media={media} perform={perform} /></Route>
+                   <Route path="/multi-platform"><AdvancedModule module="multi-platform" advanced={advanced} accounts={store.accounts} media={media} perform={perform} /></Route>
+                   <Route path="/email"><AdvancedModule module="email" advanced={advanced} accounts={store.accounts} media={media} perform={perform} /></Route>
                    <Route path="/campaigns"><Campaigns jobs={jobs} store={store} perform={perform} open={item => setDialog({ type: 'campaign', item })} create={() => setDialog({ type: 'campaign' })} remove={item => remove('campaign', item)} status={saveStatus} handoff={handoff} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
                     <Route path="/automation"><Campaigns automation jobs={jobs} store={store} perform={perform} open={item => setDialog({ type: 'campaign', item })} create={() => setDialog({ type: 'campaign' })} remove={item => remove('campaign', item)} status={saveStatus} handoff={handoff} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
                    <Route path="/accounts"><Accounts store={store} open={item => setDialog({ type: 'account', item })} create={() => setDialog({ type: 'account' })} remove={item => remove('account', item)} handoff={handoff} /></Route>
@@ -225,6 +248,8 @@ function Sidebar({ active, open, close }: { active: string; open: boolean; close
     </div>
     <div className="nav-label">Your workspace</div>
     {nav.map(({ href, title, icon: Icon }) => <Link key={href} href={href} onClick={close} className={`nav-link ${active === href ? 'active' : ''}`} data-testid={`link-nav-${title.toLowerCase()}`}><Icon /><span>{title}</span></Link>)}
+    <div className="nav-label" style={{ marginTop: 10 }}>Growth tools</div>
+    {[{ href: '/extractors', title: 'B2B & Data Extractors', icon: Database }, { href: '/multi-platform', title: 'Telegram & Facebook', icon: Send }, { href: '/email', title: 'Email Marketing', icon: Mail }].map(({ href, title, icon: Icon }) => <Link key={href} href={href} onClick={close} className={`nav-link ${active === href ? 'active' : ''}`} data-testid={`link-nav-${href.slice(1)}`}><Icon /><span>{title}</span></Link>)}
     <Link href="/whatsapp" onClick={close} className={`nav-link ${active === '/whatsapp' ? 'active' : ''}`} data-testid="link-nav-whatsapp"><MessageCircle /><span>WhatsApp Marketing</span></Link>
     <div className="nav-label" style={{ marginTop: 18 }}>Preferences</div>
     <Link href="/settings" onClick={close} className={`nav-link ${active === '/settings' ? 'active' : ''}`} data-testid="link-nav-settings"><Settings2 /><span>Settings & License</span></Link>

@@ -5,6 +5,142 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export interface AdvancedApproval {
+  approved: boolean;
+}
+
+export type TelegramAuthInputAction = typeof TelegramAuthInputAction[keyof typeof TelegramAuthInputAction];
+
+
+export const TelegramAuthInputAction = {
+  start: 'start',
+  code: 'code',
+  password: 'password',
+} as const;
+
+export interface TelegramAuthInput {
+  action: TelegramAuthInputAction;
+  /** @maxLength 300 */
+  value: string;
+}
+
+export interface AdvancedConnectionInput {
+  host?: string;
+  port?: number;
+  secure?: boolean;
+  username?: string;
+  password?: string;
+  from?: string;
+  apiId?: number;
+  apiHash?: string;
+}
+
+export type AdvancedTaskInputKind = typeof AdvancedTaskInputKind[keyof typeof AdvancedTaskInputKind];
+
+
+export const AdvancedTaskInputKind = {
+  maps: 'maps',
+  b2b: 'b2b',
+  'verify-email': 'verify-email',
+  'email-send': 'email-send',
+  'telegram-send': 'telegram-send',
+  'telegram-members': 'telegram-members',
+  'telegram-channel': 'telegram-channel',
+  'facebook-search': 'facebook-search',
+  'facebook-join': 'facebook-join',
+  'facebook-post': 'facebook-post',
+  'instagram-post': 'instagram-post',
+} as const;
+
+export interface AdvancedTaskInput {
+  kind: AdvancedTaskInputKind;
+  /** @maxLength 150 */
+  name: string;
+  /** @maxLength 15000 */
+  source?: string;
+  /** @maxLength 10000 */
+  message?: string;
+  /** @maxLength 200 */
+  subject?: string;
+  /** @maxLength 300 */
+  query?: string;
+  /**
+     * @minimum 1
+     * @maximum 200
+     */
+  limit?: number;
+  accountId?: string;
+  mediaId?: string;
+  scheduledAt?: string;
+  approved?: boolean;
+}
+
+export type AdvancedTaskStatus = typeof AdvancedTaskStatus[keyof typeof AdvancedTaskStatus];
+
+
+export const AdvancedTaskStatus = {
+  Draft: 'Draft',
+  Scheduled: 'Scheduled',
+  Queued: 'Queued',
+  Running: 'Running',
+  Completed: 'Completed',
+  Cancelled: 'Cancelled',
+  Failed: 'Failed',
+  Needs_review: 'Needs review',
+} as const;
+
+export type AdvancedTask = AdvancedTaskInput & ({
+  id: string;
+  status: AdvancedTaskStatus;
+  progress: number;
+  completedCount: number;
+  totalCount: number;
+  phase: string;
+  createdAt: string;
+  error: string;
+  /** @nullable */
+  nextActionAt?: string | null;
+});
+
+export interface AdvancedResult {
+  userId?: string;
+  username?: string;
+  id: string;
+  taskId: string;
+  kind: string;
+  name: string;
+  phone: string;
+  email: string;
+  address: string;
+  website: string;
+  status: string;
+  reason: string;
+  createdAt: string;
+}
+
+export type AdvancedConnectionId = typeof AdvancedConnectionId[keyof typeof AdvancedConnectionId];
+
+
+export const AdvancedConnectionId = {
+  smtp: 'smtp',
+  telegram: 'telegram',
+} as const;
+
+export interface AdvancedConnection {
+  id: AdvancedConnectionId;
+  configured: boolean;
+  connected: boolean;
+  label: string;
+  stage: string;
+  error: string;
+}
+
+export interface AdvancedSuite {
+  tasks: AdvancedTask[];
+  results: AdvancedResult[];
+  connections: AdvancedConnection[];
+}
+
 export type WaSessionInputAction = typeof WaSessionInputAction[keyof typeof WaSessionInputAction];
 
 
@@ -470,6 +606,7 @@ export type SimulatorStateStore = {
 };
 
 export interface SimulatorState {
+  advanced?: AdvancedSuite;
   automationAvailable?: boolean;
   waSuite?: WaSuite;
   store: SimulatorStateStore;

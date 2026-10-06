@@ -20,6 +20,9 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AdvancedApproval,
+  AdvancedConnectionInput,
+  AdvancedTaskInput,
   BrowserTaskInput,
   ChatbotRuleInput,
   CrmThreadInput,
@@ -29,6 +32,7 @@ import type {
   SimulatorRecord,
   SimulatorSettings,
   SimulatorUploadInput,
+  TelegramAuthInput,
   WaFilterInput,
   WaSessionInput,
   WorkspaceStateResponse
@@ -60,6 +64,691 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getCreateAdvancedTaskUrl = () => {
+
+
+
+
+  return `/api/socialomni/advanced/tasks`
+}
+
+export const createAdvancedTask = async (advancedTaskInput: AdvancedTaskInput, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<WorkspaceStateResponse>(getCreateAdvancedTaskUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(advancedTaskInput)
+  }
+);}
+
+
+
+
+
+export const getCreateAdvancedTaskMutationKey = () => ['createAdvancedTask'] as const;
+
+export const getCreateAdvancedTaskMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAdvancedTask>>, TError,CreateAdvancedTaskMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createAdvancedTask>>, TError,CreateAdvancedTaskMutationVariables, TContext> => {
+
+const mutationKey = getCreateAdvancedTaskMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createAdvancedTask>>, CreateAdvancedTaskMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  createAdvancedTask(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateAdvancedTaskMutationResult = NonNullable<Awaited<ReturnType<typeof createAdvancedTask>>>
+    export type CreateAdvancedTaskMutationBody = BodyType<AdvancedTaskInput>
+    export type CreateAdvancedTaskMutationError = ErrorType<unknown>
+    export type CreateAdvancedTaskMutationVariables = {data: BodyType<AdvancedTaskInput>}
+
+    export const useCreateAdvancedTask = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAdvancedTask>>, TError,CreateAdvancedTaskMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createAdvancedTask>>,
+        TError,
+        CreateAdvancedTaskMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCreateAdvancedTaskMutationOptions(options));
+    }
+
+export const getEditAdvancedTaskUrl = (id: string,) => {
+
+
+
+
+  return `/api/socialomni/advanced/tasks/${id}`
+}
+
+export const editAdvancedTask = async (id: string,
+    advancedTaskInput: AdvancedTaskInput, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<WorkspaceStateResponse>(getEditAdvancedTaskUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(advancedTaskInput)
+  }
+);}
+
+
+
+
+
+export const getEditAdvancedTaskMutationKey = () => ['editAdvancedTask'] as const;
+
+export const getEditAdvancedTaskMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof editAdvancedTask>>, TError,EditAdvancedTaskMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof editAdvancedTask>>, TError,EditAdvancedTaskMutationVariables, TContext> => {
+
+const mutationKey = getEditAdvancedTaskMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof editAdvancedTask>>, EditAdvancedTaskMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  editAdvancedTask(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type EditAdvancedTaskMutationResult = NonNullable<Awaited<ReturnType<typeof editAdvancedTask>>>
+    export type EditAdvancedTaskMutationBody = BodyType<AdvancedTaskInput>
+    export type EditAdvancedTaskMutationError = ErrorType<unknown>
+    export type EditAdvancedTaskMutationVariables = {id: string;data: BodyType<AdvancedTaskInput>}
+
+    export const useEditAdvancedTask = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof editAdvancedTask>>, TError,EditAdvancedTaskMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof editAdvancedTask>>,
+        TError,
+        EditAdvancedTaskMutationVariables,
+        TContext
+      > => {
+      return useMutation(getEditAdvancedTaskMutationOptions(options));
+    }
+
+export const getDeleteAdvancedTaskUrl = (id: string,) => {
+
+
+
+
+  return `/api/socialomni/advanced/tasks/${id}`
+}
+
+export const deleteAdvancedTask = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+  return customFetch<WorkspaceStateResponse>(getDeleteAdvancedTaskUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteAdvancedTaskMutationKey = () => ['deleteAdvancedTask'] as const;
+
+export const getDeleteAdvancedTaskMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdvancedTask>>, TError,DeleteAdvancedTaskMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdvancedTask>>, TError,DeleteAdvancedTaskMutationVariables, TContext> => {
+
+const mutationKey = getDeleteAdvancedTaskMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdvancedTask>>, DeleteAdvancedTaskMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteAdvancedTask(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteAdvancedTaskMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdvancedTask>>>
+
+    export type DeleteAdvancedTaskMutationError = ErrorType<unknown>
+    export type DeleteAdvancedTaskMutationVariables = {id: string}
+
+    export const useDeleteAdvancedTask = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdvancedTask>>, TError,DeleteAdvancedTaskMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteAdvancedTask>>,
+        TError,
+        DeleteAdvancedTaskMutationVariables,
+        TContext
+      > => {
+      return useMutation(getDeleteAdvancedTaskMutationOptions(options));
+    }
+
+export const getRunAdvancedTaskUrl = (id: string,) => {
+
+
+
+
+  return `/api/socialomni/advanced/tasks/${id}/run`
+}
+
+export const runAdvancedTask = async (id: string,
+    advancedApproval: AdvancedApproval, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<WorkspaceStateResponse>(getRunAdvancedTaskUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(advancedApproval)
+  }
+);}
+
+
+
+
+
+export const getRunAdvancedTaskMutationKey = () => ['runAdvancedTask'] as const;
+
+export const getRunAdvancedTaskMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof runAdvancedTask>>, TError,RunAdvancedTaskMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof runAdvancedTask>>, TError,RunAdvancedTaskMutationVariables, TContext> => {
+
+const mutationKey = getRunAdvancedTaskMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof runAdvancedTask>>, RunAdvancedTaskMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  runAdvancedTask(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RunAdvancedTaskMutationResult = NonNullable<Awaited<ReturnType<typeof runAdvancedTask>>>
+    export type RunAdvancedTaskMutationBody = BodyType<AdvancedApproval>
+    export type RunAdvancedTaskMutationError = ErrorType<unknown>
+    export type RunAdvancedTaskMutationVariables = {id: string;data: BodyType<AdvancedApproval>}
+
+    export const useRunAdvancedTask = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof runAdvancedTask>>, TError,RunAdvancedTaskMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof runAdvancedTask>>,
+        TError,
+        RunAdvancedTaskMutationVariables,
+        TContext
+      > => {
+      return useMutation(getRunAdvancedTaskMutationOptions(options));
+    }
+
+export const getCancelAdvancedTaskUrl = (id: string,) => {
+
+
+
+
+  return `/api/socialomni/advanced/tasks/${id}/cancel`
+}
+
+export const cancelAdvancedTask = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+  return customFetch<WorkspaceStateResponse>(getCancelAdvancedTaskUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getCancelAdvancedTaskMutationKey = () => ['cancelAdvancedTask'] as const;
+
+export const getCancelAdvancedTaskMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelAdvancedTask>>, TError,CancelAdvancedTaskMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof cancelAdvancedTask>>, TError,CancelAdvancedTaskMutationVariables, TContext> => {
+
+const mutationKey = getCancelAdvancedTaskMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelAdvancedTask>>, CancelAdvancedTaskMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  cancelAdvancedTask(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CancelAdvancedTaskMutationResult = NonNullable<Awaited<ReturnType<typeof cancelAdvancedTask>>>
+
+    export type CancelAdvancedTaskMutationError = ErrorType<unknown>
+    export type CancelAdvancedTaskMutationVariables = {id: string}
+
+    export const useCancelAdvancedTask = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelAdvancedTask>>, TError,CancelAdvancedTaskMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof cancelAdvancedTask>>,
+        TError,
+        CancelAdvancedTaskMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCancelAdvancedTaskMutationOptions(options));
+    }
+
+export const getSaveAdvancedConnectionUrl = (id: string,) => {
+
+
+
+
+  return `/api/socialomni/advanced/connections/${id}`
+}
+
+export const saveAdvancedConnection = async (id: string,
+    advancedConnectionInput: AdvancedConnectionInput, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<WorkspaceStateResponse>(getSaveAdvancedConnectionUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(advancedConnectionInput)
+  }
+);}
+
+
+
+
+
+export const getSaveAdvancedConnectionMutationKey = () => ['saveAdvancedConnection'] as const;
+
+export const getSaveAdvancedConnectionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveAdvancedConnection>>, TError,SaveAdvancedConnectionMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof saveAdvancedConnection>>, TError,SaveAdvancedConnectionMutationVariables, TContext> => {
+
+const mutationKey = getSaveAdvancedConnectionMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof saveAdvancedConnection>>, SaveAdvancedConnectionMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  saveAdvancedConnection(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SaveAdvancedConnectionMutationResult = NonNullable<Awaited<ReturnType<typeof saveAdvancedConnection>>>
+    export type SaveAdvancedConnectionMutationBody = BodyType<AdvancedConnectionInput>
+    export type SaveAdvancedConnectionMutationError = ErrorType<unknown>
+    export type SaveAdvancedConnectionMutationVariables = {id: string;data: BodyType<AdvancedConnectionInput>}
+
+    export const useSaveAdvancedConnection = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveAdvancedConnection>>, TError,SaveAdvancedConnectionMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof saveAdvancedConnection>>,
+        TError,
+        SaveAdvancedConnectionMutationVariables,
+        TContext
+      > => {
+      return useMutation(getSaveAdvancedConnectionMutationOptions(options));
+    }
+
+export const getDeleteAdvancedConnectionUrl = (id: string,) => {
+
+
+
+
+  return `/api/socialomni/advanced/connections/${id}`
+}
+
+export const deleteAdvancedConnection = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+  return customFetch<WorkspaceStateResponse>(getDeleteAdvancedConnectionUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteAdvancedConnectionMutationKey = () => ['deleteAdvancedConnection'] as const;
+
+export const getDeleteAdvancedConnectionMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdvancedConnection>>, TError,DeleteAdvancedConnectionMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdvancedConnection>>, TError,DeleteAdvancedConnectionMutationVariables, TContext> => {
+
+const mutationKey = getDeleteAdvancedConnectionMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdvancedConnection>>, DeleteAdvancedConnectionMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteAdvancedConnection(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteAdvancedConnectionMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdvancedConnection>>>
+
+    export type DeleteAdvancedConnectionMutationError = ErrorType<unknown>
+    export type DeleteAdvancedConnectionMutationVariables = {id: string}
+
+    export const useDeleteAdvancedConnection = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdvancedConnection>>, TError,DeleteAdvancedConnectionMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteAdvancedConnection>>,
+        TError,
+        DeleteAdvancedConnectionMutationVariables,
+        TContext
+      > => {
+      return useMutation(getDeleteAdvancedConnectionMutationOptions(options));
+    }
+
+export const getAuthorizeTelegramUrl = () => {
+
+
+
+
+  return `/api/socialomni/advanced/telegram/auth`
+}
+
+export const authorizeTelegram = async (telegramAuthInput: TelegramAuthInput, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<WorkspaceStateResponse>(getAuthorizeTelegramUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(telegramAuthInput)
+  }
+);}
+
+
+
+
+
+export const getAuthorizeTelegramMutationKey = () => ['authorizeTelegram'] as const;
+
+export const getAuthorizeTelegramMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authorizeTelegram>>, TError,AuthorizeTelegramMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof authorizeTelegram>>, TError,AuthorizeTelegramMutationVariables, TContext> => {
+
+const mutationKey = getAuthorizeTelegramMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof authorizeTelegram>>, AuthorizeTelegramMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  authorizeTelegram(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AuthorizeTelegramMutationResult = NonNullable<Awaited<ReturnType<typeof authorizeTelegram>>>
+    export type AuthorizeTelegramMutationBody = BodyType<TelegramAuthInput>
+    export type AuthorizeTelegramMutationError = ErrorType<unknown>
+    export type AuthorizeTelegramMutationVariables = {data: BodyType<TelegramAuthInput>}
+
+    export const useAuthorizeTelegram = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof authorizeTelegram>>, TError,AuthorizeTelegramMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof authorizeTelegram>>,
+        TError,
+        AuthorizeTelegramMutationVariables,
+        TContext
+      > => {
+      return useMutation(getAuthorizeTelegramMutationOptions(options));
+    }
+
+export const getDeleteAdvancedResultUrl = (id: string,) => {
+
+
+
+
+  return `/api/socialomni/advanced/results/${id}`
+}
+
+export const deleteAdvancedResult = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+  return customFetch<WorkspaceStateResponse>(getDeleteAdvancedResultUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteAdvancedResultMutationKey = () => ['deleteAdvancedResult'] as const;
+
+export const getDeleteAdvancedResultMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdvancedResult>>, TError,DeleteAdvancedResultMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdvancedResult>>, TError,DeleteAdvancedResultMutationVariables, TContext> => {
+
+const mutationKey = getDeleteAdvancedResultMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdvancedResult>>, DeleteAdvancedResultMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteAdvancedResult(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteAdvancedResultMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdvancedResult>>>
+
+    export type DeleteAdvancedResultMutationError = ErrorType<unknown>
+    export type DeleteAdvancedResultMutationVariables = {id: string}
+
+    export const useDeleteAdvancedResult = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdvancedResult>>, TError,DeleteAdvancedResultMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteAdvancedResult>>,
+        TError,
+        DeleteAdvancedResultMutationVariables,
+        TContext
+      > => {
+      return useMutation(getDeleteAdvancedResultMutationOptions(options));
+    }
 
 export const getSaveWaFilterUrl = () => {
 

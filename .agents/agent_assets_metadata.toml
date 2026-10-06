@@ -1,0 +1,16 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "mjPJi_ug67ZSqQmPHssie"
+uri = "file://artifacts/social-omni-desktop/public/downloads/social-najhin-desktop.zip"
+type = "unspecified"
+title = "Social Najhin — upgraded desktop package"
+description = "Standalone Electron app with prebuilt dashboard, advanced modules, local workers and development source. Extract, run npm install, then npm start. No workspace databases or credentials included."
+logical_id = "0cadc9f6-219b-4082-ace0-dede9872b8ca"
+content_hash = "sha256:1e412f1e51e01dfc53861c3168ecac7ee3a2bccb80a5d1641c4dbecd468d8931"
+size = 736196
+mtime_ms = 1791319327076
+storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:0a0a899b-e4f4-4dc0-ade7-a053f07deac3/0cadc9f6-219b-4082-ace0-dede9872b8ca/384a0338-ccdf-4fd3-9379-57d4e1f2174b"
+storage_version_token = "1791319445600750"
+content_type = "application/octet-stream"

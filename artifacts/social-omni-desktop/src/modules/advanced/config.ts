@@ -1,0 +1,27 @@
+import type { AdvancedTaskInput } from '@workspace/api-client-react';
+
+export type Kind = AdvancedTaskInput['kind'];
+export type ModuleId = 'extractors' | 'multi-platform' | 'email';
+export interface KindSpec { kind: Kind; label: string; hint: string; source?: string; sourcePlaceholder?: string; query?: string; limit?: boolean; message?: string; subject?: boolean; account?: 'Facebook' | 'Instagram'; media?: boolean; consent: string }
+export const KINDS: Record<Kind, KindSpec> = {
+  maps: { kind: 'maps', label: 'Google Maps search', hint: 'Business listings matching a search.', query: 'dentists in Boston', limit: true, consent: 'I am allowed to collect this business information for B2B outreach.' },
+  b2b: { kind: 'b2b', label: 'B2B site extractor', hint: 'Reads public facts from business websites. Missing fields stay blank, never guessed.', source: 'Business website URLs, one per line', sourcePlaceholder: 'https://example-dental.com', consent: 'I am allowed to read these public business websites.' },
+  'verify-email': { kind: 'verify-email', label: 'Email format and domain check', hint: 'Checks syntax and MX records only. A ready domain does not mean the mailbox exists. Mailbox status stays Unknown.', source: 'Email addresses, one per line', sourcePlaceholder: 'name@company.com', consent: 'I am authorized to check these addresses.' },
+  'email-send': { kind: 'email-send', label: 'Email campaign', hint: 'Plain text only. Use {{name}} and {{email}}; names come from local Contacts.', source: 'Consented recipient emails, one per line', sourcePlaceholder: 'client@company.com', message: 'Plain text message', subject: true, consent: 'Every recipient gave consent to receive this email.' },
+  'telegram-send': { kind: 'telegram-send', label: 'Telegram direct messages', hint: 'Usernames or numeric IDs of people who agreed to hear from you.', source: 'Usernames or IDs, one per line', sourcePlaceholder: '@username', message: 'Message', consent: 'Every recipient consented to this message.' },
+  'telegram-members': { kind: 'telegram-members', label: 'Telegram member export', hint: 'ONE group or channel you administer. Exports user IDs, usernames and names only; no emails or phones, and it is never an outreach list.', source: 'One group or channel identifier', sourcePlaceholder: '@my_group', limit: true, consent: 'I am authorized to administer this group or channel.' },
+  'telegram-channel': { kind: 'telegram-channel', label: 'Telegram channel / group post', hint: 'Posts to channels or groups you are allowed to post in.', source: 'Channel or group identifiers, one per line', sourcePlaceholder: '@my_channel', message: 'Post text', consent: 'I have permission to post in these channels or groups.' },
+  'facebook-search': { kind: 'facebook-search', label: 'Facebook group search', hint: 'Keyword search with a chosen Facebook account.', query: 'local bakery owners', limit: true, account: 'Facebook', consent: 'I will review results before joining or posting.' },
+  'facebook-join': { kind: 'facebook-join', label: 'Facebook group join', hint: 'Exact group URLs; requests may need admin approval.', source: 'www.facebook.com/groups/<id> URLs, one per line', sourcePlaceholder: 'https://www.facebook.com/groups/123456', account: 'Facebook', consent: 'I choose to request joining these groups.' },
+  'facebook-post': { kind: 'facebook-post', label: 'Facebook group post', hint: 'Posts only where group rules and admins allow it.', source: 'www.facebook.com/groups/<id> URLs, one per line', sourcePlaceholder: 'https://www.facebook.com/groups/123456', message: 'Post text', account: 'Facebook', consent: 'I have permission to post in these groups.' },
+  'instagram-post': { kind: 'instagram-post', label: 'Instagram feed image', hint: 'Your own feed, one JPEG or PNG from saved media. No group search on Instagram.', message: 'Caption', account: 'Instagram', media: true, consent: 'I own this account and this image.' },
+};
+export const MODULES: Record<ModuleId, { eyebrow: string; title: string; sub: string; kinds: Kind[]; results: Kind[] }> = {
+  extractors: { eyebrow: 'Data tools', title: 'B2B & Data Extractors', sub: 'Collect business facts and check email syntax from sources you may use.', kinds: ['maps', 'b2b', 'verify-email'], results: ['maps', 'b2b', 'verify-email'] },
+  'multi-platform': { eyebrow: 'Multi-platform', title: 'Telegram & Facebook Automation', sub: 'Approved, paced actions through your own accounts. Nothing sends without your explicit approval.', kinds: ['telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post'], results: ['telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post'] },
+  email: { eyebrow: 'Email', title: 'Email Marketing', sub: 'Plain-text campaigns to people who agreed to hear from you, through your own SMTP server.', kinds: ['email-send', 'verify-email'], results: ['email-send', 'verify-email'] },
+};
+export const NATIVE_NOTE = 'Live runs need the downloaded Social Najhin desktop app and are disabled in this hosted preview. Drafts still save here.';
+export const msg = (e: unknown) => (e instanceof Error ? e.message : 'Request failed.');
+export const when = (v?: string | null) => { const d = v ? new Date(v) : null; return d && !Number.isNaN(d.getTime()) ? d.toLocaleString('en', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '—'; };
+export const ACTIVE = ['Queued', 'Running', 'Scheduled'];

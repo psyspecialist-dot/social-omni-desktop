@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, shell, safeStorage } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
@@ -118,6 +118,8 @@ async function startApi() {
   apiService = createService({
     express, dbPath: path.join(app.getPath('userData'), 'socialomni-workspace.sqlite'), secret: apiSecret,
     automation: { chromium: require('playwright').chromium, profileDir: path.join(app.getPath('userData'), 'browser-profiles') },
+    secureStore: {available:()=>safeStorage.isEncryptionAvailable() && (process.platform!=='linux' || safeStorage.getSelectedStorageBackend()!=='basic_text'),
+      encrypt:value=>safeStorage.encryptString(value),decrypt:value=>safeStorage.decryptString(value)},
   });
   const localApp = express();
   localApp.disable('x-powered-by');
@@ -150,7 +152,10 @@ function createWindow() {
       webSecurity: true,
     },
   });
-  window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  window.webContents.setWindowOpenHandler(({url}) => {
+    if (['https://my.telegram.org','https://my.telegram.org/'].includes(url)) void shell.openExternal('https://my.telegram.org/');
+    return {action:'deny'};
+  });
   window.webContents.on('will-navigate', (event, destination) => {
     if (destination.split('#')[0] !== rendererUrl) event.preventDefault();
   });

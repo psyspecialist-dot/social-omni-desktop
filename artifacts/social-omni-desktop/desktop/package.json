@@ -12,6 +12,9 @@
     "check": "node --check main.js && node --check preload.js"
   },
   "dependencies": {
+    "cheerio": "^1.2.0",
+    "nodemailer": "^10.0.15",
+    "telegram": "^2.26.22",
     "express": "^5.2.1",
     "playwright": "^1.58.0",
     "sql.js": "^1.13.0"

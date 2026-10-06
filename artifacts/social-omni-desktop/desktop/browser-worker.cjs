@@ -99,6 +99,22 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
         if (!groups.length) throw new Error('No readable group results. Review the browser manually; no joins or posts were attempted.');
         update(workspace, jobId, j => { j.discoveredGroups = groups; }, `Found ${groups.length} groups for review. Nothing joined or posted.`, 'success');
       }
+      if (job.action === 'join') {
+        for (const target of job.targets) {
+          await act(`Opening approved group ${target.name}…`,()=>page.goto(groupUrl(target.name),{waitUntil:'domcontentloaded'}));
+          if (groupUrl(page.url())!==groupUrl(target.name)) throw new Error('Facebook redirected away from the approved group.');
+          const join=page.getByRole('button',{name:/^Join group$/i}).first();
+          if(await join.isVisible()) await act(`Requesting group membership…`,()=>join.click());
+          await restriction();
+          const requested=await page.getByRole('button',{name:/cancel request/i}).first().isVisible().catch(()=>false);
+          const joined=await page.getByRole('button',{name:/^(joined|member)$/i}).first().isVisible().catch(()=>false);
+          update(workspace,jobId,j=>{
+            j.targets.find(t=>t.id===target.id).joinStatus=requested?'Requested':joined?'Joined':'Needs review';
+            j.completedCount++;j.progress=Math.round(j.completedCount/j.totalCount*100);
+          }, requested?'Membership requested; administrator approval may be required.':joined?'Membership detected.':'Membership outcome unclear; review manually.','warning');
+          if(!requested && !joined) throw new Error('Membership outcome unclear. No automatic retry.');
+        }
+      }
       if (job.action === 'send' || job.action === 'publish') {
         for (const target of job.targets) {
           guard();

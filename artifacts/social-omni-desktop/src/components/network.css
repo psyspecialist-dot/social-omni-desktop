@@ -1,0 +1,39 @@
+.nj-stage{position:relative;margin:0 0 26px;min-height:640px;border-radius:22px;overflow:hidden;background:radial-gradient(ellipse at 50% 50%,hsl(214 70% 12%) 0,hsl(222 50% 5%) 46%,#03060a 100%);border:1px solid hsl(214 60% 22%/.6);isolation:isolate}
+.nj-stage:before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,hsl(160 84% 40%/.14),transparent 38%);z-index:-1}
+.nj-lines{position:absolute;inset:0;width:100%;height:100%}
+.nj-line{fill:none;stroke:hsl(214 80% 55%/.28);stroke-width:1.2;vector-effect:non-scaling-stroke;transition:stroke .2s}
+.nj-line.hot{stroke:hsl(160 84% 50%/.9);stroke-width:2}
+.nj-flow{fill:none;stroke:hsl(160 84% 50%/.85);stroke-width:1.6;stroke-linecap:round;vector-effect:non-scaling-stroke;stroke-dasharray:1.5 16;animation:nj-flow 3.4s linear infinite;opacity:.55}
+.nj-flow.tone-review{stroke:hsl(43 92% 56%)}.nj-flow.tone-fail{stroke:hsl(0 70% 58%)}.nj-flow.tone-live{stroke:hsl(160 84% 55%);opacity:1}
+.nj-flow.hot{opacity:1;stroke:hsl(214 95% 68%)}
+@keyframes nj-flow{to{stroke-dashoffset:-35}}
+.nj-hub{position:absolute;left:50%;top:50%;width:208px;height:208px;transform:translate(-50%,-50%);display:grid;place-items:center}
+.nj-core{position:relative;width:176px;height:176px;border-radius:50%;display:grid;place-content:center;text-align:center;gap:2px;padding:14px;background:radial-gradient(circle at 35% 28%,hsl(214 90% 52%),hsl(222 60% 12%) 62%,#03060a);box-shadow:0 0 60px hsl(214 95% 55%/.45),0 0 130px hsl(160 84% 40%/.25),inset 0 0 28px hsl(160 84% 50%/.35);border:1px solid hsl(160 84% 50%/.55);animation:nj-breathe 5s ease-in-out infinite}
+.nj-core h2{margin:0;font:800 22px/1.05 var(--app-font-sans);letter-spacing:-.8px;color:#f2f7ff}
+.nj-core small{font:9px var(--app-font-mono);letter-spacing:.08em;text-transform:uppercase;color:hsl(160 70% 70%);margin-top:6px}
+.nj-mono{font:500 11px var(--app-font-mono);color:hsl(160 84% 60%);letter-spacing:.2em}
+.nj-ring{position:absolute;border-radius:50%;border:1px dashed hsl(214 80% 60%/.4)}
+.nj-ring.r1{inset:-14px;animation:nj-spin 40s linear infinite}.nj-ring.r2{inset:-30px;border-style:solid;border-color:hsl(160 84% 45%/.22);animation:nj-spin 70s linear infinite reverse}.nj-ring.r3{inset:-52px;border-color:hsl(214 80% 60%/.14)}
+@keyframes nj-spin{to{transform:rotate(360deg)}}
+@keyframes nj-breathe{50%{transform:scale(1.035)}}
+.nj-nodes{list-style:none;margin:0;padding:0}
+.nj-li{position:absolute;transform:translate(-50%,-50%)}
+.nj-node{display:flex;align-items:center;gap:9px;width:172px;padding:9px 11px;border-radius:13px;text-decoration:none;color:#e8f0fb;background:hsl(222 45% 7%/.92);border:1px solid hsl(214 60% 30%/.6);backdrop-filter:blur(6px);position:relative;transition:transform .2s,border-color .2s,box-shadow .2s}
+.nj-node:hover,.nj-node:focus-visible{transform:translateY(-3px) scale(1.04);border-color:hsl(160 84% 50%);box-shadow:0 8px 28px hsl(160 84% 40%/.3);outline:none}
+.nj-node:focus-visible{outline:2px solid hsl(214 95% 68%);outline-offset:3px}
+.nj-ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex-shrink:0;color:hsl(160 84% 58%);background:hsl(214 70% 20%/.55)}
+.nj-txt{min-width:0;display:flex;flex-direction:column}
+.nj-txt b{font-size:11.5px;font-weight:700;line-height:1.2}
+.nj-txt em{font:normal 10px var(--app-font-mono);color:hsl(215 20% 68%);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nj-dot{position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:hsl(160 84% 50%)}
+.tone-review .nj-dot{background:hsl(43 92% 56%)}.tone-fail .nj-dot{background:hsl(0 70% 58%)}
+.nj-node.tone-live .nj-dot{animation:nj-pulse 1.6s ease-in-out infinite}
+@keyframes nj-pulse{50%{opacity:.35}}
+@media(max-width:1100px){.nj-node{width:150px;padding:8px}.nj-ico{width:26px;height:26px}}
+@media(max-width:860px){
+ .nj-stage{min-height:0;padding:26px 14px 18px}.nj-lines{display:none}
+ .nj-hub{position:relative;left:auto;top:auto;transform:none;margin:8px auto 28px}
+ .nj-nodes{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:9px}
+ .nj-li{position:static;transform:none}.nj-node{width:auto}
+}
+@media(prefers-reduced-motion:reduce){.nj-flow,.nj-ring,.nj-core,.nj-dot{animation:none!important}.nj-node{transition:none}.nj-node:hover,.nj-node:focus-visible{transform:none}}

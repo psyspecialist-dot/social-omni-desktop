@@ -11,6 +11,83 @@ tags:
   - name: health
     description: Health operations
 paths:
+  /socialomni/advanced/tasks:
+    post:
+      operationId: createAdvancedTask
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/AdvancedTaskInput"}
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/advanced/tasks/{id}:
+    patch:
+      operationId: editAdvancedTask
+      parameters: [{$ref: "#/components/parameters/Workspace"}, {$ref: "#/components/parameters/RecordId"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/AdvancedTaskInput"}
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+    delete:
+      operationId: deleteAdvancedTask
+      parameters: [{$ref: "#/components/parameters/Workspace"}, {$ref: "#/components/parameters/RecordId"}]
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/advanced/tasks/{id}/run:
+    post:
+      operationId: runAdvancedTask
+      parameters: [{$ref: "#/components/parameters/Workspace"}, {$ref: "#/components/parameters/RecordId"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/AdvancedApproval"}
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/advanced/tasks/{id}/cancel:
+    post:
+      operationId: cancelAdvancedTask
+      parameters: [{$ref: "#/components/parameters/Workspace"}, {$ref: "#/components/parameters/RecordId"}]
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/advanced/connections/{id}:
+    put:
+      operationId: saveAdvancedConnection
+      parameters: [{$ref: "#/components/parameters/Workspace"}, {$ref: "#/components/parameters/RecordId"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/AdvancedConnectionInput"}
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+    delete:
+      operationId: deleteAdvancedConnection
+      parameters: [{$ref: "#/components/parameters/Workspace"}, {$ref: "#/components/parameters/RecordId"}]
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/advanced/telegram/auth:
+    post:
+      operationId: authorizeTelegram
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/TelegramAuthInput"}
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/advanced/results/{id}:
+    delete:
+      operationId: deleteAdvancedResult
+      parameters: [{$ref: "#/components/parameters/Workspace"}, {$ref: "#/components/parameters/RecordId"}]
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
   /socialomni/suite/filter:
     put:
       operationId: saveWaFilter
@@ -292,6 +369,92 @@ components:
         application/json:
           schema: {$ref: "#/components/schemas/SimulatorState"}
   schemas:
+    AdvancedApproval:
+      type: object
+      required: [approved]
+      properties:
+        approved: {type: boolean}
+    TelegramAuthInput:
+      type: object
+      required: [action, value]
+      properties:
+        action: {type: string, enum: [start, code, password]}
+        value: {type: string, maxLength: 300}
+    AdvancedConnectionInput:
+      type: object
+      properties:
+        host: {type: string}
+        port: {type: integer}
+        secure: {type: boolean}
+        username: {type: string}
+        password: {type: string}
+        from: {type: string}
+        apiId: {type: integer}
+        apiHash: {type: string}
+    AdvancedTaskInput:
+      type: object
+      required: [kind, name]
+      properties:
+        kind: {type: string, enum: [maps, b2b, verify-email, email-send, telegram-send, telegram-members, telegram-channel, facebook-search, facebook-join, facebook-post, instagram-post]}
+        name: {type: string, maxLength: 150}
+        source: {type: string, maxLength: 15000}
+        message: {type: string, maxLength: 10000}
+        subject: {type: string, maxLength: 200}
+        query: {type: string, maxLength: 300}
+        limit: {type: integer, minimum: 1, maximum: 200}
+        accountId: {type: string}
+        mediaId: {type: string}
+        scheduledAt: {type: string}
+        approved: {type: boolean}
+    AdvancedTask:
+      allOf:
+        - {$ref: "#/components/schemas/AdvancedTaskInput"}
+        - type: object
+          required: [id, status, progress, completedCount, totalCount, phase, createdAt, error]
+          properties:
+            id: {type: string}
+            status: {type: string, enum: [Draft, Scheduled, Queued, Running, Completed, Cancelled, Failed, Needs review]}
+            progress: {type: integer}
+            completedCount: {type: integer}
+            totalCount: {type: integer}
+            phase: {type: string}
+            createdAt: {type: string}
+            error: {type: string}
+            nextActionAt: {type: [string, "null"]}
+    AdvancedResult:
+      type: object
+      required: [id, taskId, kind, name, phone, email, address, website, status, reason, createdAt]
+      properties:
+        userId: {type: string}
+        username: {type: string}
+        id: {type: string}
+        taskId: {type: string}
+        kind: {type: string}
+        name: {type: string}
+        phone: {type: string}
+        email: {type: string}
+        address: {type: string}
+        website: {type: string}
+        status: {type: string}
+        reason: {type: string}
+        createdAt: {type: string}
+    AdvancedConnection:
+      type: object
+      required: [id, configured, connected, label, stage, error]
+      properties:
+        id: {type: string, enum: [smtp, telegram]}
+        configured: {type: boolean}
+        connected: {type: boolean}
+        label: {type: string}
+        stage: {type: string}
+        error: {type: string}
+    AdvancedSuite:
+      type: object
+      required: [tasks, results, connections]
+      properties:
+        tasks: {type: array, items: {$ref: "#/components/schemas/AdvancedTask"}}
+        results: {type: array, items: {$ref: "#/components/schemas/AdvancedResult"}}
+        connections: {type: array, items: {$ref: "#/components/schemas/AdvancedConnection"}}
     WaSessionInput:
       type: object
       required: [action, accountId, approved]
@@ -518,6 +681,7 @@ components:
       type: object
       required: [store, settings, jobs, initialized, media, leads, analytics]
       properties:
+        advanced: {$ref: "#/components/schemas/AdvancedSuite"}
         automationAvailable: {type: boolean}
         waSuite: {$ref: "#/components/schemas/WaSuite"}
         store:

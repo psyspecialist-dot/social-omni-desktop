@@ -6,6 +6,16 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './advancedApproval';
+export * from './advancedConnection';
+export * from './advancedConnectionId';
+export * from './advancedConnectionInput';
+export * from './advancedResult';
+export * from './advancedSuite';
+export * from './advancedTask';
+export * from './advancedTaskInput';
+export * from './advancedTaskInputKind';
+export * from './advancedTaskStatus';
 export * from './browserTaskInput';
 export * from './browserTaskInputAction';
 export * from './chatbotRule';
@@ -48,6 +58,8 @@ export * from './simulatorTargetPostStatus';
 export * from './simulatorTargetSendStatus';
 export * from './simulatorUploadInput';
 export * from './simulatorUploadInputMime';
+export * from './telegramAuthInput';
+export * from './telegramAuthInputAction';
 export * from './waFilterInput';
 export * from './waFilterResult';
 export * from './waFilterResultStatus';

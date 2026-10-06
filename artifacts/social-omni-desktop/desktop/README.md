@@ -42,6 +42,62 @@ Privacy & Security. Do not disable macOS security protections.
 
 ## Package contents
 
+## New advanced modules
+
+The main screen includes the interactive Social Najhin node network. Its nodes
+open the existing WhatsApp tools and the three new module pages:
+
+- **B2B & Data Extractors:** visible-browser Google Maps business research and
+  public HTTPS business-site extraction. Names, phones, addresses and websites
+  come from observed listings/site facts; unavailable fields remain blank.
+- **Telegram & Facebook:** Telegram personal-account sign-in, consented direct
+  messages, member-directory exports from groups/channels you administer, and
+  authorized channel/group posting. Facebook supports group search, membership
+  requests and approved group posts. Instagram supports an image on your own
+  feed; Instagram does not have Facebook-style searchable groups.
+- **Email Marketing:** your SMTP server (465/TLS or 587/required STARTTLS),
+  plain-text bulk campaigns with `{{name}}` / `{{email}}` substitutions,
+  and address-format/mail-domain checks. CSV imports use an Email header or
+  a single column. Invalid verification rows are omitted from clean exports;
+  inconclusive rows remain explicitly Unknown.
+
+Results export directly to CSV or Excel. Telegram member exports include user
+ID and username columns, not hidden phone/email data or presumed consent.
+
+### Setup and honest outcomes
+
+In the downloaded desktop app, open Email Marketing and save/test your SMTP
+connection. For Telegram, obtain your own api_id/api_hash at my.telegram.org,
+save them in the connection panel, then enter your phone, login code and 2FA
+password if requested. No pre-generated session string is required.
+
+Credentials and Telegram sessions are encrypted using the operating system
+credential facility and stored separately from workspace responses. Saving
+credentials is refused if native encryption is unavailable. Neither passwords,
+API hashes nor Telegram sessions belong in list imports or task descriptions.
+Browser-based modules open a visible browser for manual sign-in and retain a
+private local browser profile.
+
+Live task execution is desktop-only. The hosted preview permits draft editing
+and result inspection, not account sign-in, sending or live extraction. Approve
+each run or schedule; confirm permission and consent. Tasks use randomized
+5–12-second action delays (the existing reply-specific pacing is unchanged).
+Delays are rate controls, not an anti-ban guarantee. Restrictions and ambiguous
+submissions stop execution without automatic retry or bypass.
+
+Schedules require the desktop app to remain running and awake. Future schedules
+survive restart; interrupted tasks, missed schedules, or schedules blocked for
+more than one minute require manual review. Cancel cannot undo a submitted
+message or post. SMTP acceptance is not recipient delivery; format/MX checks
+cannot prove a mailbox exists, guarantee inbox placement or prevent all bounces.
+
+The automated checks cover drafts, persistence, validation, domain checks and
+controlled SMTP acceptance/failure behavior. Actual macOS Keychain, Telegram
+phone/2FA authorization, third-party browser interfaces and real recipient
+delivery must be verified with your authorized accounts on macOS.
+
+### Files in this folder
+
 - `package.json`, `main.js`, `preload.js`: standalone Electron entry point.
 - `renderer/`: complete prebuilt frontend, ready to run.
 - `api-service.cjs`, `validation.cjs`, `worker.cjs`, `browser-worker.cjs`, `leads.cjs`: local backend.
