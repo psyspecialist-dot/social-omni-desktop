@@ -3,8 +3,9 @@ import { useForm } from 'react-hook-form';
 import { Form } from '@/components/ui/form';
 import { useHashLocation } from 'wouter/use-hash-location';
 import { isDesktop, openOfficialPlatform, readLocal } from '@/lib/persistence';
-import { apiRequest, type ApiState, type MediaAsset, type SimulationJob, type SimulationSettings } from '@/lib/api';
+import { apiRequest, type ApiState, type MediaAsset, type SimulationJob, type SimulationSettings, type LeadWorkspace, type SimulationAnalytics } from '@/lib/api';
 import WhatsApp from '@/WhatsApp';
+import Leads from '@/Leads';
 import MediaUpload from '@/components/MediaUpload';
 import SimQueue from '@/components/SimQueue';
 import { STORAGE_KEY, THEME_KEY, platforms, statuses, isoIn, seedStore, parseStore, type CampaignStatus, type Campaign, type Account, type Contact, type Store } from '@/lib/workspace';
@@ -17,7 +18,7 @@ import { Route, Switch, Link, useLocation, Router as WouterRouter } from 'wouter
 import {
   Activity, AlertCircle, ArrowUpRight, AtSign, CalendarClock, Check,
   CheckCircle2, CircleHelp, ClipboardList, ExternalLink, FileText,
-  LayoutDashboard, ListFilter, Menu, Moon,
+   LayoutDashboard, ListFilter, Menu, Moon, MapPin,
    Download, MessageCircle, Pause, Play, Pencil, Plus, Search, Settings2, ShieldCheck, Sun, Trash2, Users, X,
 } from 'lucide-react';
 
@@ -30,7 +31,7 @@ const formatTime = (value: string) => {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('en', { hour: 'numeric', minute: '2-digit' }).format(date);
 };
-const titleForPath: Record<string, string> = { '/': 'Dashboard', '/campaigns': 'Campaigns', '/accounts': 'Accounts', '/whatsapp': 'WhatsApp', '/contacts': 'Contacts', '/settings': 'Settings' };
+const titleForPath: Record<string, string> = { '/': 'Overview & Analytics', '/campaigns': 'Campaigns', '/automation': 'Facebook & Instagram Automation', '/accounts': 'Accounts Manager', '/whatsapp': 'WhatsApp Marketing', '/leads': 'Google Maps Lead Extractor', '/contacts': 'Contacts', '/settings': 'Settings & Future License' };
 
 function Workspace() {
   const [store, setStore] = useState<Store>(seedStore);
@@ -38,7 +39,9 @@ function Workspace() {
   const [ready, setReady] = useState(false);
   const [storageError, setStorageError] = useState('');
   const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState<SimulationSettings>({ theme: 'light', keywords: '', delayMin: 3, delayMax: 5, phoneNumbers: '', messageContent: '', mediaId: null, accountId: null });
+  const [settings, setSettings] = useState<SimulationSettings>({ theme: 'light', keywords: '', delayMin: 3, delayMax: 5, phoneNumbers: '', messageContent: '', mediaId: null, accountId: null, licenseKey: '' });
+  const [leads, setLeads] = useState<LeadWorkspace>({ keyword: '', city: '', targetCount: 10, results: [] });
+  const [analytics, setAnalytics] = useState<SimulationAnalytics>({ messagesSent: 0 });
   const [media, setMedia] = useState<MediaAsset[]>([]);
   const [jobs, setJobs] = useState<SimulationJob[]>([]);
   const writes = useRef(0);
@@ -53,6 +56,8 @@ function Workspace() {
     setSettings(data.settings);
     setJobs(data.jobs);
     setMedia(data.media || []);
+    setLeads(data.leads);
+    setAnalytics(data.analytics);
     setTheme(data.settings.theme);
   };
   useEffect(() => {
@@ -125,7 +130,7 @@ function Workspace() {
   };
   const remove = (kind: 'campaign' | 'account' | 'contact', item: Campaign | Account | Contact) => {
     const name = 'title' in item ? item.title : 'displayLabel' in item ? item.displayLabel : item.name;
-    setConfirm({ title: `Remove ${name}?`, body: 'This record will be removed from this device. This cannot be undone.', onConfirm: () => {
+    setConfirm({ title: `Remove ${name}?`, body: 'This record will be permanently removed from this workspace. This cannot be undone.', onConfirm: () => {
       void perform('DELETE', `/${kind === 'campaign' ? 'campaigns' : kind === 'account' ? 'accounts' : 'contacts'}/${item.id}`)
         .then(() => setConfirm(null)).catch(report);
     } });
@@ -139,7 +144,7 @@ function Workspace() {
     }
     void perform('PATCH', `/campaigns/${id}/status`, { status }).catch(report);
   };
-  const clearWorkspace = () => setConfirm({ title: 'Clear local workspace?', body: 'This permanently removes campaigns, account labels, contacts, lists, jobs, and activity from this workspace. It cannot be undone.', onConfirm: () => {
+  const clearWorkspace = () => setConfirm({ title: 'Clear local workspace?', body: 'This permanently removes campaigns, accounts, contacts, media, simulation inputs, leads, counters, license placeholder, jobs, and activity from this workspace. It cannot be undone.', onConfirm: () => {
     void perform('DELETE', '/state').then(() => setConfirm(null)).catch(report);
   } });
   const runTask = (kind: 'campaign' | 'whatsapp', campaignId?: string) =>
@@ -164,21 +169,23 @@ function Workspace() {
                {storageError && <div className="storage-alert" role="alert" data-testid="error-storage-save">{storageError}<button className="button button-secondary" onClick={() => { apiRequest('GET', '/state').then(data => { applyState(data); setStorageError(''); }).catch(report); }} data-testid="button-retry-save">Reconnect</button></div>}
               <ErrorBoundary resetKey={path}>
                 <Switch>
-                  <Route path="/"><Dashboard jobs={jobs} store={store} onStatus={saveStatus} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
+                  <Route path="/"><Dashboard jobs={jobs} store={store} leads={leads} analytics={analytics} onStatus={saveStatus} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
                    <Route path="/campaigns"><Campaigns jobs={jobs} store={store} open={item => setDialog({ type: 'campaign', item })} create={() => setDialog({ type: 'campaign' })} remove={item => remove('campaign', item)} status={saveStatus} handoff={handoff} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
+                    <Route path="/automation"><Campaigns automation jobs={jobs} store={store} open={item => setDialog({ type: 'campaign', item })} create={() => setDialog({ type: 'campaign' })} remove={item => remove('campaign', item)} status={saveStatus} handoff={handoff} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
                    <Route path="/accounts"><Accounts store={store} open={item => setDialog({ type: 'account', item })} create={() => setDialog({ type: 'account' })} remove={item => remove('account', item)} handoff={handoff} /></Route>
                    <Route path="/whatsapp"><WhatsApp settings={settings} media={media} accounts={store.accounts} jobs={jobs} perform={perform} onSave={async value => { await perform('PUT', '/settings', value); }} onRun={() => runTask('whatsapp')} onCancel={cancelTask} /></Route>
+                   <Route path="/leads"><Leads leads={leads} jobs={jobs} perform={perform} onCancel={cancelTask} /></Route>
                   <Route path="/contacts"><Contacts store={store} open={item => setDialog({ type: 'contact', item })} create={() => setDialog({ type: 'contact' })} remove={item => remove('contact', item)} /></Route>
                   <Route path="/settings"><Settings settings={settings} saveSettings={async value => { await perform('PUT', '/settings', value); }} theme={theme} setTheme={value => { void perform('PUT', '/settings', { theme: value }).catch(report); }} store={store} clear={clearWorkspace} /></Route>
                   <Route component={NotFound} />
                 </Switch>
               </ErrorBoundary>
                <section className="activity-console" aria-label="Live local activity log" data-testid="console-activity"><div className="activity-console-head"><strong><Activity size={13} /> Live simulation &amp; activity</strong><span data-testid="status-storage">{storageError ? 'Connection issue' : saving ? 'Saving…' : isDesktop ? 'Saved · local SQLite' : 'Saved · preview SQLite'}</span></div>
-                 {jobs.slice(0, 3).map(job => <div key={job.id} className="job-line"><span>{job.kind === 'whatsapp' ? 'WhatsApp' : 'Campaign'} · {job.status}</span><div className="job-progress" role="progressbar" aria-label={`${job.kind} simulation progress`} aria-valuenow={job.progress} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${job.progress}%` }} /></div><span>{job.progress}%</span>{['Pending', 'Running'].includes(job.status) && <button type="button" className="button button-quiet" onClick={() => cancelTask(job.id)} aria-label="Cancel simulation">Cancel</button>}</div>)}
+                 {jobs.slice(0, 3).map(job => <div key={job.id} className="job-line"><span>{job.kind === 'whatsapp' ? 'WhatsApp' : job.kind === 'leads' ? 'Lead extraction' : 'Campaign'} · {job.status}</span><div className="job-progress" role="progressbar" aria-label={`${job.kind} simulation progress`} aria-valuenow={job.progress} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${job.progress}%` }} /></div><span>{job.progress}%</span>{['Pending', 'Running'].includes(job.status) && <button type="button" className="button button-quiet" onClick={() => cancelTask(job.id)} aria-label="Cancel simulation">Cancel</button>}</div>)}
                  <div role="log" aria-live="polite">{store.activity.slice(0, 6).map(entry => <div className="console-log" key={entry.id}><time>{formatTime(entry.timestamp)}</time><span className={`log-level log-${entry.level}`}>{entry.level}</span><span>{entry.message}</span></div>)}</div></section>
             </div>
           </div>
-          {dialog && <EditorDialog key={`${dialog.type}-${dialog.item?.id || 'new'}`} kind={dialog.type} item={dialog.item} store={store} media={media} perform={perform}
+          {dialog && <EditorDialog automation={path === '/automation'} key={`${dialog.type}-${dialog.item?.id || 'new'}`} kind={dialog.type} item={dialog.item} store={store} media={media} perform={perform}
             close={() => setDialog(null)} saveCampaign={saveCampaign} saveAccount={saveAccount} saveContact={saveContact} />}
           {confirm && <ConfirmDialog title={confirm.title} body={confirm.body} cancel={() => setConfirm(null)} accept={confirm.onConfirm} />}
           {toast && <div className="toast" role="status" data-testid="status-toast">{toast}</div>}
@@ -194,20 +201,22 @@ function App() {
 
 function Sidebar({ active, open, close }: { active: string; open: boolean; close: () => void }) {
   const nav = [
-    { href: '/', title: 'Overview', icon: LayoutDashboard },
+    { href: '/', title: 'Overview & Analytics', icon: LayoutDashboard },
     { href: '/campaigns', title: 'Campaigns', icon: ClipboardList },
-    { href: '/accounts', title: 'Accounts', icon: AtSign },
+    { href: '/accounts', title: 'Accounts Manager', icon: AtSign },
+    { href: '/automation', title: 'Facebook & Instagram', icon: ClipboardList },
+    { href: '/leads', title: 'Google Maps Leads', icon: MapPin },
     { href: '/contacts', title: 'Contacts', icon: Users },
   ];
   return <aside className={`sidebar ${open ? 'open' : ''}`}>
-    <div className="brand"><div className="brand-mark">so</div><div><div className="brand-name">SocialOmni</div><div className="brand-sub">personal control desk</div></div>
+    <div className="brand"><div className="brand-mark">so</div><div><div className="brand-name">SocialOmni Desktop</div><div className="brand-sub">local simulation dashboard</div></div>
       <button className="small-icon" style={{ color: 'inherit', marginLeft: 'auto' }} onClick={close} aria-label="Close navigation" data-testid="button-sidebar-close"><X /></button>
     </div>
     <div className="nav-label">Your workspace</div>
     {nav.map(({ href, title, icon: Icon }) => <Link key={href} href={href} onClick={close} className={`nav-link ${active === href ? 'active' : ''}`} data-testid={`link-nav-${title.toLowerCase()}`}><Icon /><span>{title}</span></Link>)}
-    <Link href="/whatsapp" onClick={close} className={`nav-link ${active === '/whatsapp' ? 'active' : ''}`} data-testid="link-nav-whatsapp"><MessageCircle /><span>WhatsApp</span></Link>
+    <Link href="/whatsapp" onClick={close} className={`nav-link ${active === '/whatsapp' ? 'active' : ''}`} data-testid="link-nav-whatsapp"><MessageCircle /><span>WhatsApp Marketing</span></Link>
     <div className="nav-label" style={{ marginTop: 18 }}>Preferences</div>
-    <Link href="/settings" onClick={close} className={`nav-link ${active === '/settings' ? 'active' : ''}`} data-testid="link-nav-settings"><Settings2 /><span>Settings</span></Link>
+    <Link href="/settings" onClick={close} className={`nav-link ${active === '/settings' ? 'active' : ''}`} data-testid="link-nav-settings"><Settings2 /><span>Settings & License</span></Link>
     <div className="side-bottom">
       <div className="nav-label">Privacy by default</div>
        <div className="local-indicator"><i className="local-dot" /><div><strong>{isDesktop ? 'Stored on this device' : 'Preview workspace'}</strong><span>{isDesktop ? 'No remote sync' : 'On Replit’s server'}</span></div></div>
@@ -222,19 +231,15 @@ function StatusPill({ value }: { value: CampaignStatus }) {
   const styles: Record<CampaignStatus, string> = { 'Ready for review': 'status-ready', Scheduled: 'status-scheduled', Draft: 'status-draft', Paused: 'status-paused', Sent: 'status-sent', Failed: 'status-failed' };
   return <span className={`status ${styles[value]}`} data-testid={`status-campaign-${value.toLowerCase().replaceAll(' ', '-')}`}>{value}</span>;
 }
-function Dashboard({ jobs, store, onStatus, run }: { jobs: SimulationJob[]; store: Store; onStatus: (id: string, status: CampaignStatus) => void; run: (id: string) => void }) {
-  const pending = store.campaigns.filter(c => c.status === 'Ready for review').length;
-  const scheduled = store.campaigns.filter(c => c.status === 'Scheduled').length;
-  const active = store.campaigns.filter(c => !['Sent', 'Failed', 'Paused'].includes(c.status)).length;
+function Dashboard({ jobs, store, leads, analytics, onStatus, run }: { jobs: SimulationJob[]; store: Store; leads: LeadWorkspace; analytics: SimulationAnalytics; onStatus: (id: string, status: CampaignStatus) => void; run: (id: string) => void }) {
   const upcoming = [...store.campaigns].filter(c => ['Scheduled', 'Ready for review'].includes(c.status)).sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt)).slice(0, 4);
-  const optedIn = store.contacts.filter(c => c.optedIn).length;
   return <main className="page">
-    <PageHeading eyebrow="Your desk is ready" title="A little more in order." subtitle="Your campaign plan, people, and handoffs — all in one quiet place." action={<Link href="/campaigns" className="button button-primary" data-testid="button-new-campaign"><Plus /> Plan a campaign</Link>} />
+    <PageHeading eyebrow="SocialOmni Desktop" title="Overview & Analytics" subtitle="Live workspace totals and simulation progress. No external sending, posting, joining, or scraping." action={<Link href="/campaigns" className="button button-primary" data-testid="button-new-campaign"><Plus /> Plan a campaign</Link>} />
     <div className="stat-grid">
-      <Stat title="In motion" value={active} note="Campaigns not yet closed" icon={<ClipboardList />} trend="Current plan" />
-      <Stat title="Ready to review" value={pending} note="Your next decision" icon={<CheckCircle2 />} trend={pending ? 'Needs a look' : 'All caught up'} />
-      <Stat title="On the calendar" value={scheduled} note="Scheduled for later" icon={<CalendarClock />} trend="Manual handoff only" />
-      <Stat title="Opted-in contacts" value={optedIn} note="Records stored locally" icon={<Users />} trend={`${store.lists.length} contact lists`} />
+      <Stat title="Total campaigns" value={store.campaigns.length} note="Saved campaign plans" icon={<ClipboardList />} trend="All platforms" />
+      <Stat title="Active accounts" value={store.accounts.filter(a => a.status.startsWith('Active')).length} note="Simulated identities" icon={<AtSign />} trend="Not connected" />
+      <Stat title="Messages sent" value={analytics.messagesSent} note="Cumulative simulated sends" icon={<MessageCircle />} trend="No real messages" />
+      <Stat title="Scraped leads" value={leads.results.length} note="Saved synthetic results" icon={<MapPin />} trend="No real scraping" />
     </div>
     <div className="dash-grid">
       <section className="panel">
@@ -258,7 +263,7 @@ function Dashboard({ jobs, store, onStatus, run }: { jobs: SimulationJob[]; stor
       </section>
     </div>
     <section className="panel" style={{ marginBottom: 16 }} data-testid="panel-live-queues"><div className="panel-head"><div><div className="panel-title">Live queues</div><div className="panel-caption">Simulated runs only. Nothing is sent or posted.</div></div></div><div className="panel-body">
-      {jobs.filter(j => ['Pending', 'Running'].includes(j.status)).length ? jobs.filter(j => ['Pending', 'Running'].includes(j.status)).map(j => <div key={j.id}><div className="sq-title">{j.kind === 'whatsapp' ? 'WhatsApp message run' : `Campaign: ${store.campaigns.find(c => c.id === j.campaignId)?.title || 'removed campaign'}`}</div><SimQueue job={j} testId={`dash-${j.id}`} /></div>) : <Empty symbol={<Activity />} title="No simulation running" text="Start a campaign simulation or a WhatsApp run to watch its queue here." />}
+      {jobs.filter(j => ['Pending', 'Running'].includes(j.status)).length ? jobs.filter(j => ['Pending', 'Running'].includes(j.status)).map(j => <div key={j.id}><div className="sq-title">{j.kind === 'whatsapp' ? 'WhatsApp message run' : j.kind === 'leads' ? 'Google Maps lead simulation' : `Campaign: ${store.campaigns.find(c => c.id === j.campaignId)?.title || 'removed campaign'}`}</div>{j.kind === 'leads' ? <p role="status">{j.completedCount}/{j.totalCount} synthetic leads · {j.status} · {j.progress}%</p> : <SimQueue job={j} testId={`dash-${j.id}`} />}</div>) : <Empty symbol={<Activity />} title="No simulation running" text="Start a campaign, WhatsApp, or lead extraction simulation to watch its queue here." />}
     </div></section>
     <div className="console" data-testid="status-local-console"><div className="console-orb"><ShieldCheck size={17} /></div><div className="console-copy"><b>{isDesktop ? 'Local workspace is ready' : 'Preview workspace is ready'}</b><span>Data is in {isDesktop ? 'SQLite on this computer' : 'SQLite on the Replit preview server (not your device)'}. SocialOmni never publishes or contacts anyone for you.</span></div><div className="console-state">Standing by</div></div>
   </main>;
@@ -270,24 +275,25 @@ function Empty({ symbol, title, text, action }: { symbol: ReactNode; title: stri
   return <div className="empty-state"><div className="empty-symbol">{symbol}</div><b>{title}</b><p>{text}</p>{action}</div>;
 }
 
-function Campaigns({ jobs, store, open, create, remove, status, handoff, run }: { jobs: SimulationJob[]; store: Store; open: (c: Campaign) => void; create: () => void; remove: (c: Campaign) => void; status: (id: string, s: CampaignStatus) => void; handoff: (platform: string) => void; run: (id: string) => void }) {
+function Campaigns({ automation = false, jobs, store, open, create, remove, status, handoff, run }: { automation?: boolean; jobs: SimulationJob[]; store: Store; open: (c: Campaign) => void; create: () => void; remove: (c: Campaign) => void; status: (id: string, s: CampaignStatus) => void; handoff: (platform: string) => void; run: (id: string) => void }) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('All statuses');
   const [tab, setTab] = useState<'all' | 'review'>('all');
-  const filtered = useMemo(() => store.campaigns.filter(c => {
+  const scoped = useMemo(() => automation ? store.campaigns.filter(c => ['Facebook', 'Instagram'].includes(c.platform)) : store.campaigns, [store.campaigns, automation]);
+  const filtered = useMemo(() => scoped.filter(c => {
     const matchQuery = `${c.title} ${c.platform} ${c.caption}`.toLowerCase().includes(query.toLowerCase());
     return matchQuery && (filter === 'All statuses' || c.status === filter) && (tab === 'all' || c.status === 'Ready for review');
-  }).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)), [store.campaigns, query, filter, tab]);
+  }).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)), [scoped, query, filter, tab]);
   return <main className="page">
-    <PageHeading eyebrow="Plan, then hand off" title="Campaigns" subtitle="Shape the work here. You decide when and where anything goes live." action={<button className="button button-primary" onClick={create} data-testid="button-create-campaign"><Plus /> New campaign</button>} />
+    <PageHeading eyebrow="Local simulation" title={automation ? 'Facebook & Instagram Automation' : 'Campaigns'} subtitle={automation ? 'Save keywords, images or videos, captions, and 50, 100, 200+ target groups. Rehearse joins and posts locally; no platform actions occur.' : 'Shape the work here. You decide when and where anything goes live.'} action={<button className="button button-primary" onClick={create} data-testid="button-create-campaign"><Plus /> New campaign</button>} />
     <div className="toolbar">
       <div className="search-wrap"><Search /><input className="search-input" value={query} onChange={e => setQuery(e.target.value)} placeholder="Search campaigns or captions" aria-label="Search campaigns" data-testid="input-search-campaigns" /></div>
       <select className="field-select" value={filter} onChange={e => setFilter(e.target.value)} aria-label="Filter campaigns by status" data-testid="select-campaign-status"><option>All statuses</option>{statuses.map(s => <option key={s}>{s}</option>)}</select>
       <span className="filter-count">{filtered.length} {filtered.length === 1 ? 'campaign' : 'campaigns'}</span>
     </div>
     <div className="toolbar" style={{ marginTop: -3 }}>
-      <button className={`button ${tab === 'all' ? 'button-primary' : 'button-secondary'}`} onClick={() => setTab('all')} data-testid="button-tab-all-campaigns"><ListFilter size={14} /> All campaigns <span className="mono-tag">{store.campaigns.length}</span></button>
-      <button className={`button ${tab === 'review' ? 'button-primary' : 'button-secondary'}`} onClick={() => setTab('review')} data-testid="button-tab-review-queue"><CheckCircle2 size={14} /> Review queue <span className="mono-tag">{store.campaigns.filter(c => c.status === 'Ready for review').length}</span></button>
+      <button className={`button ${tab === 'all' ? 'button-primary' : 'button-secondary'}`} onClick={() => setTab('all')} data-testid="button-tab-all-campaigns"><ListFilter size={14} /> All campaigns <span className="mono-tag">{scoped.length}</span></button>
+      <button className={`button ${tab === 'review' ? 'button-primary' : 'button-secondary'}`} onClick={() => setTab('review')} data-testid="button-tab-review-queue"><CheckCircle2 size={14} /> Review queue <span className="mono-tag">{scoped.filter(c => c.status === 'Ready for review').length}</span></button>
     </div>
     <div className="list-panel">
       {filtered.length ? <>
@@ -302,7 +308,7 @@ function Campaigns({ jobs, store, open, create, remove, status, handoff, run }: 
       </> : <Empty symbol={<FileText />} title={query || filter !== 'All statuses' || tab === 'review' ? 'No matching campaigns' : 'Start with a small plan'} text={query || filter !== 'All statuses' || tab === 'review' ? 'Try a different search or status filter.' : 'Keep your upcoming social work clear, intentional, and on your terms.'} action={<button className="button button-primary" onClick={create} data-testid="button-empty-create-campaign"><Plus /> Create campaign</button>} />}
     </div>
     <section className="panel" style={{ marginTop: 16 }} data-testid="panel-group-queues"><div className="panel-head"><div><div className="panel-title">Simulated group queues</div><div className="panel-caption">Hypothetical groups derived from keywords. SocialOmni never discovers or joins real groups.</div></div></div><div className="panel-body">
-      {(() => { const latest = store.campaigns.map(c => ({ c, j: jobs.find(j => j.kind === 'campaign' && j.campaignId === c.id) })).filter(x => x.j); return latest.length ? latest.map(({ c, j }) => <div key={c.id}><div className="sq-title">{c.title} <span className="mono-tag">{c.platform}</span></div><SimQueue job={j!} testId={`camp-${c.id}`} /></div>) : <Empty symbol={<ListFilter />} title="No group queue yet" text="Press Start Campaign simulation on a campaign to see Pending, Joined, and Posted counters." />; })()}
+      {(() => { const latest = scoped.map(c => ({ c, j: jobs.find(j => j.kind === 'campaign' && j.campaignId === c.id) })).filter(x => x.j); return latest.length ? latest.map(({ c, j }) => <div key={c.id}><div className="sq-title">{c.title} <span className="mono-tag">{c.platform}</span></div><SimQueue job={j!} testId={`camp-${c.id}`} /></div>) : <Empty symbol={<ListFilter />} title="No group queue yet" text="Press Start Campaign simulation on a campaign to see Pending, Joined, and Posted counters." />; })()}
     </div></section>
      <div style={{ marginTop: 13, color: 'hsl(var(--muted-foreground))', fontSize: 10, display: 'flex', alignItems: 'center', gap: 6 }}><CircleHelp size={13} /> Start Campaign runs a local progress simulation. It never joins groups or publishes anything. Scheduled items move to Ready for review.</div>
   </main>;
@@ -312,7 +318,7 @@ function Accounts({ store, open, create, remove, handoff }: { store: Store; open
   const [query, setQuery] = useState('');
   const accounts = store.accounts.filter(a => `${a.platform} ${a.displayLabel} ${a.handle}`.toLowerCase().includes(query.toLowerCase()));
   return <main className="page">
-    <PageHeading eyebrow="Identity, not credentials" title="Accounts" subtitle="Simulated accounts for rehearsal runs. Nothing connects to a platform." action={<button className="button button-primary" onClick={create} data-testid="button-add-account"><Plus /> Add account label</button>} />
+    <PageHeading eyebrow="Identity, not credentials" title="Accounts Manager" subtitle="SQLite-backed simulated accounts for Facebook, Instagram, TikTok, and WhatsApp. Nothing connects to a platform." action={<button className="button button-primary" onClick={create} data-testid="button-add-account"><Plus /> Add account</button>} />
     <div className="toolbar"><div className="search-wrap"><Search /><input className="search-input" value={query} onChange={e => setQuery(e.target.value)} placeholder="Find an account label" aria-label="Search accounts" data-testid="input-search-accounts" /></div><span className="filter-count">{accounts.length} labels</span></div>
     {accounts.length ? <div className="list-panel acct-scroll"><table className="acct-table" data-testid="table-accounts"><thead><tr><th>Platform</th><th>Account Name</th><th>Phone / Username</th><th>Demo session</th><th>Status</th><th style={{ textAlign: 'right' }}>Actions</th></tr></thead><tbody>
       {accounts.map(account => <tr key={account.id} data-testid={`row-account-${account.id}`}><td><span className="mono-tag">{account.platform}</span></td><td><b>{account.displayLabel}</b></td><td>{account.handle || 'Not added'}</td><td className="account-handle">{account.demoSession || 'None'}</td><td><span className="account-status">{account.status}</span></td>
@@ -347,16 +353,27 @@ function Contacts({ store, open, create, remove }: { store: Store; open: (c: Con
   </main>;
 }
 
-function Settings({ settings, saveSettings, theme, setTheme, store, clear }: { settings: SimulationSettings; saveSettings: (v: { delayMin: number; delayMax: number }) => Promise<void>; theme: 'light' | 'dark'; setTheme: (t: 'light' | 'dark') => void; store: Store; clear: () => void }) {
+function Settings({ settings, saveSettings, theme, setTheme, store, clear }: { settings: SimulationSettings; saveSettings: (v: Partial<SimulationSettings>) => Promise<void>; theme: 'light' | 'dark'; setTheme: (t: 'light' | 'dark') => void; store: Store; clear: () => void }) {
   const [min, setMin] = useState(settings.delayMin);
   const [max, setMax] = useState(settings.delayMax);
   const [note, setNote] = useState('');
+  const [license, setLicense] = useState(settings.licenseKey);
+  const [licenseNote, setLicenseNote] = useState('');
+  const [licenseBusy, setLicenseBusy] = useState(false);
+  useEffect(() => { setLicense(settings.licenseKey); }, [settings.licenseKey]);
+  useEffect(() => { setMin(settings.delayMin); setMax(settings.delayMax); }, [settings.delayMin, settings.delayMax]);
+  const saveLicense = async () => {
+    setLicenseBusy(true); setLicenseNote('');
+    try { await saveSettings({ licenseKey: license }); setLicenseNote('Placeholder saved locally. No activation or license verification has occurred.'); }
+    catch (e) { setLicenseNote(e instanceof Error ? e.message : 'Could not save the placeholder.'); }
+    finally { setLicenseBusy(false); }
+  };
   const go = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   const saveDelay = () => { setNote(''); saveSettings({ delayMin: min, delayMax: max }).then(() => setNote('Delay settings saved.')).catch(e => setNote(e instanceof Error ? e.message : 'Could not save.')); };
   return <main className="page">
-    <PageHeading eyebrow="Make the desk yours" title="Settings" subtitle="A few preferences, plus a clear view of where your data lives." />
+    <PageHeading eyebrow="Make the desk yours" title="Settings & Future License" subtitle="Simulation preferences, local data controls, and a future-license placeholder." />
     <div className="settings-layout">
-      <nav className="settings-nav" aria-label="Settings sections"><button onClick={() => go('appearance')} data-testid="settings-nav-appearance">Appearance</button><button onClick={() => document.getElementById('local-data')?.scrollIntoView({ behavior: 'smooth' })} data-testid="settings-nav-local-data">Local data</button><button onClick={() => document.getElementById('simulation')?.scrollIntoView({ behavior: 'smooth' })} data-testid="settings-nav-simulation">Simulation</button></nav>
+      <nav className="settings-nav" aria-label="Settings sections"><button onClick={() => go('appearance')} data-testid="settings-nav-appearance">Appearance</button><button onClick={() => go('local-data')} data-testid="settings-nav-local-data">Local data</button><button onClick={() => go('simulation')} data-testid="settings-nav-simulation">Simulation</button><button onClick={() => go('future-license')} data-testid="settings-nav-license">Future license</button></nav>
       <div className="settings-content">
         <section className="setting-card" id="appearance"><div className="setting-head"><div><strong>Appearance</strong><p>Choose the reading mode that feels right at your desk.</p></div><div className="mode-switch">
           <button className={theme === 'light' ? 'selected' : ''} onClick={() => setTheme('light')} data-testid="button-theme-light"><Sun size={14} /> Light</button>
@@ -372,6 +389,7 @@ function Settings({ settings, saveSettings, theme, setTheme, store, clear }: { s
             <div className="field-group"><label className="field-label" htmlFor="set-max">Maximum delay<span className="field-hint">{max}s</span></label><input id="set-max" type="range" min={3} max={30} value={max} onChange={e => { const v = Number(e.target.value); setMax(v); if (v < min) setMin(v); }} style={{ width: '100%' }} data-testid="settings-delay-max" /></div></div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}><button className="button button-secondary" onClick={saveDelay} data-testid="button-save-delay">Save delay</button><Link href="/whatsapp" className="text-link" data-testid="link-settings-whatsapp">Open WhatsApp rehearsal</Link>{note && <span role="status" style={{ fontSize: 10, color: 'hsl(var(--muted-foreground))' }} data-testid="status-delay-saved">{note}</span>}</div>
         </section>
+         <section className="setting-card" id="future-license"><div className="setting-head"><div><strong>Future license</strong><p>Placeholder only. The simulator is not license-gated and does not contact an activation service. Use a demo value, not a password or API token.</p></div><span className="mono-tag">NOT ACTIVATED</span></div><form onSubmit={e => { e.preventDefault(); void saveLicense(); }} style={{ marginTop: 15 }}><div className="field-group"><label className="field-label" htmlFor="license-key">License key placeholder</label><input id="license-key" className="field-input" maxLength={200} autoComplete="off" placeholder="DEMO-XXXX-XXXX-XXXX" value={license} onChange={e => { setLicense(e.target.value); setLicenseNote(''); }} data-testid="input-license-key" /></div><button type="submit" className="button button-secondary" disabled={licenseBusy} data-testid="button-save-license">{licenseBusy ? 'Saving…' : 'Save placeholder'}</button>{licenseNote && <p role="status" className="heading-sub" data-testid="status-license-saved">{licenseNote}</p>}</form></section>
          <section className="setting-card"><div className="setting-head"><div><strong>{isDesktop ? 'Secure desktop bridge' : 'Run locally with Electron'}</strong><p>{isDesktop ? 'The renderer uses a restricted preload bridge and local SQLite. Platform logins stay in your default browser.' : 'Download the desktop source folder, unzip it, then run npm install and npm start inside it. It includes the built interface, main.js, preload.js, package.json, and instructions. This is source, not a signed installer.'}</p></div><ShieldCheck size={18} color="hsl(var(--primary))" /></div>{!isDesktop && <a className="button button-primary" style={{ marginTop: 16 }} href={`${import.meta.env.BASE_URL}downloads/socialomni-desktop.zip`} download data-testid="link-download-desktop"><Download size={14} /> Download desktop folder</a>}</section>
       </div>
     </div>
@@ -380,7 +398,8 @@ function Settings({ settings, saveSettings, theme, setTheme, store, clear }: { s
 
 type EditorFields = { title: string; platform: string; caption: string; scheduledAt: string; campaignStatus: CampaignStatus; displayLabel: string; handle: string; accountStatus: string; name: string; channel: 'Email' | 'Phone'; value: string; optedIn: boolean; list: string };
 
-function EditorDialog({ kind, item, store, media, perform, close: dismiss, saveCampaign, saveAccount, saveContact }: {
+function EditorDialog({ automation = false, kind, item, store, media, perform, close: dismiss, saveCampaign, saveAccount, saveContact }: {
+  automation?: boolean;
   kind: 'campaign' | 'account' | 'contact'; item?: Campaign | Account | Contact; store: Store; media: MediaAsset[]; perform: (m: 'POST' | 'PUT' | 'PATCH' | 'DELETE', r: string, b?: unknown) => Promise<ApiState>; close: () => void;
   saveCampaign: (c: Omit<Campaign, 'id' | 'createdAt' | 'updatedAt'>, id?: string) => Promise<void>;
   saveAccount: (a: Omit<Account, 'id'>, id?: string) => Promise<void>;
@@ -430,7 +449,7 @@ function EditorDialog({ kind, item, store, media, perform, close: dismiss, saveC
       if (!title.trim()) { setError('Give this campaign a title.'); return; }
       if (campaignStatus === 'Scheduled' && (!scheduledAt || Number.isNaN(new Date(scheduledAt).getTime()))) { setError('Choose a valid planned handoff time for a scheduled reminder.'); return; }
       const count = Number(groupCount);
-      if (!Number.isInteger(count) || count < 1 || count > 200) { setError('Target group count must be a whole number from 1 to 200.'); return; }
+      if (!Number.isInteger(count) || count < 1 || count > 1000) { setError('Target group count must be a whole number from 1 to 1000.'); return; }
       await saveCampaign({ title: title.trim(), platform, caption: caption.trim(), scheduledAt, status: campaignStatus, keywords: keywords.trim(), targetGroupCount: count, mediaId, accountId }, initialCampaign?.id);
     } else if (kind === 'account') {
       if (!displayLabel.trim()) { setError('Add a recognizable label.'); return; }
@@ -454,13 +473,13 @@ function EditorDialog({ kind, item, store, media, perform, close: dismiss, saveC
       <Form {...form}><form className="dialog-form" onSubmit={form.handleSubmit(submit)}>
         {kind === 'campaign' && <>
           <div className="field-group"><label className="field-label" htmlFor="campaign-title">Campaign title</label><input id="campaign-title" className="field-input" value={title} onChange={e => setTitle(e.target.value)} placeholder="A name you’ll recognize" autoFocus data-testid="input-campaign-title" /></div>
-          <div className="form-grid"><div className="field-group"><label className="field-label" htmlFor="campaign-platform">Platform</label><select id="campaign-platform" className="field-select" style={{ width: '100%' }} value={platform} onChange={e => setPlatform(e.target.value)} data-testid="select-campaign-platform">{platforms.map(p => <option key={p}>{p}</option>)}</select></div>
+          <div className="form-grid"><div className="field-group"><label className="field-label" htmlFor="campaign-platform">Platform</label><select id="campaign-platform" className="field-select" style={{ width: '100%' }} value={platform} onChange={e => setPlatform(e.target.value)} data-testid="select-campaign-platform">{(automation ? ['Facebook', 'Instagram'] : platforms).map(p => <option key={p}>{p}</option>)}</select></div>
             <div className="field-group"><label className="field-label" htmlFor="campaign-status">Status</label><select id="campaign-status" className="field-select" style={{ width: '100%' }} value={campaignStatus} onChange={e => setCampaignStatus(e.target.value as CampaignStatus)} data-testid="select-campaign-edit-status">{statuses.map(s => <option key={s}>{s}</option>)}</select></div></div>
           <div className="field-group"><label className="field-label" htmlFor="campaign-caption">Caption or working notes <span className="field-hint">{caption.length} / 1000</span></label><textarea id="campaign-caption" maxLength={1000} className="field-textarea" value={caption} onChange={e => setCaption(e.target.value)} placeholder="Keep your working copy here. It will not be sent anywhere." data-testid="textarea-campaign-caption" /></div>
           <div className="field-group"><label className="field-label" htmlFor="campaign-date">Planned handoff time</label><input type="datetime-local" id="campaign-date" className="field-input" value={scheduledAt} onChange={e => setScheduledAt(e.target.value)} data-testid="input-campaign-date" /></div>
           <div className="field-group"><label className="field-label" htmlFor="campaign-keywords">Keywords <span className="field-hint">comma separated</span></label><input id="campaign-keywords" className="field-input" value={keywords} onChange={e => setKeywords(e.target.value)} placeholder="bakery, sourdough, local" data-testid="input-campaign-keywords" />
             {(platform === 'Facebook' || platform === 'Instagram') && <div className="wa-hint">Group names are hypothetical and derived from these keywords. No real groups are ever discovered.</div>}</div>
-          <div className="form-grid"><div className="field-group"><label className="field-label" htmlFor="campaign-groups">Target group count <span className="field-hint">1 to 200</span></label><input id="campaign-groups" type="number" min={1} max={200} className="field-input" value={groupCount} onChange={e => setGroupCount(e.target.value)} data-testid="input-campaign-groups" /></div>
+          <div className="form-grid"><div className="field-group"><label className="field-label" htmlFor="campaign-groups">Target group count <span className="field-hint">1 to 1,000</span></label><input id="campaign-groups" type="number" min={1} max={1000} className="field-input" value={groupCount} onChange={e => setGroupCount(e.target.value)} data-testid="input-campaign-groups" /><div style={{ display: 'flex', gap: 6, marginTop: 8 }}>{[50, 100, 200, 500].map(n => <button type="button" key={n} className="button button-quiet" onClick={() => setGroupCount(String(n))} data-testid={`button-group-count-${n}`}>{n}</button>)}</div></div>
             <div className="field-group"><label className="field-label" htmlFor="campaign-account">Simulated account <span className="field-hint">optional</span></label><select id="campaign-account" className="field-select" style={{ width: '100%' }} value={accountId ?? ''} onChange={e => setAccountId(e.target.value || null)} data-testid="select-campaign-account"><option value="">No account</option>{store.accounts.filter(a => a.platform === platform).map(a => <option key={a.id} value={a.id}>{a.displayLabel}</option>)}{accountId && !store.accounts.some(a => a.id === accountId && a.platform === platform) && <option value={accountId}>Saved account (other platform or removed)</option>}</select></div></div>
           <div className="field-group"><div className="field-label">Media</div><MediaUpload mediaId={mediaId} media={media} perform={perform} onChange={setMediaId} onBusyChange={setMediaBusy} testId="campaign-media" /></div>
         </>}

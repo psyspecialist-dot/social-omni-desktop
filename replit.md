@@ -1,6 +1,6 @@
 # SocialOmni Desktop
 
-A local-first social campaign planner with a React browser preview and a standalone Electron edition.
+A local-first social marketing simulation dashboard with a React browser preview and a standalone Electron edition.
 
 ## Run & Operate
 
@@ -51,6 +51,11 @@ A local-first social campaign planner with a React browser preview and a standal
 - Downloadable Electron source folder with the prebuilt renderer from Settings
 - Working Express CRUD routes, anonymous preview SQLite, native local SQLite, simulation worker progress and 3–30 second delay settings
 - Phone lists, formatted message templates, saved image/video attachments, campaign keywords and target counts; sequential simulated sends, joins, and posts with cancellation
+- Sidebar modules: Overview & Analytics, Accounts Manager, WhatsApp Marketing, Facebook & Instagram Automation, Google Maps Leads, Settings & Future License; campaigns and contacts remain available
+- Google Maps Lead Extractor is a local simulation only: niche/location drafts and synthetic business results persist in SQLite; no actual Google Maps scraping or lead collection
+- Lead results export as CSV and real XLSX; fictional phone ranges and reserved .example websites prevent synthetic records from masquerading as verified business contacts
+- Overview totals track saved campaigns, active simulated accounts, cumulative simulated messages, and currently saved synthetic leads
+- Future-license input is a locally persisted placeholder only; it does not activate, validate, or restrict use
 
 ## User preferences
 

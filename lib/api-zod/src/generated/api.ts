@@ -8,6 +8,243 @@
 import * as zod from 'zod';
 
 
+export const SaveSocialOmniLeadDraftHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const saveSocialOmniLeadDraftBodyKeywordMax = 100;
+
+export const saveSocialOmniLeadDraftBodyCityMax = 150;
+
+export const saveSocialOmniLeadDraftBodyTargetCountMax = 200;
+
+
+
+export const SaveSocialOmniLeadDraftBody = zod.object({
+  "keyword": zod.string().max(saveSocialOmniLeadDraftBodyKeywordMax),
+  "city": zod.string().max(saveSocialOmniLeadDraftBodyCityMax),
+  "targetCount": zod.number().int().min(1).max(saveSocialOmniLeadDraftBodyTargetCountMax)
+})
+
+export const saveSocialOmniLeadDraftResponseSettingsKeywordsMax = 300;
+
+export const saveSocialOmniLeadDraftResponseSettingsDelayMinMin = 3;
+export const saveSocialOmniLeadDraftResponseSettingsDelayMinMax = 30;
+
+export const saveSocialOmniLeadDraftResponseSettingsDelayMaxMin = 3;
+export const saveSocialOmniLeadDraftResponseSettingsDelayMaxMax = 30;
+
+export const saveSocialOmniLeadDraftResponseSettingsPhoneNumbersMax = 10000;
+
+export const saveSocialOmniLeadDraftResponseSettingsMessageContentMax = 10000;
+
+export const saveSocialOmniLeadDraftResponseSettingsLicenseKeyMax = 200;
+
+export const saveSocialOmniLeadDraftResponseLeadsOneKeywordMax = 100;
+
+export const saveSocialOmniLeadDraftResponseLeadsOneCityMax = 150;
+
+export const saveSocialOmniLeadDraftResponseLeadsOneTargetCountMax = 200;
+
+export const saveSocialOmniLeadDraftResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const SaveSocialOmniLeadDraftResponse = zod.object({
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "keywords": zod.string().max(saveSocialOmniLeadDraftResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(saveSocialOmniLeadDraftResponseSettingsDelayMinMin).max(saveSocialOmniLeadDraftResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(saveSocialOmniLeadDraftResponseSettingsDelayMaxMin).max(saveSocialOmniLeadDraftResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(saveSocialOmniLeadDraftResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(saveSocialOmniLeadDraftResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(saveSocialOmniLeadDraftResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined']),
+  "postStatus": zod.enum(['Pending', 'Posted']),
+  "sendStatus": zod.enum(['Pending', 'Sent'])
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(saveSocialOmniLeadDraftResponseLeadsOneKeywordMax),
+  "city": zod.string().max(saveSocialOmniLeadDraftResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(saveSocialOmniLeadDraftResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "messagesSent": zod.number().int().min(saveSocialOmniLeadDraftResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
+/**
+ * Clears synthetic results only; refuses while a lead simulation is active.
+ */
+export const ClearSocialOmniLeadsHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const clearSocialOmniLeadsResponseSettingsKeywordsMax = 300;
+
+export const clearSocialOmniLeadsResponseSettingsDelayMinMin = 3;
+export const clearSocialOmniLeadsResponseSettingsDelayMinMax = 30;
+
+export const clearSocialOmniLeadsResponseSettingsDelayMaxMin = 3;
+export const clearSocialOmniLeadsResponseSettingsDelayMaxMax = 30;
+
+export const clearSocialOmniLeadsResponseSettingsPhoneNumbersMax = 10000;
+
+export const clearSocialOmniLeadsResponseSettingsMessageContentMax = 10000;
+
+export const clearSocialOmniLeadsResponseSettingsLicenseKeyMax = 200;
+
+export const clearSocialOmniLeadsResponseLeadsOneKeywordMax = 100;
+
+export const clearSocialOmniLeadsResponseLeadsOneCityMax = 150;
+
+export const clearSocialOmniLeadsResponseLeadsOneTargetCountMax = 200;
+
+export const clearSocialOmniLeadsResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const ClearSocialOmniLeadsResponse = zod.object({
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "keywords": zod.string().max(clearSocialOmniLeadsResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(clearSocialOmniLeadsResponseSettingsDelayMinMin).max(clearSocialOmniLeadsResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(clearSocialOmniLeadsResponseSettingsDelayMaxMin).max(clearSocialOmniLeadsResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(clearSocialOmniLeadsResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(clearSocialOmniLeadsResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(clearSocialOmniLeadsResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined']),
+  "postStatus": zod.enum(['Pending', 'Posted']),
+  "sendStatus": zod.enum(['Pending', 'Sent'])
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(clearSocialOmniLeadsResponseLeadsOneKeywordMax),
+  "city": zod.string().max(clearSocialOmniLeadsResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(clearSocialOmniLeadsResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "messagesSent": zod.number().int().min(clearSocialOmniLeadsResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
 export const GetSocialOmniStateHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
 })
@@ -23,6 +260,16 @@ export const getSocialOmniStateResponseSettingsDelayMaxMax = 30;
 export const getSocialOmniStateResponseSettingsPhoneNumbersMax = 10000;
 
 export const getSocialOmniStateResponseSettingsMessageContentMax = 10000;
+
+export const getSocialOmniStateResponseSettingsLicenseKeyMax = 200;
+
+export const getSocialOmniStateResponseLeadsOneKeywordMax = 100;
+
+export const getSocialOmniStateResponseLeadsOneCityMax = 150;
+
+export const getSocialOmniStateResponseLeadsOneTargetCountMax = 200;
+
+export const getSocialOmniStateResponseAnalyticsMessagesSentMin = 0;
 
 
 
@@ -42,11 +289,12 @@ export const GetSocialOmniStateResponse = zod.object({
   "phoneNumbers": zod.string().max(getSocialOmniStateResponseSettingsPhoneNumbersMax).optional(),
   "messageContent": zod.string().max(getSocialOmniStateResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
-  "accountId": zod.string().nullish()
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(getSocialOmniStateResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "id": zod.string(),
-  "kind": zod.enum(['campaign', 'whatsapp']),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
   "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
   "progress": zod.number().int(),
@@ -82,7 +330,28 @@ export const GetSocialOmniStateResponse = zod.object({
   "mime": zod.string(),
   "size": zod.number().int(),
   "dataUrl": zod.string().optional()
-}).optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(getSocialOmniStateResponseLeadsOneKeywordMax),
+  "city": zod.string().max(getSocialOmniStateResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(getSocialOmniStateResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "messagesSent": zod.number().int().min(getSocialOmniStateResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
 })
 
 
@@ -102,6 +371,16 @@ export const clearSocialOmniStateResponseSettingsPhoneNumbersMax = 10000;
 
 export const clearSocialOmniStateResponseSettingsMessageContentMax = 10000;
 
+export const clearSocialOmniStateResponseSettingsLicenseKeyMax = 200;
+
+export const clearSocialOmniStateResponseLeadsOneKeywordMax = 100;
+
+export const clearSocialOmniStateResponseLeadsOneCityMax = 150;
+
+export const clearSocialOmniStateResponseLeadsOneTargetCountMax = 200;
+
+export const clearSocialOmniStateResponseAnalyticsMessagesSentMin = 0;
+
 
 
 export const ClearSocialOmniStateResponse = zod.object({
@@ -120,11 +399,12 @@ export const ClearSocialOmniStateResponse = zod.object({
   "phoneNumbers": zod.string().max(clearSocialOmniStateResponseSettingsPhoneNumbersMax).optional(),
   "messageContent": zod.string().max(clearSocialOmniStateResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
-  "accountId": zod.string().nullish()
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(clearSocialOmniStateResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "id": zod.string(),
-  "kind": zod.enum(['campaign', 'whatsapp']),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
   "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
   "progress": zod.number().int(),
@@ -160,7 +440,28 @@ export const ClearSocialOmniStateResponse = zod.object({
   "mime": zod.string(),
   "size": zod.number().int(),
   "dataUrl": zod.string().optional()
-}).optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(clearSocialOmniStateResponseLeadsOneKeywordMax),
+  "city": zod.string().max(clearSocialOmniStateResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(clearSocialOmniStateResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "messagesSent": zod.number().int().min(clearSocialOmniStateResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
 })
 
 
@@ -180,6 +481,8 @@ export const updateSocialOmniSettingsBodyPhoneNumbersMax = 10000;
 
 export const updateSocialOmniSettingsBodyMessageContentMax = 10000;
 
+export const updateSocialOmniSettingsBodyLicenseKeyMax = 200;
+
 
 
 export const UpdateSocialOmniSettingsBody = zod.object({
@@ -190,7 +493,8 @@ export const UpdateSocialOmniSettingsBody = zod.object({
   "phoneNumbers": zod.string().max(updateSocialOmniSettingsBodyPhoneNumbersMax).optional(),
   "messageContent": zod.string().max(updateSocialOmniSettingsBodyMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
-  "accountId": zod.string().nullish()
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(updateSocialOmniSettingsBodyLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.')
 
 export const updateSocialOmniSettingsResponseSettingsKeywordsMax = 300;
@@ -204,6 +508,16 @@ export const updateSocialOmniSettingsResponseSettingsDelayMaxMax = 30;
 export const updateSocialOmniSettingsResponseSettingsPhoneNumbersMax = 10000;
 
 export const updateSocialOmniSettingsResponseSettingsMessageContentMax = 10000;
+
+export const updateSocialOmniSettingsResponseSettingsLicenseKeyMax = 200;
+
+export const updateSocialOmniSettingsResponseLeadsOneKeywordMax = 100;
+
+export const updateSocialOmniSettingsResponseLeadsOneCityMax = 150;
+
+export const updateSocialOmniSettingsResponseLeadsOneTargetCountMax = 200;
+
+export const updateSocialOmniSettingsResponseAnalyticsMessagesSentMin = 0;
 
 
 
@@ -223,11 +537,12 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "phoneNumbers": zod.string().max(updateSocialOmniSettingsResponseSettingsPhoneNumbersMax).optional(),
   "messageContent": zod.string().max(updateSocialOmniSettingsResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
-  "accountId": zod.string().nullish()
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(updateSocialOmniSettingsResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "id": zod.string(),
-  "kind": zod.enum(['campaign', 'whatsapp']),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
   "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
   "progress": zod.number().int(),
@@ -263,7 +578,28 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "mime": zod.string(),
   "size": zod.number().int(),
   "dataUrl": zod.string().optional()
-}).optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(updateSocialOmniSettingsResponseLeadsOneKeywordMax),
+  "city": zod.string().max(updateSocialOmniSettingsResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(updateSocialOmniSettingsResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "messagesSent": zod.number().int().min(updateSocialOmniSettingsResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
 })
 
 
@@ -275,7 +611,7 @@ export const CreateSocialOmniJobHeader = zod.object({
 })
 
 export const CreateSocialOmniJobBody = zod.object({
-  "kind": zod.enum(['campaign', 'whatsapp']),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().optional()
 })
 
@@ -290,6 +626,16 @@ export const createSocialOmniJobResponseSettingsDelayMaxMax = 30;
 export const createSocialOmniJobResponseSettingsPhoneNumbersMax = 10000;
 
 export const createSocialOmniJobResponseSettingsMessageContentMax = 10000;
+
+export const createSocialOmniJobResponseSettingsLicenseKeyMax = 200;
+
+export const createSocialOmniJobResponseLeadsOneKeywordMax = 100;
+
+export const createSocialOmniJobResponseLeadsOneCityMax = 150;
+
+export const createSocialOmniJobResponseLeadsOneTargetCountMax = 200;
+
+export const createSocialOmniJobResponseAnalyticsMessagesSentMin = 0;
 
 
 
@@ -309,11 +655,12 @@ export const CreateSocialOmniJobResponse = zod.object({
   "phoneNumbers": zod.string().max(createSocialOmniJobResponseSettingsPhoneNumbersMax).optional(),
   "messageContent": zod.string().max(createSocialOmniJobResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
-  "accountId": zod.string().nullish()
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(createSocialOmniJobResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "id": zod.string(),
-  "kind": zod.enum(['campaign', 'whatsapp']),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
   "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
   "progress": zod.number().int(),
@@ -349,7 +696,28 @@ export const CreateSocialOmniJobResponse = zod.object({
   "mime": zod.string(),
   "size": zod.number().int(),
   "dataUrl": zod.string().optional()
-}).optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(createSocialOmniJobResponseLeadsOneKeywordMax),
+  "city": zod.string().max(createSocialOmniJobResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(createSocialOmniJobResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "messagesSent": zod.number().int().min(createSocialOmniJobResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
 })
 
 
@@ -373,6 +741,16 @@ export const cancelSocialOmniJobResponseSettingsPhoneNumbersMax = 10000;
 
 export const cancelSocialOmniJobResponseSettingsMessageContentMax = 10000;
 
+export const cancelSocialOmniJobResponseSettingsLicenseKeyMax = 200;
+
+export const cancelSocialOmniJobResponseLeadsOneKeywordMax = 100;
+
+export const cancelSocialOmniJobResponseLeadsOneCityMax = 150;
+
+export const cancelSocialOmniJobResponseLeadsOneTargetCountMax = 200;
+
+export const cancelSocialOmniJobResponseAnalyticsMessagesSentMin = 0;
+
 
 
 export const CancelSocialOmniJobResponse = zod.object({
@@ -391,11 +769,12 @@ export const CancelSocialOmniJobResponse = zod.object({
   "phoneNumbers": zod.string().max(cancelSocialOmniJobResponseSettingsPhoneNumbersMax).optional(),
   "messageContent": zod.string().max(cancelSocialOmniJobResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
-  "accountId": zod.string().nullish()
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(cancelSocialOmniJobResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "id": zod.string(),
-  "kind": zod.enum(['campaign', 'whatsapp']),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
   "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
   "progress": zod.number().int(),
@@ -431,7 +810,28 @@ export const CancelSocialOmniJobResponse = zod.object({
   "mime": zod.string(),
   "size": zod.number().int(),
   "dataUrl": zod.string().optional()
-}).optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(cancelSocialOmniJobResponseLeadsOneKeywordMax),
+  "city": zod.string().max(cancelSocialOmniJobResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(cancelSocialOmniJobResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "messagesSent": zod.number().int().min(cancelSocialOmniJobResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
 })
 
 
@@ -464,6 +864,16 @@ export const uploadSocialOmniMediaResponseSettingsPhoneNumbersMax = 10000;
 
 export const uploadSocialOmniMediaResponseSettingsMessageContentMax = 10000;
 
+export const uploadSocialOmniMediaResponseSettingsLicenseKeyMax = 200;
+
+export const uploadSocialOmniMediaResponseLeadsOneKeywordMax = 100;
+
+export const uploadSocialOmniMediaResponseLeadsOneCityMax = 150;
+
+export const uploadSocialOmniMediaResponseLeadsOneTargetCountMax = 200;
+
+export const uploadSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
+
 
 
 export const UploadSocialOmniMediaResponse = zod.object({
@@ -482,11 +892,12 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "phoneNumbers": zod.string().max(uploadSocialOmniMediaResponseSettingsPhoneNumbersMax).optional(),
   "messageContent": zod.string().max(uploadSocialOmniMediaResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
-  "accountId": zod.string().nullish()
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(uploadSocialOmniMediaResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "id": zod.string(),
-  "kind": zod.enum(['campaign', 'whatsapp']),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
   "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
   "progress": zod.number().int(),
@@ -522,7 +933,28 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "mime": zod.string(),
   "size": zod.number().int(),
   "dataUrl": zod.string().optional()
-}).optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(uploadSocialOmniMediaResponseLeadsOneKeywordMax),
+  "city": zod.string().max(uploadSocialOmniMediaResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(uploadSocialOmniMediaResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "messagesSent": zod.number().int().min(uploadSocialOmniMediaResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
 })
 
 
@@ -546,6 +978,16 @@ export const readSocialOmniMediaResponseSettingsPhoneNumbersMax = 10000;
 
 export const readSocialOmniMediaResponseSettingsMessageContentMax = 10000;
 
+export const readSocialOmniMediaResponseSettingsLicenseKeyMax = 200;
+
+export const readSocialOmniMediaResponseLeadsOneKeywordMax = 100;
+
+export const readSocialOmniMediaResponseLeadsOneCityMax = 150;
+
+export const readSocialOmniMediaResponseLeadsOneTargetCountMax = 200;
+
+export const readSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
+
 
 
 export const ReadSocialOmniMediaResponse = zod.object({
@@ -564,11 +1006,12 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "phoneNumbers": zod.string().max(readSocialOmniMediaResponseSettingsPhoneNumbersMax).optional(),
   "messageContent": zod.string().max(readSocialOmniMediaResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
-  "accountId": zod.string().nullish()
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(readSocialOmniMediaResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "id": zod.string(),
-  "kind": zod.enum(['campaign', 'whatsapp']),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
   "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
   "progress": zod.number().int(),
@@ -604,7 +1047,28 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "mime": zod.string(),
   "size": zod.number().int(),
   "dataUrl": zod.string().optional()
-}).optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(readSocialOmniMediaResponseLeadsOneKeywordMax),
+  "city": zod.string().max(readSocialOmniMediaResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(readSocialOmniMediaResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "messagesSent": zod.number().int().min(readSocialOmniMediaResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
 })
 
 
@@ -631,6 +1095,16 @@ export const deleteSocialOmniMediaResponseSettingsPhoneNumbersMax = 10000;
 
 export const deleteSocialOmniMediaResponseSettingsMessageContentMax = 10000;
 
+export const deleteSocialOmniMediaResponseSettingsLicenseKeyMax = 200;
+
+export const deleteSocialOmniMediaResponseLeadsOneKeywordMax = 100;
+
+export const deleteSocialOmniMediaResponseLeadsOneCityMax = 150;
+
+export const deleteSocialOmniMediaResponseLeadsOneTargetCountMax = 200;
+
+export const deleteSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
+
 
 
 export const DeleteSocialOmniMediaResponse = zod.object({
@@ -649,11 +1123,12 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "phoneNumbers": zod.string().max(deleteSocialOmniMediaResponseSettingsPhoneNumbersMax).optional(),
   "messageContent": zod.string().max(deleteSocialOmniMediaResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
-  "accountId": zod.string().nullish()
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(deleteSocialOmniMediaResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "id": zod.string(),
-  "kind": zod.enum(['campaign', 'whatsapp']),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
   "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
   "progress": zod.number().int(),
@@ -689,7 +1164,28 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "mime": zod.string(),
   "size": zod.number().int(),
   "dataUrl": zod.string().optional()
-}).optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(deleteSocialOmniMediaResponseLeadsOneKeywordMax),
+  "city": zod.string().max(deleteSocialOmniMediaResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(deleteSocialOmniMediaResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "messagesSent": zod.number().int().min(deleteSocialOmniMediaResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
 })
 
 
@@ -703,7 +1199,7 @@ export const CreateSocialOmniRecordHeader = zod.object({
 
 export const createSocialOmniRecordBodyCaptionMax = 1000;
 
-export const createSocialOmniRecordBodyTargetGroupCountMax = 200;
+export const createSocialOmniRecordBodyTargetGroupCountMax = 1000;
 
 
 
@@ -739,6 +1235,16 @@ export const createSocialOmniRecordResponseSettingsPhoneNumbersMax = 10000;
 
 export const createSocialOmniRecordResponseSettingsMessageContentMax = 10000;
 
+export const createSocialOmniRecordResponseSettingsLicenseKeyMax = 200;
+
+export const createSocialOmniRecordResponseLeadsOneKeywordMax = 100;
+
+export const createSocialOmniRecordResponseLeadsOneCityMax = 150;
+
+export const createSocialOmniRecordResponseLeadsOneTargetCountMax = 200;
+
+export const createSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
+
 
 
 export const CreateSocialOmniRecordResponse = zod.object({
@@ -757,11 +1263,12 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "phoneNumbers": zod.string().max(createSocialOmniRecordResponseSettingsPhoneNumbersMax).optional(),
   "messageContent": zod.string().max(createSocialOmniRecordResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
-  "accountId": zod.string().nullish()
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(createSocialOmniRecordResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "id": zod.string(),
-  "kind": zod.enum(['campaign', 'whatsapp']),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
   "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
   "progress": zod.number().int(),
@@ -797,7 +1304,28 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "mime": zod.string(),
   "size": zod.number().int(),
   "dataUrl": zod.string().optional()
-}).optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(createSocialOmniRecordResponseLeadsOneKeywordMax),
+  "city": zod.string().max(createSocialOmniRecordResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(createSocialOmniRecordResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "messagesSent": zod.number().int().min(createSocialOmniRecordResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
 })
 
 
@@ -815,7 +1343,7 @@ export const UpdateSocialOmniRecordHeader = zod.object({
 
 export const updateSocialOmniRecordBodyCaptionMax = 1000;
 
-export const updateSocialOmniRecordBodyTargetGroupCountMax = 200;
+export const updateSocialOmniRecordBodyTargetGroupCountMax = 1000;
 
 
 
@@ -851,6 +1379,16 @@ export const updateSocialOmniRecordResponseSettingsPhoneNumbersMax = 10000;
 
 export const updateSocialOmniRecordResponseSettingsMessageContentMax = 10000;
 
+export const updateSocialOmniRecordResponseSettingsLicenseKeyMax = 200;
+
+export const updateSocialOmniRecordResponseLeadsOneKeywordMax = 100;
+
+export const updateSocialOmniRecordResponseLeadsOneCityMax = 150;
+
+export const updateSocialOmniRecordResponseLeadsOneTargetCountMax = 200;
+
+export const updateSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
+
 
 
 export const UpdateSocialOmniRecordResponse = zod.object({
@@ -869,11 +1407,12 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "phoneNumbers": zod.string().max(updateSocialOmniRecordResponseSettingsPhoneNumbersMax).optional(),
   "messageContent": zod.string().max(updateSocialOmniRecordResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
-  "accountId": zod.string().nullish()
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(updateSocialOmniRecordResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "id": zod.string(),
-  "kind": zod.enum(['campaign', 'whatsapp']),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
   "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
   "progress": zod.number().int(),
@@ -909,7 +1448,28 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "mime": zod.string(),
   "size": zod.number().int(),
   "dataUrl": zod.string().optional()
-}).optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(updateSocialOmniRecordResponseLeadsOneKeywordMax),
+  "city": zod.string().max(updateSocialOmniRecordResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(updateSocialOmniRecordResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "messagesSent": zod.number().int().min(updateSocialOmniRecordResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
 })
 
 
@@ -934,6 +1494,16 @@ export const deleteSocialOmniRecordResponseSettingsPhoneNumbersMax = 10000;
 
 export const deleteSocialOmniRecordResponseSettingsMessageContentMax = 10000;
 
+export const deleteSocialOmniRecordResponseSettingsLicenseKeyMax = 200;
+
+export const deleteSocialOmniRecordResponseLeadsOneKeywordMax = 100;
+
+export const deleteSocialOmniRecordResponseLeadsOneCityMax = 150;
+
+export const deleteSocialOmniRecordResponseLeadsOneTargetCountMax = 200;
+
+export const deleteSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
+
 
 
 export const DeleteSocialOmniRecordResponse = zod.object({
@@ -952,11 +1522,12 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "phoneNumbers": zod.string().max(deleteSocialOmniRecordResponseSettingsPhoneNumbersMax).optional(),
   "messageContent": zod.string().max(deleteSocialOmniRecordResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
-  "accountId": zod.string().nullish()
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(deleteSocialOmniRecordResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "id": zod.string(),
-  "kind": zod.enum(['campaign', 'whatsapp']),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().nullish(),
   "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
   "progress": zod.number().int(),
@@ -992,7 +1563,28 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "mime": zod.string(),
   "size": zod.number().int(),
   "dataUrl": zod.string().optional()
-}).optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(deleteSocialOmniRecordResponseLeadsOneKeywordMax),
+  "city": zod.string().max(deleteSocialOmniRecordResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(deleteSocialOmniRecordResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.literal(true)
+}))
+})),
+  "analytics": zod.object({
+  "messagesSent": zod.number().int().min(deleteSocialOmniRecordResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
 })
 
 

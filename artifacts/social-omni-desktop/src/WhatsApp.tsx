@@ -58,7 +58,7 @@ export default function WhatsApp({ settings, media, accounts, jobs, perform, onS
   const changeMax = (v: number) => set({ delayMax: v, delayMin: Math.min(v, d.delayMin) });
 
   return <main className="page">
-    <div className="page-heading"><div><div className="eyebrow">Local simulation</div><h1>WhatsApp</h1>
+    <div className="page-heading"><div><div className="eyebrow">Local simulation</div><h1>WhatsApp Marketing</h1>
       <p className="heading-sub">Rehearse a message run on this device. Nothing is sent, joined, or collected.</p></div>
       <div style={{ display: 'flex', gap: 8 }}>
         {active && <button type="button" className="button button-secondary" onClick={() => onCancel(active.id)} data-testid="button-cancel-run"><Square /> Stop</button>}

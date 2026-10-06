@@ -32,4 +32,9 @@ export interface SimulatorSettings {
   mediaId?: string | null;
   /** @nullable */
   accountId?: string | null;
+  /**
+     * Locally stored future-license placeholder; no activation or validation
+     * @maxLength 200
+     */
+  licenseKey?: string;
 }

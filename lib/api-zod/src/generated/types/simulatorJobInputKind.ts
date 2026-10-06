@@ -12,4 +12,5 @@ export type SimulatorJobInputKind = typeof SimulatorJobInputKind[keyof typeof Si
 export const SimulatorJobInputKind = {
   campaign: 'campaign',
   whatsapp: 'whatsapp',
+  leads: 'leads',
 } as const;

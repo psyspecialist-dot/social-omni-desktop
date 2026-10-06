@@ -11,6 +11,25 @@ tags:
   - name: health
     description: Health operations
 paths:
+  /socialomni/leads:
+    put:
+      operationId: saveSocialOmniLeadDraft
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/SimulatorLeadInput"}
+      responses:
+        "200":
+          $ref: "#/components/responses/WorkspaceState"
+    delete:
+      operationId: clearSocialOmniLeads
+      description: Clears synthetic results only; refuses while a lead simulation is active.
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      responses:
+        "200":
+          $ref: "#/components/responses/WorkspaceState"
   /socialomni/state:
     get:
       operationId: getSocialOmniState
@@ -165,7 +184,7 @@ components:
       type: object
       required: [kind]
       properties:
-        kind: {type: string, enum: [campaign, whatsapp]}
+        kind: {type: string, enum: [campaign, whatsapp, leads]}
         campaignId: {type: string}
     SimulatorUploadInput:
       type: object
@@ -186,6 +205,7 @@ components:
         messageContent: {type: string, maxLength: 10000}
         mediaId: {type: [string, "null"]}
         accountId: {type: [string, "null"]}
+        licenseKey: {type: string, maxLength: 200, description: Locally stored future-license placeholder; no activation or validation}
     SimulatorRecord:
       type: object
       description: Campaign fields title/platform/caption/scheduledAt/status; account fields displayLabel/platform/handle/status; contact fields name/channel/value/optedIn/list.
@@ -196,7 +216,7 @@ components:
         scheduledAt: {type: string}
         status: {type: string}
         keywords: {type: string}
-        targetGroupCount: {type: integer, minimum: 1, maximum: 200}
+        targetGroupCount: {type: integer, minimum: 1, maximum: 1000}
         mediaId: {type: [string, "null"]}
         accountId: {type: [string, "null"]}
         displayLabel: {type: string}
@@ -230,7 +250,7 @@ components:
       required: [id, kind, status, progress, currentStep, steps, createdAt]
       properties:
         id: {type: string}
-        kind: {type: string, enum: [campaign, whatsapp]}
+        kind: {type: string, enum: [campaign, whatsapp, leads]}
         campaignId: {type: [string, "null"]}
         status: {type: string, enum: [Pending, Running, Completed, Cancelled, Failed]}
         progress: {type: integer}
@@ -245,9 +265,42 @@ components:
         accountName: {type: string}
         mediaName: {type: [string, "null"]}
         messageContent: {type: string}
+    SimulatorLeadInput:
+      type: object
+      required: [keyword, city, targetCount]
+      properties:
+        keyword: {type: string, maxLength: 100}
+        city: {type: string, maxLength: 150}
+        targetCount: {type: integer, minimum: 1, maximum: 200}
+    SimulatorLead:
+      type: object
+      required: [id, businessName, phoneNumber, address, website, keyword, city, jobId, createdAt, simulated]
+      properties:
+        id: {type: string}
+        businessName: {type: string}
+        phoneNumber: {type: string}
+        address: {type: string}
+        website: {type: string}
+        keyword: {type: string}
+        city: {type: string}
+        jobId: {type: string}
+        createdAt: {type: string}
+        simulated: {type: boolean, const: true}
+    SimulatorLeadWorkspace:
+      allOf:
+        - {$ref: "#/components/schemas/SimulatorLeadInput"}
+        - type: object
+          required: [results]
+          properties:
+            results: {type: array, items: {$ref: "#/components/schemas/SimulatorLead"}}
+    SimulatorAnalytics:
+      type: object
+      required: [messagesSent]
+      properties:
+        messagesSent: {type: integer, minimum: 0, description: Cumulative simulated sends, unaffected by job-history pruning}
     SimulatorState:
       type: object
-      required: [store, settings, jobs, initialized, media]
+      required: [store, settings, jobs, initialized, media, leads, analytics]
       properties:
         store:
           type: object
@@ -263,6 +316,8 @@ components:
         initialized: {type: boolean}
         media: {type: array, items: {$ref: "#/components/schemas/SimulatorMedia"}}
         mediaContent: {$ref: "#/components/schemas/SimulatorMedia"}
+        leads: {$ref: "#/components/schemas/SimulatorLeadWorkspace"}
+        analytics: {$ref: "#/components/schemas/SimulatorAnalytics"}
     HealthStatus:
       type: object
       properties:

@@ -5,7 +5,9 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { SimulatorAnalytics } from './simulatorAnalytics';
 import type { SimulatorJob } from './simulatorJob';
+import type { SimulatorLeadWorkspace } from './simulatorLeadWorkspace';
 import type { SimulatorMedia } from './simulatorMedia';
 import type { SimulatorSettings } from './simulatorSettings';
 import type { SimulatorStateStore } from './simulatorStateStore';
@@ -17,4 +19,6 @@ export interface SimulatorState {
   initialized: boolean;
   media: SimulatorMedia[];
   mediaContent?: SimulatorMedia;
+  leads: SimulatorLeadWorkspace;
+  analytics: SimulatorAnalytics;
 }

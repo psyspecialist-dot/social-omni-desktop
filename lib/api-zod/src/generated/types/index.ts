@@ -7,11 +7,15 @@
  */
 
 export * from './healthStatus';
+export * from './simulatorAnalytics';
 export * from './simulatorJob';
 export * from './simulatorJobInput';
 export * from './simulatorJobInputKind';
 export * from './simulatorJobKind';
 export * from './simulatorJobStatus';
+export * from './simulatorLead';
+export * from './simulatorLeadInput';
+export * from './simulatorLeadWorkspace';
 export * from './simulatorMedia';
 export * from './simulatorRecord';
 export * from './simulatorRecordChannel';

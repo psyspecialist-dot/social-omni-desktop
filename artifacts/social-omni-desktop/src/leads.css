@@ -1,0 +1,27 @@
+.ld-grid{display:grid;grid-template-columns:minmax(280px,380px) minmax(0,1fr);gap:18px;align-items:start}
+.ld-stack{display:flex;flex-direction:column;gap:18px;min-width:0}
+.ld-form{padding:18px 20px 20px}
+.ld-note{padding:13px 15px;border-radius:11px;background:rgba(209,163,64,.13);border:1px solid rgba(209,163,64,.3);font-size:11px;line-height:1.5;margin:0 0 16px}
+.ld-fb{font-size:11px;line-height:1.5;margin-top:10px}
+.ld-fb.err{color:hsl(var(--destructive))}.ld-fb.ok{color:#45845d}.ld-fb.hint{color:hsl(var(--muted-foreground))}
+.ld-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.ld-bar{height:6px;border-radius:99px;background:hsl(var(--secondary));margin:12px 0 8px;overflow:hidden}
+.ld-bar i{display:block;height:100%;background:hsl(var(--primary));transition:width .3s}
+.ld-meta{display:flex;justify-content:space-between;gap:10px;font:10px var(--app-font-mono);color:hsl(var(--muted-foreground))}
+.ld-job{padding:16px 20px}
+.ld-job-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ld-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px 20px;border-bottom:1px solid hsl(var(--border))}
+.ld-tools .search-wrap{max-width:260px;min-width:160px}
+.ld-scroll{overflow:auto;max-height:560px}
+.ld-table{width:100%;border-collapse:collapse;font-size:12px;min-width:720px}
+.ld-table th{position:sticky;top:0;background:hsl(var(--secondary));font:10px var(--app-font-mono);text-transform:uppercase;letter-spacing:.1em;color:hsl(var(--muted-foreground));text-align:left;padding:11px 16px}
+.ld-table td{padding:12px 16px;border-bottom:1px solid hsl(var(--border));vertical-align:top}
+.ld-table tr:last-child td{border-bottom:0}
+.ld-name{font-weight:700}
+.ld-mono{font-family:var(--app-font-mono);font-size:11px;white-space:nowrap}
+.ld-count{font:10px var(--app-font-mono);color:hsl(var(--muted-foreground))}
+.ld-confirm{margin-top:14px;padding:12px 14px;border:1px solid hsl(var(--destructive));border-radius:10px;font-size:11px;line-height:1.5}
+.ld-confirm .ld-actions{margin-top:10px}
+.leads-page .button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.button-destructive{background:hsl(var(--destructive));color:hsl(var(--destructive-foreground))}
+@media(max-width:1000px){.ld-grid{grid-template-columns:1fr}}

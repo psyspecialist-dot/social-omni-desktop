@@ -22,6 +22,7 @@ import type {
 import type {
   HealthStatus,
   SimulatorJobInput,
+  SimulatorLeadInput,
   SimulatorRecord,
   SimulatorSettings,
   SimulatorUploadInput,
@@ -54,6 +55,159 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getSaveSocialOmniLeadDraftUrl = () => {
+
+
+
+
+  return `/api/socialomni/leads`
+}
+
+export const saveSocialOmniLeadDraft = async (simulatorLeadInput: SimulatorLeadInput, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<WorkspaceStateResponse>(getSaveSocialOmniLeadDraftUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(simulatorLeadInput)
+  }
+);}
+
+
+
+
+
+export const getSaveSocialOmniLeadDraftMutationKey = () => ['saveSocialOmniLeadDraft'] as const;
+
+export const getSaveSocialOmniLeadDraftMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveSocialOmniLeadDraft>>, TError,SaveSocialOmniLeadDraftMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof saveSocialOmniLeadDraft>>, TError,SaveSocialOmniLeadDraftMutationVariables, TContext> => {
+
+const mutationKey = getSaveSocialOmniLeadDraftMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof saveSocialOmniLeadDraft>>, SaveSocialOmniLeadDraftMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  saveSocialOmniLeadDraft(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SaveSocialOmniLeadDraftMutationResult = NonNullable<Awaited<ReturnType<typeof saveSocialOmniLeadDraft>>>
+    export type SaveSocialOmniLeadDraftMutationBody = BodyType<SimulatorLeadInput>
+    export type SaveSocialOmniLeadDraftMutationError = ErrorType<unknown>
+    export type SaveSocialOmniLeadDraftMutationVariables = {data: BodyType<SimulatorLeadInput>}
+
+    export const useSaveSocialOmniLeadDraft = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveSocialOmniLeadDraft>>, TError,SaveSocialOmniLeadDraftMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof saveSocialOmniLeadDraft>>,
+        TError,
+        SaveSocialOmniLeadDraftMutationVariables,
+        TContext
+      > => {
+      return useMutation(getSaveSocialOmniLeadDraftMutationOptions(options));
+    }
+
+export const getClearSocialOmniLeadsUrl = () => {
+
+
+
+
+  return `/api/socialomni/leads`
+}
+
+/**
+ * Clears synthetic results only; refuses while a lead simulation is active.
+ */
+export const clearSocialOmniLeads = async ( options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+  return customFetch<WorkspaceStateResponse>(getClearSocialOmniLeadsUrl(),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getClearSocialOmniLeadsMutationKey = () => ['clearSocialOmniLeads'] as const;
+
+export const getClearSocialOmniLeadsMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearSocialOmniLeads>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof clearSocialOmniLeads>>, TError,void, TContext> => {
+
+const mutationKey = getClearSocialOmniLeadsMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof clearSocialOmniLeads>>, void> = () => {
+
+
+          return  clearSocialOmniLeads(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ClearSocialOmniLeadsMutationResult = NonNullable<Awaited<ReturnType<typeof clearSocialOmniLeads>>>
+
+    export type ClearSocialOmniLeadsMutationError = ErrorType<unknown>
+
+
+    export const useClearSocialOmniLeads = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof clearSocialOmniLeads>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof clearSocialOmniLeads>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getClearSocialOmniLeadsMutationOptions(options));
+    }
 
 export const getGetSocialOmniStateUrl = () => {
 

@@ -1,6 +1,6 @@
 # SocialOmni Desktop
 
-This is the local Electron edition of the SocialOmni campaign planner.
+This is the local Electron edition of the SocialOmni Desktop simulation dashboard.
 
 ## Run on your computer
 
@@ -54,7 +54,7 @@ relative asset paths and hash routing so it runs from a local file.
 Plan drafts, keep contact records, organize simulated accounts, and review
 scheduled work. WhatsApp saves comma/newline-separated phone lists and formatted
 message templates. Campaigns save keywords, captions, a target group count
-(1–200), and optional account/media selections. Image and video attachments
+(1–1,000), and optional account/media selections. Image and video attachments
 (up to 5 MB each, 50 MB per workspace) are saved as SQLite blobs.
 
 Start Campaign and Run Task trigger background simulations with persistent
@@ -65,11 +65,22 @@ hypothetical names, not real search results. Active simulated accounts are not
 connected accounts. Only fake session references beginning with `demo-` are
 accepted; never enter actual credentials or cookies.
 
+Overview shows total saved campaigns, active simulated accounts, cumulative
+simulated messages, and saved synthetic leads. Facebook & Instagram Automation
+has its own sidebar module. Google Maps Lead Extractor saves niche/location
+drafts and generates clearly labeled fictional businesses with reserved phone
+numbers and .example websites; it never contacts or scrapes Google Maps.
+Results accumulate in SQLite (up to 2,000) and can be exported as CSV or real
+Excel .xlsx files. Excel cells are text; CSV guards formula-like values.
+Lead simulations run in the same sequential queue and can be stopped.
+Settings includes a saved future-license placeholder, not an activation service.
+
 Drafts, attachments and results survive restarts. An in-progress rehearsal is
 marked interrupted when the process restarts; it is not automatically resumed.
 Publishing and messaging remain manual actions in official platform apps. A due
 item becomes ready for review, not automatically sent. Clearing the workspace
-also removes saved media and message/phone-list settings (appearance is retained).
+also removes saved media, message/phone-list settings, lead results and drafts,
+analytics counters, and the license placeholder (appearance is retained).
 
 It does not auto-post, auto-comment, auto-join groups, extract group members,
 send bulk messages, or use ban-avoidance delays.

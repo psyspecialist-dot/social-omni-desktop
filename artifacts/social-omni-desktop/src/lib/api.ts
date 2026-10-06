@@ -9,6 +9,7 @@ export interface SimulationSettings {
   messageContent: string;
   mediaId: string | null;
   accountId: string | null;
+  licenseKey: string;
 }
 export interface MediaAsset { id: string; name: string; mime: string; size: number }
 export interface SimulationTarget {
@@ -19,7 +20,7 @@ export interface SimulationTarget {
 }
 export interface SimulationJob {
   id: string;
-  kind: 'campaign' | 'whatsapp';
+  kind: 'campaign' | 'whatsapp' | 'leads';
   campaignId: string | null;
   status: 'Pending' | 'Running' | 'Completed' | 'Cancelled' | 'Failed';
   progress: number;
@@ -35,6 +36,12 @@ export interface SimulationJob {
   mediaName?: string | null;
   messageContent?: string;
 }
+export interface Lead {
+  id: string; businessName: string; phoneNumber: string; address: string; website: string;
+  keyword: string; city: string; jobId: string; createdAt: string; simulated: true;
+}
+export interface LeadWorkspace { keyword: string; city: string; targetCount: number; results: Lead[] }
+export interface SimulationAnalytics { messagesSent: number }
 export interface ApiState {
   store: Store;
   settings: SimulationSettings;
@@ -42,6 +49,8 @@ export interface ApiState {
   initialized: boolean;
   media: MediaAsset[];
   mediaContent?: MediaAsset & { dataUrl: string };
+  leads: LeadWorkspace;
+  analytics: SimulationAnalytics;
 }
 const workspaceKey = 'socialomni.workspace.id';
 function workspaceId(): string {

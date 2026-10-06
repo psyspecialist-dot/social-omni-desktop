@@ -11,6 +11,7 @@ export type SimulatorJobInputKind = typeof SimulatorJobInputKind[keyof typeof Si
 export const SimulatorJobInputKind = {
   campaign: 'campaign',
   whatsapp: 'whatsapp',
+  leads: 'leads',
 } as const;
 
 export interface SimulatorJobInput {
@@ -71,6 +72,11 @@ export interface SimulatorSettings {
   mediaId?: string | null;
   /** @nullable */
   accountId?: string | null;
+  /**
+     * Locally stored future-license placeholder; no activation or validation
+     * @maxLength 200
+     */
+  licenseKey?: string;
 }
 
 export type SimulatorRecordPlatform = typeof SimulatorRecordPlatform[keyof typeof SimulatorRecordPlatform];
@@ -104,7 +110,7 @@ export interface SimulatorRecord {
   keywords?: string;
   /**
      * @minimum 1
-     * @maximum 200
+     * @maximum 1000
      */
   targetGroupCount?: number;
   /** @nullable */
@@ -168,6 +174,7 @@ export type SimulatorJobKind = typeof SimulatorJobKind[keyof typeof SimulatorJob
 export const SimulatorJobKind = {
   campaign: 'campaign',
   whatsapp: 'whatsapp',
+  leads: 'leads',
 } as const;
 
 export type SimulatorJobStatus = typeof SimulatorJobStatus[keyof typeof SimulatorJobStatus];
@@ -203,6 +210,43 @@ export interface SimulatorJob {
   messageContent?: string;
 }
 
+export interface SimulatorLeadInput {
+  /** @maxLength 100 */
+  keyword: string;
+  /** @maxLength 150 */
+  city: string;
+  /**
+     * @minimum 1
+     * @maximum 200
+     */
+  targetCount: number;
+}
+
+export interface SimulatorLead {
+  id: string;
+  businessName: string;
+  phoneNumber: string;
+  address: string;
+  website: string;
+  keyword: string;
+  city: string;
+  jobId: string;
+  createdAt: string;
+  simulated: true;
+}
+
+export type SimulatorLeadWorkspace = SimulatorLeadInput & {
+  results: SimulatorLead[];
+};
+
+export interface SimulatorAnalytics {
+  /**
+     * Cumulative simulated sends
+     * @minimum 0
+     */
+  messagesSent: number;
+}
+
 export type SimulatorStateStoreCampaignsItem = { [key: string]: unknown };
 
 export type SimulatorStateStoreAccountsItem = { [key: string]: unknown };
@@ -226,6 +270,8 @@ export interface SimulatorState {
   initialized: boolean;
   media: SimulatorMedia[];
   mediaContent?: SimulatorMedia;
+  leads: SimulatorLeadWorkspace;
+  analytics: SimulatorAnalytics;
 }
 
 export interface HealthStatus {
