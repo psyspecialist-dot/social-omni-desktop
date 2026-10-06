@@ -1,0 +1,26 @@
+Please upgrade the "Social Najhin" desktop application to include all remaining advanced marketing, extraction, and multi-platform automation modules, integrated with a gorgeous, centralized node-network dashboard:
+
+1. Central Node-Network Dashboard (Main View):
+   - Design a stunning, interactive landing dashboard inspired by a node-network mind map.
+   - Central glowing circular hub titled "Social Najhin" connected via glowing SVG/CSS curved lines to surround interactive nodes for all app modules.
+
+2. Data Extractors Module (B2B & Google Maps):
+   - Add a "B2B & Data Extractors" tab.
+   - Include Google Maps Lead Extractor (scraping business names, phones, addresses, websites) and a B2B Leads Prospector tool.
+   - Provide direct one-click export to Excel (.xlsx) and CSV formats.
+
+3. Multi-Platform Automation Module (Telegram & Facebook):
+   - Add a "Telegram & Facebook Automation" tab.
+   - Implement automation features for Facebook & Instagram: keyword group searching, auto-joining groups, bulk posting, and message scheduling with safe anti-ban pacing.
+   - Implement Telegram marketing automation: bulk messaging, group member extraction, and channel posting.
+
+4. Email Marketing & Verification Module (Email Suite):
+   - Add an "Email Marketing" tab.
+   - Include "Atlas Mail Sender" style bulk email campaign creator with customizable templates.
+   - Include "Globo Mail Verifier" tool to clean and verify email address lists, checking validity and removing bad addresses to prevent bounce rates.
+
+5. Unified Theme, SQLite, & Safety:
+   - Maintain the majestic dark theme with deep black background, professional Social Media Blue and Emerald Green accents, and subtle Red/Yellow highlights for warnings and status tags.
+   - Ensure all data syncs with local SQLite and all tasks respect human-like randomized delays (anti-ban protection).
+
+Please update all backend routes, worker scripts, and frontend views to make this complete all-in-one suite fully functional for local desktop execution on macOS.
