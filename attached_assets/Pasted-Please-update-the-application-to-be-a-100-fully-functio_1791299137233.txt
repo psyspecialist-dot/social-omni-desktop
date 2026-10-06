@@ -1,0 +1,22 @@
+Please update the application to be a 100% fully functional, production-ready social media and WhatsApp marketing dashboard. Fix all missing features and input fields across all modules according to these exact specifications:
+
+1. Complete WhatsApp Marketing Module:
+   - Add a dedicated textarea/input box for "Target Phone Numbers (comma or line separated)".
+   - Add a rich text input box for the "Message Content / Template".
+   - Add a file upload input for sending images/videos with the WhatsApp message.
+   - Implement the actual sequential sending logic with the human-like random delay slider (3 to 5+ seconds interval) between messages, showing live progress counters (e.g., Sent: 3 / 20, Status: Waiting...).
+
+2. Complete Facebook & Instagram Automation Module:
+   - Add input fields for "Target Keywords" (to find groups).
+   - Add a campaign creator form: Upload video/image, write caption/post text, set target group count (e.g., 50, 100 groups).
+   - Display a live queue table showing group names, join status (Pending/Joined), and posting status.
+
+3. Fully Functional "Accounts Manager" Page:
+   - Add a form to add/connect new accounts for WhatsApp, Facebook, Instagram, and TikTok (fields for Account Name, Phone/Username, and Session Key/Cookie string).
+   - Save and list these accounts dynamically in a clean database-backed table with "Active" status.
+
+4. Centralized Local SQLite Database & Backend Execution:
+   - Ensure all inputs (campaigns, phone lists, message texts, accounts) are saved to SQLite and processed sequentially by backend worker scripts without throwing errors.
+   - Make sure the live activity console at the bottom shows real simulated logs for every action (joining groups, sending messages with delays, uploading content).
+
+Please write and update all necessary backend routes, database schemas, and frontend UI pages so that every single menu item (Overview, Campaigns, Accounts, Contacts, WhatsApp, Settings) is fully interactive and equipped with all necessary input forms.
