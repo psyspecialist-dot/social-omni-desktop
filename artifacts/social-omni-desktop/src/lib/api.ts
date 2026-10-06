@@ -5,6 +5,17 @@ export interface SimulationSettings {
   keywords: string;
   delayMin: number;
   delayMax: number;
+  phoneNumbers: string;
+  messageContent: string;
+  mediaId: string | null;
+  accountId: string | null;
+}
+export interface MediaAsset { id: string; name: string; mime: string; size: number }
+export interface SimulationTarget {
+  id: string; name: string;
+  joinStatus: 'Pending' | 'Joined';
+  postStatus: 'Pending' | 'Posted';
+  sendStatus: 'Pending' | 'Sent';
 }
 export interface SimulationJob {
   id: string;
@@ -15,12 +26,22 @@ export interface SimulationJob {
   currentStep: number;
   steps: string[];
   createdAt: string;
+  targets?: SimulationTarget[];
+  completedCount?: number;
+  totalCount?: number;
+  nextActionAt?: string | null;
+  phase?: string;
+  accountName?: string;
+  mediaName?: string | null;
+  messageContent?: string;
 }
 export interface ApiState {
   store: Store;
   settings: SimulationSettings;
   jobs: SimulationJob[];
   initialized: boolean;
+  media: MediaAsset[];
+  mediaContent?: MediaAsset & { dataUrl: string };
 }
 const workspaceKey = 'socialomni.workspace.id';
 function workspaceId(): string {

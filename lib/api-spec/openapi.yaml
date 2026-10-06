@@ -11,6 +11,119 @@ tags:
   - name: health
     description: Health operations
 paths:
+  /socialomni/state:
+    get:
+      operationId: getSocialOmniState
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      responses:
+        "200":
+          $ref: "#/components/responses/WorkspaceState"
+    delete:
+      operationId: clearSocialOmniState
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      responses:
+        "200":
+          $ref: "#/components/responses/WorkspaceState"
+  /socialomni/settings:
+    put:
+      operationId: updateSocialOmniSettings
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/SimulatorSettings"}
+      responses:
+        "200":
+          $ref: "#/components/responses/WorkspaceState"
+  /socialomni/jobs:
+    post:
+      operationId: createSocialOmniJob
+      description: Creates a local simulation, never a platform action. Inputs are snapshotted from the saved draft.
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/SimulatorJobInput"}
+      responses:
+        "200":
+          $ref: "#/components/responses/WorkspaceState"
+  /socialomni/jobs/{id}/cancel:
+    post:
+      operationId: cancelSocialOmniJob
+      parameters:
+        - {$ref: "#/components/parameters/Workspace"}
+        - {$ref: "#/components/parameters/RecordId"}
+      responses:
+        "200":
+          $ref: "#/components/responses/WorkspaceState"
+  /socialomni/media:
+    post:
+      operationId: uploadSocialOmniMedia
+      description: Stores image/video bytes in local SQLite, limited to 5 MiB per file and 50 MiB per workspace.
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/SimulatorUploadInput"}
+      responses:
+        "200":
+          $ref: "#/components/responses/WorkspaceState"
+  /socialomni/media/{id}:
+    get:
+      operationId: readSocialOmniMedia
+      parameters:
+        - {$ref: "#/components/parameters/Workspace"}
+        - {$ref: "#/components/parameters/RecordId"}
+      responses:
+        "200":
+          $ref: "#/components/responses/WorkspaceState"
+    delete:
+      operationId: deleteSocialOmniMedia
+      description: Refuses to delete attachments referenced by a draft or an active simulation.
+      parameters:
+        - {$ref: "#/components/parameters/Workspace"}
+        - {$ref: "#/components/parameters/RecordId"}
+      responses:
+        "200":
+          $ref: "#/components/responses/WorkspaceState"
+  /socialomni/{collection}:
+    parameters:
+      - {$ref: "#/components/parameters/Workspace"}
+      - {$ref: "#/components/parameters/Collection"}
+    post:
+      operationId: createSocialOmniRecord
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/SimulatorRecord"}
+      responses:
+        "200":
+          $ref: "#/components/responses/WorkspaceState"
+  /socialomni/{collection}/{id}:
+    parameters:
+      - {$ref: "#/components/parameters/Workspace"}
+      - {$ref: "#/components/parameters/Collection"}
+      - {$ref: "#/components/parameters/RecordId"}
+    patch:
+      operationId: updateSocialOmniRecord
+      description: Full editable record fields, excluding server-owned ID and timestamps.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/SimulatorRecord"}
+      responses:
+        "200":
+          $ref: "#/components/responses/WorkspaceState"
+    delete:
+      operationId: deleteSocialOmniRecord
+      responses:
+        "200":
+          $ref: "#/components/responses/WorkspaceState"
   /healthz:
     get:
       operationId: healthCheck
@@ -25,7 +138,131 @@ paths:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
 components:
+  parameters:
+    Workspace:
+      name: x-socialomni-workspace
+      in: header
+      required: true
+      schema: {type: string, format: uuid}
+    RecordId:
+      name: id
+      in: path
+      required: true
+      schema: {type: string}
+    Collection:
+      name: collection
+      in: path
+      required: true
+      schema: {type: string, enum: [campaigns, accounts, contacts]}
+  responses:
+    WorkspaceState:
+      description: Updated workspace state; invalid inputs return 400 with an error message; missing records return 404.
+      content:
+        application/json:
+          schema: {$ref: "#/components/schemas/SimulatorState"}
   schemas:
+    SimulatorJobInput:
+      type: object
+      required: [kind]
+      properties:
+        kind: {type: string, enum: [campaign, whatsapp]}
+        campaignId: {type: string}
+    SimulatorUploadInput:
+      type: object
+      required: [name, mime, data]
+      properties:
+        name: {type: string, maxLength: 200}
+        mime: {type: string, enum: [image/png, image/jpeg, image/webp, image/gif, video/mp4, video/webm]}
+        data: {type: string, description: Base64 encoded file without a data URL prefix}
+    SimulatorSettings:
+      type: object
+      description: Partial updates preserve omitted fields.
+      properties:
+        theme: {type: string, enum: [light, dark]}
+        keywords: {type: string, maxLength: 300}
+        delayMin: {type: integer, minimum: 3, maximum: 30}
+        delayMax: {type: integer, minimum: 3, maximum: 30}
+        phoneNumbers: {type: string, maxLength: 10000}
+        messageContent: {type: string, maxLength: 10000}
+        mediaId: {type: [string, "null"]}
+        accountId: {type: [string, "null"]}
+    SimulatorRecord:
+      type: object
+      description: Campaign fields title/platform/caption/scheduledAt/status; account fields displayLabel/platform/handle/status; contact fields name/channel/value/optedIn/list.
+      properties:
+        title: {type: string}
+        platform: {type: string, enum: [Facebook, Instagram, WhatsApp, TikTok]}
+        caption: {type: string, maxLength: 1000}
+        scheduledAt: {type: string}
+        status: {type: string}
+        keywords: {type: string}
+        targetGroupCount: {type: integer, minimum: 1, maximum: 200}
+        mediaId: {type: [string, "null"]}
+        accountId: {type: [string, "null"]}
+        displayLabel: {type: string}
+        handle: {type: string}
+        demoSession: {type: string, description: Fake demo- reference only; never an actual session cookie}
+        name: {type: string}
+        channel: {type: string, enum: [Email, Phone]}
+        value: {type: string}
+        optedIn: {type: boolean}
+        list: {type: string}
+    SimulatorMedia:
+      type: object
+      required: [id, name, mime, size]
+      properties:
+        id: {type: string}
+        name: {type: string}
+        mime: {type: string}
+        size: {type: integer}
+        dataUrl: {type: string}
+    SimulatorTarget:
+      type: object
+      required: [id, name, joinStatus, postStatus, sendStatus]
+      properties:
+        id: {type: string}
+        name: {type: string}
+        joinStatus: {type: string, enum: [Pending, Joined]}
+        postStatus: {type: string, enum: [Pending, Posted]}
+        sendStatus: {type: string, enum: [Pending, Sent]}
+    SimulatorJob:
+      type: object
+      required: [id, kind, status, progress, currentStep, steps, createdAt]
+      properties:
+        id: {type: string}
+        kind: {type: string, enum: [campaign, whatsapp]}
+        campaignId: {type: [string, "null"]}
+        status: {type: string, enum: [Pending, Running, Completed, Cancelled, Failed]}
+        progress: {type: integer}
+        currentStep: {type: integer}
+        steps: {type: array, items: {type: string}}
+        createdAt: {type: string}
+        targets: {type: array, items: {$ref: "#/components/schemas/SimulatorTarget"}}
+        completedCount: {type: integer}
+        totalCount: {type: integer}
+        phase: {type: string}
+        nextActionAt: {type: [string, "null"]}
+        accountName: {type: string}
+        mediaName: {type: [string, "null"]}
+        messageContent: {type: string}
+    SimulatorState:
+      type: object
+      required: [store, settings, jobs, initialized, media]
+      properties:
+        store:
+          type: object
+          required: [campaigns, accounts, contacts, lists, activity]
+          properties:
+            campaigns: {type: array, items: {type: object, additionalProperties: true}}
+            accounts: {type: array, items: {type: object, additionalProperties: true}}
+            contacts: {type: array, items: {type: object, additionalProperties: true}}
+            lists: {type: array, items: {type: string}}
+            activity: {type: array, items: {type: object, additionalProperties: true}}
+        settings: {$ref: "#/components/schemas/SimulatorSettings"}
+        jobs: {type: array, items: {$ref: "#/components/schemas/SimulatorJob"}}
+        initialized: {type: boolean}
+        media: {type: array, items: {$ref: "#/components/schemas/SimulatorMedia"}}
+        mediaContent: {$ref: "#/components/schemas/SimulatorMedia"}
     HealthStatus:
       type: object
       properties:

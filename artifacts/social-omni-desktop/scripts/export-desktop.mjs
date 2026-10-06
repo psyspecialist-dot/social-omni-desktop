@@ -22,4 +22,7 @@ const destination = path.join(appDirectory, 'desktop', 'renderer');
 rmSync(destination, { recursive: true, force: true });
 cpSync(output, destination, { recursive: true, filter: (source) => !source.includes(`${path.sep}downloads`) });
 cpSync(path.resolve(appDirectory, '..', '..', 'lib', 'socialomni-api', 'service.cjs'), path.join(appDirectory, 'desktop', 'api-service.cjs'));
+for (const file of ['validation.cjs', 'worker.cjs']) {
+  cpSync(path.resolve(appDirectory, '..', '..', 'lib', 'socialomni-api', file), path.join(appDirectory, 'desktop', file));
+}
 process.stdout.write(`Desktop renderer exported to ${destination}\n`);

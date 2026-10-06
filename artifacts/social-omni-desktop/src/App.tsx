@@ -3,8 +3,10 @@ import { useForm } from 'react-hook-form';
 import { Form } from '@/components/ui/form';
 import { useHashLocation } from 'wouter/use-hash-location';
 import { isDesktop, openOfficialPlatform, readLocal } from '@/lib/persistence';
-import { apiRequest, type ApiState, type SimulationJob, type SimulationSettings } from '@/lib/api';
+import { apiRequest, type ApiState, type MediaAsset, type SimulationJob, type SimulationSettings } from '@/lib/api';
 import WhatsApp from '@/WhatsApp';
+import MediaUpload from '@/components/MediaUpload';
+import SimQueue from '@/components/SimQueue';
 import { STORAGE_KEY, THEME_KEY, platforms, statuses, isoIn, seedStore, parseStore, type CampaignStatus, type Campaign, type Account, type Contact, type Store } from '@/lib/workspace';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from '@/components/error-boundary';
@@ -36,7 +38,8 @@ function Workspace() {
   const [ready, setReady] = useState(false);
   const [storageError, setStorageError] = useState('');
   const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState<SimulationSettings>({ theme: 'light', keywords: '', delayMin: 3, delayMax: 5 });
+  const [settings, setSettings] = useState<SimulationSettings>({ theme: 'light', keywords: '', delayMin: 3, delayMax: 5, phoneNumbers: '', messageContent: '', mediaId: null, accountId: null });
+  const [media, setMedia] = useState<MediaAsset[]>([]);
   const [jobs, setJobs] = useState<SimulationJob[]>([]);
   const writes = useRef(0);
   const revision = useRef(0);
@@ -49,6 +52,7 @@ function Workspace() {
     setStore(data.store);
     setSettings(data.settings);
     setJobs(data.jobs);
+    setMedia(data.media || []);
     setTheme(data.settings.theme);
   };
   useEffect(() => {
@@ -160,12 +164,12 @@ function Workspace() {
                {storageError && <div className="storage-alert" role="alert" data-testid="error-storage-save">{storageError}<button className="button button-secondary" onClick={() => { apiRequest('GET', '/state').then(data => { applyState(data); setStorageError(''); }).catch(report); }} data-testid="button-retry-save">Reconnect</button></div>}
               <ErrorBoundary resetKey={path}>
                 <Switch>
-                  <Route path="/"><Dashboard store={store} onStatus={saveStatus} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
-                   <Route path="/campaigns"><Campaigns store={store} open={item => setDialog({ type: 'campaign', item })} create={() => setDialog({ type: 'campaign' })} remove={item => remove('campaign', item)} status={saveStatus} handoff={handoff} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
+                  <Route path="/"><Dashboard jobs={jobs} store={store} onStatus={saveStatus} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
+                   <Route path="/campaigns"><Campaigns jobs={jobs} store={store} open={item => setDialog({ type: 'campaign', item })} create={() => setDialog({ type: 'campaign' })} remove={item => remove('campaign', item)} status={saveStatus} handoff={handoff} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
                    <Route path="/accounts"><Accounts store={store} open={item => setDialog({ type: 'account', item })} create={() => setDialog({ type: 'account' })} remove={item => remove('account', item)} handoff={handoff} /></Route>
-                   <Route path="/whatsapp"><WhatsApp settings={settings} onSave={async value => { await perform('PUT', '/settings', value); }} onRun={() => runTask('whatsapp')} jobs={jobs} /></Route>
+                   <Route path="/whatsapp"><WhatsApp settings={settings} media={media} accounts={store.accounts} jobs={jobs} perform={perform} onSave={async value => { await perform('PUT', '/settings', value); }} onRun={() => runTask('whatsapp')} onCancel={cancelTask} /></Route>
                   <Route path="/contacts"><Contacts store={store} open={item => setDialog({ type: 'contact', item })} create={() => setDialog({ type: 'contact' })} remove={item => remove('contact', item)} /></Route>
-                  <Route path="/settings"><Settings theme={theme} setTheme={value => { void perform('PUT', '/settings', { theme: value }).catch(report); }} store={store} clear={clearWorkspace} /></Route>
+                  <Route path="/settings"><Settings settings={settings} saveSettings={async value => { await perform('PUT', '/settings', value); }} theme={theme} setTheme={value => { void perform('PUT', '/settings', { theme: value }).catch(report); }} store={store} clear={clearWorkspace} /></Route>
                   <Route component={NotFound} />
                 </Switch>
               </ErrorBoundary>
@@ -174,7 +178,7 @@ function Workspace() {
                  <div role="log" aria-live="polite">{store.activity.slice(0, 6).map(entry => <div className="console-log" key={entry.id}><time>{formatTime(entry.timestamp)}</time><span className={`log-level log-${entry.level}`}>{entry.level}</span><span>{entry.message}</span></div>)}</div></section>
             </div>
           </div>
-          {dialog && <EditorDialog key={`${dialog.type}-${dialog.item?.id || 'new'}`} kind={dialog.type} item={dialog.item} store={store}
+          {dialog && <EditorDialog key={`${dialog.type}-${dialog.item?.id || 'new'}`} kind={dialog.type} item={dialog.item} store={store} media={media} perform={perform}
             close={() => setDialog(null)} saveCampaign={saveCampaign} saveAccount={saveAccount} saveContact={saveContact} />}
           {confirm && <ConfirmDialog title={confirm.title} body={confirm.body} cancel={() => setConfirm(null)} accept={confirm.onConfirm} />}
           {toast && <div className="toast" role="status" data-testid="status-toast">{toast}</div>}
@@ -218,7 +222,7 @@ function StatusPill({ value }: { value: CampaignStatus }) {
   const styles: Record<CampaignStatus, string> = { 'Ready for review': 'status-ready', Scheduled: 'status-scheduled', Draft: 'status-draft', Paused: 'status-paused', Sent: 'status-sent', Failed: 'status-failed' };
   return <span className={`status ${styles[value]}`} data-testid={`status-campaign-${value.toLowerCase().replaceAll(' ', '-')}`}>{value}</span>;
 }
-function Dashboard({ store, onStatus, run }: { store: Store; onStatus: (id: string, status: CampaignStatus) => void; run: (id: string) => void }) {
+function Dashboard({ jobs, store, onStatus, run }: { jobs: SimulationJob[]; store: Store; onStatus: (id: string, status: CampaignStatus) => void; run: (id: string) => void }) {
   const pending = store.campaigns.filter(c => c.status === 'Ready for review').length;
   const scheduled = store.campaigns.filter(c => c.status === 'Scheduled').length;
   const active = store.campaigns.filter(c => !['Sent', 'Failed', 'Paused'].includes(c.status)).length;
@@ -253,6 +257,9 @@ function Dashboard({ store, onStatus, run }: { store: Store; onStatus: (id: stri
         </div>
       </section>
     </div>
+    <section className="panel" style={{ marginBottom: 16 }} data-testid="panel-live-queues"><div className="panel-head"><div><div className="panel-title">Live queues</div><div className="panel-caption">Simulated runs only. Nothing is sent or posted.</div></div></div><div className="panel-body">
+      {jobs.filter(j => ['Pending', 'Running'].includes(j.status)).length ? jobs.filter(j => ['Pending', 'Running'].includes(j.status)).map(j => <div key={j.id}><div className="sq-title">{j.kind === 'whatsapp' ? 'WhatsApp message run' : `Campaign: ${store.campaigns.find(c => c.id === j.campaignId)?.title || 'removed campaign'}`}</div><SimQueue job={j} testId={`dash-${j.id}`} /></div>) : <Empty symbol={<Activity />} title="No simulation running" text="Start a campaign simulation or a WhatsApp run to watch its queue here." />}
+    </div></section>
     <div className="console" data-testid="status-local-console"><div className="console-orb"><ShieldCheck size={17} /></div><div className="console-copy"><b>{isDesktop ? 'Local workspace is ready' : 'Preview workspace is ready'}</b><span>Data is in {isDesktop ? 'SQLite on this computer' : 'SQLite on the Replit preview server (not your device)'}. SocialOmni never publishes or contacts anyone for you.</span></div><div className="console-state">Standing by</div></div>
   </main>;
 }
@@ -263,7 +270,7 @@ function Empty({ symbol, title, text, action }: { symbol: ReactNode; title: stri
   return <div className="empty-state"><div className="empty-symbol">{symbol}</div><b>{title}</b><p>{text}</p>{action}</div>;
 }
 
-function Campaigns({ store, open, create, remove, status, handoff, run }: { store: Store; open: (c: Campaign) => void; create: () => void; remove: (c: Campaign) => void; status: (id: string, s: CampaignStatus) => void; handoff: (platform: string) => void; run: (id: string) => void }) {
+function Campaigns({ jobs, store, open, create, remove, status, handoff, run }: { jobs: SimulationJob[]; store: Store; open: (c: Campaign) => void; create: () => void; remove: (c: Campaign) => void; status: (id: string, s: CampaignStatus) => void; handoff: (platform: string) => void; run: (id: string) => void }) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('All statuses');
   const [tab, setTab] = useState<'all' | 'review'>('all');
@@ -294,6 +301,9 @@ function Campaigns({ store, open, create, remove, status, handoff, run }: { stor
         </div>)}
       </> : <Empty symbol={<FileText />} title={query || filter !== 'All statuses' || tab === 'review' ? 'No matching campaigns' : 'Start with a small plan'} text={query || filter !== 'All statuses' || tab === 'review' ? 'Try a different search or status filter.' : 'Keep your upcoming social work clear, intentional, and on your terms.'} action={<button className="button button-primary" onClick={create} data-testid="button-empty-create-campaign"><Plus /> Create campaign</button>} />}
     </div>
+    <section className="panel" style={{ marginTop: 16 }} data-testid="panel-group-queues"><div className="panel-head"><div><div className="panel-title">Simulated group queues</div><div className="panel-caption">Hypothetical groups derived from keywords. SocialOmni never discovers or joins real groups.</div></div></div><div className="panel-body">
+      {(() => { const latest = store.campaigns.map(c => ({ c, j: jobs.find(j => j.kind === 'campaign' && j.campaignId === c.id) })).filter(x => x.j); return latest.length ? latest.map(({ c, j }) => <div key={c.id}><div className="sq-title">{c.title} <span className="mono-tag">{c.platform}</span></div><SimQueue job={j!} testId={`camp-${c.id}`} /></div>) : <Empty symbol={<ListFilter />} title="No group queue yet" text="Press Start Campaign simulation on a campaign to see Pending, Joined, and Posted counters." />; })()}
+    </div></section>
      <div style={{ marginTop: 13, color: 'hsl(var(--muted-foreground))', fontSize: 10, display: 'flex', alignItems: 'center', gap: 6 }}><CircleHelp size={13} /> Start Campaign runs a local progress simulation. It never joins groups or publishes anything. Scheduled items move to Ready for review.</div>
   </main>;
 }
@@ -302,18 +312,15 @@ function Accounts({ store, open, create, remove, handoff }: { store: Store; open
   const [query, setQuery] = useState('');
   const accounts = store.accounts.filter(a => `${a.platform} ${a.displayLabel} ${a.handle}`.toLowerCase().includes(query.toLowerCase()));
   return <main className="page">
-    <PageHeading eyebrow="Identity, not credentials" title="Accounts" subtitle="Keep platform labels close at hand. Sign-in happens on the official site." action={<button className="button button-primary" onClick={create} data-testid="button-add-account"><Plus /> Add account label</button>} />
+    <PageHeading eyebrow="Identity, not credentials" title="Accounts" subtitle="Simulated accounts for rehearsal runs. Nothing connects to a platform." action={<button className="button button-primary" onClick={create} data-testid="button-add-account"><Plus /> Add account label</button>} />
     <div className="toolbar"><div className="search-wrap"><Search /><input className="search-input" value={query} onChange={e => setQuery(e.target.value)} placeholder="Find an account label" aria-label="Search accounts" data-testid="input-search-accounts" /></div><span className="filter-count">{accounts.length} labels</span></div>
-    {accounts.length ? <div className="account-grid">{accounts.map(account => <article className="account-card" key={account.id} data-testid={`card-account-${account.id}`}>
-      <div className="account-top"><div className="platform-glyph">{account.platform.slice(0, 2).toUpperCase()}</div><span className="mono-tag">{account.platform}</span></div>
-      <div className="account-name">{account.displayLabel}</div><div className="account-handle">{account.handle || 'No handle added'}</div>
-      <div className="account-bottom"><span className="account-status">{account.status}</span><div className="account-actions">
-        <button className="small-icon" title={`Open official ${account.platform} site`} onClick={() => handoff(account.platform)} data-testid={`button-open-platform-${account.id}`}><ExternalLink /></button>
-        <button className="small-icon" title="Edit label" onClick={() => open(account)} data-testid={`button-edit-account-${account.id}`}><Pencil /></button>
-        <button className="small-icon" title="Remove label" onClick={() => remove(account)} data-testid={`button-delete-account-${account.id}`}><Trash2 /></button>
-      </div></div>
-    </article>)}</div> : <div className="list-panel"><Empty symbol={<AtSign />} title={query ? 'No matching labels' : 'Keep your identities together'} text={query ? 'Try another platform or label.' : 'Add non-secret labels for the accounts you manage. Credentials never belong here.'} action={<button className="button button-primary" onClick={create} data-testid="button-empty-add-account"><Plus /> Add account label</button>} /></div>}
-    <p style={{ marginTop: 15, fontSize: 10, color: 'hsl(var(--muted-foreground))', lineHeight: 1.6 }}>Open site is a user-initiated handoff to the platform’s official website. SocialOmni does not store passwords, cookies, or sign-in sessions.</p>
+    {accounts.length ? <div className="list-panel acct-scroll"><table className="acct-table" data-testid="table-accounts"><thead><tr><th>Platform</th><th>Account Name</th><th>Phone / Username</th><th>Demo session</th><th>Status</th><th style={{ textAlign: 'right' }}>Actions</th></tr></thead><tbody>
+      {accounts.map(account => <tr key={account.id} data-testid={`row-account-${account.id}`}><td><span className="mono-tag">{account.platform}</span></td><td><b>{account.displayLabel}</b></td><td>{account.handle || 'Not added'}</td><td className="account-handle">{account.demoSession || 'None'}</td><td><span className="account-status">{account.status}</span></td>
+        <td><div className="row-actions"><button className="small-icon" title={`Open official ${account.platform} site`} aria-label={`Open official ${account.platform} site`} onClick={() => handoff(account.platform)} data-testid={`button-open-platform-${account.id}`}><ExternalLink /></button>
+        <button className="small-icon" aria-label={`Edit ${account.displayLabel}`} onClick={() => open(account)} data-testid={`button-edit-account-${account.id}`}><Pencil /></button>
+        <button className="small-icon" aria-label={`Remove ${account.displayLabel}`} onClick={() => remove(account)} data-testid={`button-delete-account-${account.id}`}><Trash2 /></button></div></td></tr>)}
+    </tbody></table></div> : <div className="list-panel"><Empty symbol={<AtSign />} title={query ? 'No matching accounts' : 'Keep your identities together'} text={query ? 'Try another platform, name, or username.' : 'Add simulated accounts. Real credentials and cookies are never requested.'} action={<button className="button button-primary" onClick={create} data-testid="button-empty-add-account"><Plus /> Add account</button>} /></div>}
+    <p style={{ marginTop: 15, fontSize: 10, color: 'hsl(var(--muted-foreground))', lineHeight: 1.6 }}>Accounts are simulation labels only; the demo session is a fake reference. Open site is a user-initiated handoff to the platform’s official website. SocialOmni does not store passwords, cookies, or sign-in sessions.</p>
   </main>;
 }
 
@@ -340,15 +347,18 @@ function Contacts({ store, open, create, remove }: { store: Store; open: (c: Con
   </main>;
 }
 
-function Settings({ theme, setTheme, store, clear }: { theme: 'light' | 'dark'; setTheme: (t: 'light' | 'dark') => void; store: Store; clear: () => void }) {
-  const [license, setLicense] = useState('');
-  const [licenseState, setLicenseState] = useState('');
+function Settings({ settings, saveSettings, theme, setTheme, store, clear }: { settings: SimulationSettings; saveSettings: (v: { delayMin: number; delayMax: number }) => Promise<void>; theme: 'light' | 'dark'; setTheme: (t: 'light' | 'dark') => void; store: Store; clear: () => void }) {
+  const [min, setMin] = useState(settings.delayMin);
+  const [max, setMax] = useState(settings.delayMax);
+  const [note, setNote] = useState('');
+  const go = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  const saveDelay = () => { setNote(''); saveSettings({ delayMin: min, delayMax: max }).then(() => setNote('Delay settings saved.')).catch(e => setNote(e instanceof Error ? e.message : 'Could not save.')); };
   return <main className="page">
     <PageHeading eyebrow="Make the desk yours" title="Settings" subtitle="A few preferences, plus a clear view of where your data lives." />
     <div className="settings-layout">
-      <nav className="settings-nav" aria-label="Settings sections"><button className="active" data-testid="settings-nav-appearance">Appearance</button><button onClick={() => document.getElementById('local-data')?.scrollIntoView({ behavior: 'smooth' })} data-testid="settings-nav-local-data">Local data</button><button onClick={() => document.getElementById('license')?.scrollIntoView({ behavior: 'smooth' })} data-testid="settings-nav-license">License</button></nav>
+      <nav className="settings-nav" aria-label="Settings sections"><button onClick={() => go('appearance')} data-testid="settings-nav-appearance">Appearance</button><button onClick={() => document.getElementById('local-data')?.scrollIntoView({ behavior: 'smooth' })} data-testid="settings-nav-local-data">Local data</button><button onClick={() => document.getElementById('simulation')?.scrollIntoView({ behavior: 'smooth' })} data-testid="settings-nav-simulation">Simulation</button></nav>
       <div className="settings-content">
-        <section className="setting-card"><div className="setting-head"><div><strong>Appearance</strong><p>Choose the reading mode that feels right at your desk.</p></div><div className="mode-switch">
+        <section className="setting-card" id="appearance"><div className="setting-head"><div><strong>Appearance</strong><p>Choose the reading mode that feels right at your desk.</p></div><div className="mode-switch">
           <button className={theme === 'light' ? 'selected' : ''} onClick={() => setTheme('light')} data-testid="button-theme-light"><Sun size={14} /> Light</button>
           <button className={theme === 'dark' ? 'selected' : ''} onClick={() => setTheme('dark')} data-testid="button-theme-dark"><Moon size={14} /> Dark</button>
         </div></div></section>
@@ -356,9 +366,11 @@ function Settings({ theme, setTheme, store, clear }: { theme: 'light' | 'dark'; 
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 17 }}><span className="mono-tag">{store.campaigns.length} campaigns</span><span className="mono-tag">{store.accounts.length} account labels</span><span className="mono-tag">{store.contacts.length} contact records</span><span className="mono-tag">{store.lists.length} lists</span></div>
            <div style={{ marginTop: 18, borderTop: '1px solid hsl(var(--border))', paddingTop: 15, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 18 }}><div style={{ fontSize: 11, color: 'hsl(var(--muted-foreground))' }}>Remove all local records from this workspace.</div><button className="button button-danger" onClick={clear} data-testid="button-clear-local-data"><Trash2 size={14} /> Clear workspace</button></div>
         </section>
-        <section className="setting-card" id="license"><div className="setting-head"><div><strong>License · test placeholder</strong><p>License validation is intentionally not connected in this local preview.</p></div><span className="mono-tag">NOT ACTIVE</span></div>
-          <div style={{ display: 'flex', gap: 8, marginTop: 15 }}><input className="field-input" value={license} onChange={e => setLicense(e.target.value)} placeholder="Test-only license placeholder" aria-label="Test-only license placeholder" data-testid="input-license-placeholder" /><button className="button button-secondary" onClick={() => setLicenseState(license.trim() ? 'Placeholder noted — no license check was performed.' : 'Enter a placeholder value first.')} data-testid="button-test-license">Test placeholder</button></div>
-          {licenseState && <div role="status" style={{ fontSize: 10, color: 'hsl(var(--muted-foreground))', marginTop: 9 }} data-testid="status-license-placeholder">{licenseState}</div>}
+        <section className="setting-card" id="simulation"><div className="setting-head"><div><strong>Simulation defaults</strong><p>Random delay between simulated steps, shared with the WhatsApp page. Everything here is a local rehearsal: no sends, no joins, no real sessions.</p></div><span className="mono-tag">SIMULATED</span></div>
+          <div className="form-grid" style={{ marginTop: 15 }}>
+            <div className="field-group"><label className="field-label" htmlFor="set-min">Minimum delay<span className="field-hint">{min}s</span></label><input id="set-min" type="range" min={3} max={30} value={min} onChange={e => { const v = Number(e.target.value); setMin(v); if (v > max) setMax(v); }} style={{ width: '100%' }} data-testid="settings-delay-min" /></div>
+            <div className="field-group"><label className="field-label" htmlFor="set-max">Maximum delay<span className="field-hint">{max}s</span></label><input id="set-max" type="range" min={3} max={30} value={max} onChange={e => { const v = Number(e.target.value); setMax(v); if (v < min) setMin(v); }} style={{ width: '100%' }} data-testid="settings-delay-max" /></div></div>
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}><button className="button button-secondary" onClick={saveDelay} data-testid="button-save-delay">Save delay</button><Link href="/whatsapp" className="text-link" data-testid="link-settings-whatsapp">Open WhatsApp rehearsal</Link>{note && <span role="status" style={{ fontSize: 10, color: 'hsl(var(--muted-foreground))' }} data-testid="status-delay-saved">{note}</span>}</div>
         </section>
          <section className="setting-card"><div className="setting-head"><div><strong>{isDesktop ? 'Secure desktop bridge' : 'Run locally with Electron'}</strong><p>{isDesktop ? 'The renderer uses a restricted preload bridge and local SQLite. Platform logins stay in your default browser.' : 'Download the desktop source folder, unzip it, then run npm install and npm start inside it. It includes the built interface, main.js, preload.js, package.json, and instructions. This is source, not a signed installer.'}</p></div><ShieldCheck size={18} color="hsl(var(--primary))" /></div>{!isDesktop && <a className="button button-primary" style={{ marginTop: 16 }} href={`${import.meta.env.BASE_URL}downloads/socialomni-desktop.zip`} download data-testid="link-download-desktop"><Download size={14} /> Download desktop folder</a>}</section>
       </div>
@@ -368,8 +380,8 @@ function Settings({ theme, setTheme, store, clear }: { theme: 'light' | 'dark'; 
 
 type EditorFields = { title: string; platform: string; caption: string; scheduledAt: string; campaignStatus: CampaignStatus; displayLabel: string; handle: string; accountStatus: string; name: string; channel: 'Email' | 'Phone'; value: string; optedIn: boolean; list: string };
 
-function EditorDialog({ kind, item, store, close, saveCampaign, saveAccount, saveContact }: {
-  kind: 'campaign' | 'account' | 'contact'; item?: Campaign | Account | Contact; store: Store; close: () => void;
+function EditorDialog({ kind, item, store, media, perform, close: dismiss, saveCampaign, saveAccount, saveContact }: {
+  kind: 'campaign' | 'account' | 'contact'; item?: Campaign | Account | Contact; store: Store; media: MediaAsset[]; perform: (m: 'POST' | 'PUT' | 'PATCH' | 'DELETE', r: string, b?: unknown) => Promise<ApiState>; close: () => void;
   saveCampaign: (c: Omit<Campaign, 'id' | 'createdAt' | 'updatedAt'>, id?: string) => Promise<void>;
   saveAccount: (a: Omit<Account, 'id'>, id?: string) => Promise<void>;
   saveContact: (c: Omit<Contact, 'id' | 'createdAt'>, id?: string) => Promise<void>;
@@ -382,7 +394,7 @@ function EditorDialog({ kind, item, store, close, saveCampaign, saveAccount, sav
     title: initialCampaign?.title || '', platform: initialCampaign?.platform || initialAccount?.platform || 'Instagram',
     caption: initialCampaign?.caption || '', scheduledAt: initialCampaign?.scheduledAt || isoIn(1, 10),
     campaignStatus: initialCampaign?.status || 'Draft', displayLabel: initialAccount?.displayLabel || '',
-    handle: initialAccount?.handle || '', accountStatus: initialAccount?.status || 'Active label',
+    handle: initialAccount?.handle || '', accountStatus: initialAccount?.status || 'Active (simulated)',
     name: initialContact?.name || '', channel: initialContact?.channel || 'Email', value: initialContact?.value || '',
     optedIn: initialContact?.optedIn ?? false, list: initialContact?.list || store.lists[0] || 'New list',
   } });
@@ -400,6 +412,13 @@ function EditorDialog({ kind, item, store, close, saveCampaign, saveAccount, sav
   const setValue = (v: string) => form.setValue('value', v);
   const setOptedIn = (v: boolean) => form.setValue('optedIn', v);
   const setList = (v: string) => form.setValue('list', v);
+  const [keywords, setKeywords] = useState(initialCampaign?.keywords || '');
+  const [groupCount, setGroupCount] = useState(String(initialCampaign?.targetGroupCount ?? 50));
+  const [mediaId, setMediaId] = useState<string | null>(initialCampaign?.mediaId ?? null);
+  const [accountId, setAccountId] = useState<string | null>(initialCampaign?.accountId ?? null);
+  const [demoSession, setDemoSession] = useState(initialAccount?.demoSession || '');
+  const [mediaBusy, setMediaBusy] = useState(false);
+  const close = () => { if (!mediaBusy) dismiss(); };
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const submit = async () => {
@@ -410,10 +429,14 @@ function EditorDialog({ kind, item, store, close, saveCampaign, saveAccount, sav
     if (kind === 'campaign') {
       if (!title.trim()) { setError('Give this campaign a title.'); return; }
       if (campaignStatus === 'Scheduled' && (!scheduledAt || Number.isNaN(new Date(scheduledAt).getTime()))) { setError('Choose a valid planned handoff time for a scheduled reminder.'); return; }
-      await saveCampaign({ title: title.trim(), platform, caption: caption.trim(), scheduledAt, status: campaignStatus }, initialCampaign?.id);
+      const count = Number(groupCount);
+      if (!Number.isInteger(count) || count < 1 || count > 200) { setError('Target group count must be a whole number from 1 to 200.'); return; }
+      await saveCampaign({ title: title.trim(), platform, caption: caption.trim(), scheduledAt, status: campaignStatus, keywords: keywords.trim(), targetGroupCount: count, mediaId, accountId }, initialCampaign?.id);
     } else if (kind === 'account') {
       if (!displayLabel.trim()) { setError('Add a recognizable label.'); return; }
-      await saveAccount({ platform, displayLabel: displayLabel.trim(), handle: handle.trim(), status: accountStatus }, initialAccount?.id);
+      const demo = demoSession.trim();
+      if (demo && !demo.startsWith('demo-')) { setError('Demo session reference must start with demo-. It is a fake label, never a real session.'); return; }
+      await saveAccount({ platform, displayLabel: displayLabel.trim(), handle: handle.trim(), status: accountStatus, demoSession: demo }, initialAccount?.id);
     } else {
       if (!name.trim() || !value.trim()) { setError('Name and contact value are required.'); return; }
       if (channel === 'Email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) { setError('Enter a valid email address.'); return; }
@@ -435,13 +458,19 @@ function EditorDialog({ kind, item, store, close, saveCampaign, saveAccount, sav
             <div className="field-group"><label className="field-label" htmlFor="campaign-status">Status</label><select id="campaign-status" className="field-select" style={{ width: '100%' }} value={campaignStatus} onChange={e => setCampaignStatus(e.target.value as CampaignStatus)} data-testid="select-campaign-edit-status">{statuses.map(s => <option key={s}>{s}</option>)}</select></div></div>
           <div className="field-group"><label className="field-label" htmlFor="campaign-caption">Caption or working notes <span className="field-hint">{caption.length} / 1000</span></label><textarea id="campaign-caption" maxLength={1000} className="field-textarea" value={caption} onChange={e => setCaption(e.target.value)} placeholder="Keep your working copy here. It will not be sent anywhere." data-testid="textarea-campaign-caption" /></div>
           <div className="field-group"><label className="field-label" htmlFor="campaign-date">Planned handoff time</label><input type="datetime-local" id="campaign-date" className="field-input" value={scheduledAt} onChange={e => setScheduledAt(e.target.value)} data-testid="input-campaign-date" /></div>
+          <div className="field-group"><label className="field-label" htmlFor="campaign-keywords">Keywords <span className="field-hint">comma separated</span></label><input id="campaign-keywords" className="field-input" value={keywords} onChange={e => setKeywords(e.target.value)} placeholder="bakery, sourdough, local" data-testid="input-campaign-keywords" />
+            {(platform === 'Facebook' || platform === 'Instagram') && <div className="wa-hint">Group names are hypothetical and derived from these keywords. No real groups are ever discovered.</div>}</div>
+          <div className="form-grid"><div className="field-group"><label className="field-label" htmlFor="campaign-groups">Target group count <span className="field-hint">1 to 200</span></label><input id="campaign-groups" type="number" min={1} max={200} className="field-input" value={groupCount} onChange={e => setGroupCount(e.target.value)} data-testid="input-campaign-groups" /></div>
+            <div className="field-group"><label className="field-label" htmlFor="campaign-account">Simulated account <span className="field-hint">optional</span></label><select id="campaign-account" className="field-select" style={{ width: '100%' }} value={accountId ?? ''} onChange={e => setAccountId(e.target.value || null)} data-testid="select-campaign-account"><option value="">No account</option>{store.accounts.filter(a => a.platform === platform).map(a => <option key={a.id} value={a.id}>{a.displayLabel}</option>)}{accountId && !store.accounts.some(a => a.id === accountId && a.platform === platform) && <option value={accountId}>Saved account (other platform or removed)</option>}</select></div></div>
+          <div className="field-group"><div className="field-label">Media</div><MediaUpload mediaId={mediaId} media={media} perform={perform} onChange={setMediaId} onBusyChange={setMediaBusy} testId="campaign-media" /></div>
         </>}
         {kind === 'account' && <>
           <div className="field-group"><label className="field-label" htmlFor="account-platform">Platform</label><select id="account-platform" className="field-select" style={{ width: '100%' }} value={platform} onChange={e => setPlatform(e.target.value)} data-testid="select-account-platform">{platforms.map(p => <option key={p}>{p}</option>)}</select></div>
-          <div className="field-group"><label className="field-label" htmlFor="account-label">Display label</label><input id="account-label" className="field-input" value={displayLabel} onChange={e => setDisplayLabel(e.target.value)} placeholder="e.g. Studio account" autoFocus data-testid="input-account-label" /></div>
-          <div className="field-group"><label className="field-label" htmlFor="account-handle">Handle or page name <span className="field-hint">optional</span></label><input id="account-handle" className="field-input" value={handle} onChange={e => setHandle(e.target.value)} placeholder="@yourhandle" data-testid="input-account-handle" /></div>
-          <div className="field-group"><label className="field-label" htmlFor="account-status">Label status</label><select id="account-status" className="field-select" style={{ width: '100%' }} value={accountStatus} onChange={e => setAccountStatus(e.target.value)} data-testid="select-account-status"><option>Active label</option><option>Paused label</option></select></div>
-          <div className="consent-note" style={{ marginBottom: 0 }}>Do not enter a password, recovery code, cookie, or session detail.</div>
+          <div className="field-group"><label className="field-label" htmlFor="account-label">Account Name</label><input id="account-label" className="field-input" value={displayLabel} onChange={e => setDisplayLabel(e.target.value)} placeholder="e.g. Studio account" autoFocus data-testid="input-account-label" /></div>
+          <div className="field-group"><label className="field-label" htmlFor="account-handle">Phone / Username <span className="field-hint">optional</span></label><input id="account-handle" className="field-input" value={handle} onChange={e => setHandle(e.target.value)} placeholder="@yourhandle" data-testid="input-account-handle" /></div>
+          <div className="field-group"><label className="field-label" htmlFor="account-status">Label status</label><select id="account-status" className="field-select" style={{ width: '100%' }} value={accountStatus} onChange={e => setAccountStatus(e.target.value)} data-testid="select-account-status">{['Active label', 'Paused label'].includes(accountStatus) && <option>{accountStatus}</option>}<option>Active (simulated)</option><option>Paused (simulated)</option></select></div>
+          <div className="field-group"><label className="field-label" htmlFor="account-demo">Demo session reference <span className="field-hint">optional, fake only</span></label><input id="account-demo" className="field-input" value={demoSession} onChange={e => setDemoSession(e.target.value)} placeholder="demo-studio-01" autoComplete="off" data-testid="input-account-demo" /><div className="wa-hint">A made-up label that must start with demo-. Never paste a cookie, token, or password.</div></div>
+          <div className="consent-note" style={{ marginBottom: 0 }}>Real credentials are not accepted. Do not enter a password, recovery code, cookie, or session detail.</div>
         </>}
         {kind === 'contact' && <>
           <div className="field-group"><label className="field-label" htmlFor="contact-name">Name</label><input id="contact-name" className="field-input" value={name} onChange={e => setName(e.target.value)} placeholder="First and last name" autoFocus data-testid="input-contact-name" /></div>
@@ -451,7 +480,7 @@ function EditorDialog({ kind, item, store, close, saveCampaign, saveAccount, sav
           <label className="check-row"><input type="checkbox" checked={optedIn} onChange={e => setOptedIn(e.target.checked)} data-testid="checkbox-contact-opt-in" /><span>I have explicit permission to keep this contact record for its intended purpose. Consent can be withdrawn at any time.</span></label>
         </>}
         {error && <div role="alert" style={{ color: 'hsl(var(--destructive))', fontSize: 11, marginTop: 8 }} data-testid="error-dialog-form">{error}</div>}
-        <div className="form-actions"><button type="button" className="button button-secondary" onClick={close} data-testid="button-cancel-form">Cancel</button><button type="submit" className="button button-primary" disabled={submitting} data-testid="button-save-form"><Check size={14} /> {submitting ? 'Saving…' : isEdit ? 'Save changes' : 'Save to SQLite'}</button></div>
+        <div className="form-actions"><button type="button" className="button button-secondary" disabled={mediaBusy || submitting} onClick={close} data-testid="button-cancel-form">Cancel</button><button type="submit" className="button button-primary" disabled={mediaBusy || submitting} data-testid="button-save-form"><Check size={14} /> {mediaBusy ? 'Saving attachment…' : submitting ? 'Saving…' : isEdit ? 'Save changes' : 'Save to SQLite'}</button></div>
       </form></Form>
     </section>
   </div>;

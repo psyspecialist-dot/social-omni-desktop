@@ -8,8 +8,10 @@ const text = z.string().max(1000);
 const campaignSchema = z.object({
   id: text, title: text, platform: text, caption: text, scheduledAt: text,
   status: z.enum(statuses), createdAt: text, updatedAt: text,
+  keywords: text.optional(), targetGroupCount: z.number().int().optional(),
+  mediaId: text.nullable().optional(), accountId: text.nullable().optional(),
 });
-const accountSchema = z.object({ id: text, platform: text, displayLabel: text, handle: text, status: text });
+const accountSchema = z.object({ id: text, platform: text, displayLabel: text, handle: text, status: text, demoSession: text.optional() });
 const contactSchema = z.object({
   id: text, name: text, channel: z.enum(['Email', 'Phone']), value: text,
   optedIn: z.boolean(), createdAt: text, list: text,

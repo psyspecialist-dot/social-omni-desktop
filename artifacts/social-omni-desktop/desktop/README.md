@@ -37,7 +37,8 @@ relative asset paths and hash routing so it runs from a local file.
   one-time import of previous records; it is not deleted.
 - The local API binds only to a random loopback port and requires an internal
   secret on each request. The renderer uses a validated Electron bridge.
-- SQLite runs through SQL.js, so no native SQLite compiler or ABI rebuild is required.
+- Current SQLite storage uses Electron's embedded Node SQLite module. SQL.js is
+  used only to read the legacy file. No separate SQLite compiler is required.
 - The browser preview uses SQLite on the Replit development server, with an
   anonymous browser workspace ID. It is not storage on your computer and is
   not intended for private contacts. Browser and desktop records remain separate.
@@ -50,12 +51,25 @@ relative asset paths and hash routing so it runs from a local file.
 
 ## What this edition does
 
-Plan drafts, keep opted-in contact records, organize campaign statuses, and
-review scheduled work. Start Campaign and Run Task trigger local background
-simulations with saved progress, adjustable 3–30 second pauses, and live logs.
+Plan drafts, keep contact records, organize simulated accounts, and review
+scheduled work. WhatsApp saves comma/newline-separated phone lists and formatted
+message templates. Campaigns save keywords, captions, a target group count
+(1–200), and optional account/media selections. Image and video attachments
+(up to 5 MB each, 50 MB per workspace) are saved as SQLite blobs.
+
+Start Campaign and Run Task trigger background simulations with persistent
+per-target queues, counters, randomized 3–30 second pauses, and live logs. Jobs
+run one at a time per workspace. Queue results say Sent/Joined/Posted only as
+simulated results; nothing is transmitted externally. Group names are generated
+hypothetical names, not real search results. Active simulated accounts are not
+connected accounts. Only fake session references beginning with `demo-` are
+accepted; never enter actual credentials or cookies.
+
+Drafts, attachments and results survive restarts. An in-progress rehearsal is
+marked interrupted when the process restarts; it is not automatically resumed.
 Publishing and messaging remain manual actions in official platform apps. A due
-item becomes ready for review, not automatically sent. The license field is a
-clearly labeled test placeholder, not a paid license validator.
+item becomes ready for review, not automatically sent. Clearing the workspace
+also removes saved media and message/phone-list settings (appearance is retained).
 
 It does not auto-post, auto-comment, auto-join groups, extract group members,
 send bulk messages, or use ban-avoidance delays.

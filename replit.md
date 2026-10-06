@@ -29,27 +29,28 @@ A local-first social campaign planner with a React browser preview and a standal
 - `artifacts/social-omni-desktop/src/lib/workspace.ts` — data models, validation, example records
 - `artifacts/social-omni-desktop/src/lib/persistence.ts` — legacy local record reader and official platform handoff
 - `artifacts/social-omni-desktop/src/lib/api.ts` — local API client
-- `lib/socialomni-api/service.cjs` — shared Express route logic and SQLite simulation worker
+- `lib/socialomni-api/` — shared Express routes, validation, SQLite media storage, and sequential simulation worker
 - `artifacts/social-omni-desktop/src/index.css` — theme and responsive styles
 - `artifacts/social-omni-desktop/desktop/` — standalone package, main process, preload, local-run instructions
 - `artifacts/social-omni-desktop/scripts/export-desktop.mjs` — relative-asset renderer export
-- The shared API scaffold is unused by this local-first app.
+- The shared API server hosts the browser-preview SQLite API; Electron hosts the same service on a protected loopback port.
 
 ## Architecture decisions
 
 - Publishing and messaging stay manual on official platform sites. No browser automation, credential/cookie storage, member extraction, auto-joining, bulk sends, or ban-evasion behavior.
 - The Electron renderer has Node.js disabled and uses a whitelisted preload bridge for local persistence and platform opening.
 - Due scheduled items become review reminders on the next API poll; paused reminders do not progress.
-- Start Campaign and WhatsApp Run Task are local simulations, not platform automation.
+- The user chose a complete local simulator, not real platform actions. Start Campaign and WhatsApp Run Task must remain explicitly simulated.
 
 ## Product
 
 - Campaign draft CRUD, scheduling, review states, pause/resume, manual sent/failed tracking
-- Non-secret account labels for Facebook, Instagram, TikTok, and WhatsApp with official-site handoff
+- Simulated accounts for Facebook, Instagram, TikTok, and WhatsApp; fake demo-session references only, with official-site manual handoff
 - Local contact records with explicit consent indicators and lists; no sending
-- Light/dark themes, live local activity log, test-only license placeholder
+- Light/dark themes, persistent simulation settings, live activity logs and per-target queue tables
 - Downloadable Electron source folder with the prebuilt renderer from Settings
 - Working Express CRUD routes, anonymous preview SQLite, native local SQLite, simulation worker progress and 3–30 second delay settings
+- Phone lists, formatted message templates, saved image/video attachments, campaign keywords and target counts; sequential simulated sends, joins, and posts with cancellation
 
 ## User preferences
 

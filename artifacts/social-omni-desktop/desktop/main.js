@@ -114,7 +114,7 @@ async function startApi() {
   apiService = createService({ express, dbPath: path.join(app.getPath('userData'), 'socialomni-workspace.sqlite'), secret: apiSecret });
   const localApp = express();
   localApp.disable('x-powered-by');
-  localApp.use(express.json({ limit: '1mb' }));
+  localApp.use(express.json({ limit: '8mb' }));
   localApp.use('/api/socialomni', apiService.router);
   apiServer = await new Promise((resolve, reject) => {
     const server = localApp.listen(0, '127.0.0.1', () => resolve(server));
