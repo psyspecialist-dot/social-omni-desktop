@@ -24,9 +24,9 @@ modules, conditional actions or enum badges still appear in English.
 module views and status labels remained untranslated.
 
 Treat the user's official Social Najhin logo as brand artwork in both languages;
-retain its embedded English wordmark rather than translating or redrawing it.
-Localize surrounding captions and keep the original image unchanged when deriving
-small application icons.
+do not translate or redraw it. Localize surrounding captions and keep the original
+image unchanged when deriving hub artwork and small application icons. Preserve
+transparency rather than adding a rectangular background to circular artwork.
 
 **Why:** The user supplied the professional logo as the official branding asset
 while requiring continued full Arabic/English functionality.
