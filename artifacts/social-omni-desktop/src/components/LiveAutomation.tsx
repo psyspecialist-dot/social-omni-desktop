@@ -20,6 +20,10 @@ export default function LiveAutomation({ platform, accounts, campaigns = [], job
   const [approved, setApproved] = useState(false);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
+  const [events, setEvents] = useState<BrowserAutomationEvent[]>([]);
+  useEffect(() => window.socialOmni?.onBrowserEvent?.(event => {
+    if (event.platform === platform) setEvents(previous => [...previous, event].slice(-80));
+  }), [platform]);
   useEffect(() => { setApproved(false); }, [accountId, campaignId, groups, draftPreview?.phoneNumbers, draftPreview?.messageContent, draftPreview?.mediaId]);
   const selectedAccount = choices.find(a => a.id === accountId);
   const available = isDesktop && Boolean(selectedAccount);
@@ -27,19 +31,20 @@ export default function LiveAutomation({ platform, accounts, campaigns = [], job
   const latest = jobs.find(j => j.mode === 'live' && j.platform === platform);
   const search = jobs.find(j => j.mode === 'live' && j.platform === 'Facebook' && j.discoveredGroups?.length);
   const start = async (action: 'connect' | 'search' | 'send' | 'publish') => {
-    setBusy(action); setError('');
+    if (busy) return;
+    setBusy(action); setError(''); setEvents([]);
     try {
       if (action === 'send') await beforeSend?.();
       await perform('POST', '/browser/jobs', { action, accountId, campaignId, keywords, groupUrls: groups, approved });
       setApproved(false);
-    } catch (e) { setError(e instanceof Error ? e.message : t('Unable to start the browser.')); }
+    } catch (e) { setError(e instanceof Error ? e.message : 'Unable to start the browser.'); }
     finally { setBusy(''); }
   };
   const stop = async () => {
     if (!active) return;
     setBusy('stop'); setError('');
     try { await perform('POST', `/jobs/${active.id}/cancel`); }
-    catch (e) { setError(e instanceof Error ? e.message : t('Unable to stop.')); }
+    catch (e) { setError(e instanceof Error ? e.message : 'Unable to stop.'); }
     finally { setBusy(''); }
   };
   return <section className="live-panel" data-testid={`live-${platform.toLowerCase()}`}>
@@ -54,7 +59,7 @@ export default function LiveAutomation({ platform, accounts, campaigns = [], job
             <option value="">{t('Select a {platform} account', { platform: t(platform) })}</option>{choices.map(a => <option key={a.id} value={a.id}>{a.displayLabel}</option>)}
           </select>
         </label>
-        <button type="button" className="button button-secondary" onClick={() => start('connect')} disabled={!available || Boolean(active) || Boolean(busy)}>{t('Open browser / sign in')}</button>
+        <button type="button" className="button button-secondary" onClick={() => start('connect')} disabled={!available || Boolean(active) || Boolean(busy)} data-testid={`live-connect-${platform.toLowerCase()}`}>{busy === 'connect' ? t('Starting…') : t('Open browser / sign in')}</button>
       </div>
       {!choices.length && <p className="heading-sub">{t('Add a {platform} account in Accounts Manager first. Do not enter cookies or passwords.', { platform: t(platform) })}</p>}
       {selectedAccount?.browserConnectedAt && <p className="live-status">{t('Last sign-in detected: {date}. Every run checks the session again.', { date: new Date(selectedAccount.browserConnectedAt).toLocaleString(locale) })}</p>}
@@ -69,7 +74,7 @@ export default function LiveAutomation({ platform, accounts, campaigns = [], job
       {platform === 'Facebook' && <>
         <div className="live-controls" style={{ marginTop: 16 }}>
           <label className="live-field">{t('Group search keywords')}<input className="field-input" value={keywords} onChange={e => setKeywords(e.target.value)} placeholder={t('e.g. local photography')} disabled={Boolean(active)} /></label>
-          <button className="button button-secondary" onClick={() => start('search')} disabled={!available || !keywords.trim() || Boolean(active) || Boolean(busy)}>{t('Search groups for review')}</button>
+          <button type="button" className="button button-secondary" onClick={() => start('search')} disabled={!available || !keywords.trim() || Boolean(active) || Boolean(busy)} data-testid="live-search-facebook">{busy === 'search' ? t('Starting…') : t('Search groups for review')}</button>
         </div>
         {search?.discoveredGroups && <div style={{ marginTop: 12 }}>{search.discoveredGroups.map(group => <label key={group.url} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
           <input type="checkbox" disabled={Boolean(active)} checked={groups.split('\n').includes(group.url)} onChange={e => {
@@ -95,7 +100,15 @@ export default function LiveAutomation({ platform, accounts, campaigns = [], job
         {active?.mode === 'live' && <button type="button" className="button button-danger" onClick={stop} disabled={Boolean(busy)}><Square size={14} /> {t('Stop browser task')}</button>}
       </div>
       <p className="heading-sub">{t('Text-only execution. Sign-in / WhatsApp QR scan happens manually in the browser. Sessions are separate per account. English platform controls are required. Review outcomes before any retry.')}</p>
-      {error && <p className="wa-feedback error" role="alert">{error}</p>}
+      {error && <p className="wa-feedback error" role="alert">{t(error)}</p>}
+      {isDesktop && <div style={{ marginTop: 18 }}>
+        <p className="section-label">{t('Browser activity')}</p>
+        <div role="log" aria-live="polite" aria-relevant="additions" data-testid={`browser-log-${platform.toLowerCase()}`} style={{ maxHeight: 200, overflowY: 'auto', overflowWrap: 'anywhere' }}>
+          {events.length ? events.map((event, index) => <p key={`${event.at}-${index}`} className={event.level === 'warning' ? 'wa-feedback error' : 'heading-sub'}>
+            <time>{new Date(event.at).toLocaleTimeString(locale)}</time> · {t(event.message)}
+          </p>) : <p className="heading-sub">{t('Browser progress and errors appear here when a task starts.')}</p>}
+        </div>
+      </div>}
       {latest && <div style={{ marginTop: 18 }}><SimQueue job={latest} testId={`live-${latest.id}`} /></div>}
     </div>
   </section>;

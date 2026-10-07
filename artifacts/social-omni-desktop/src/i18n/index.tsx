@@ -28,7 +28,7 @@ export function makeT(lang: Lang): TFn {
           const match = regex.exec(key);
           if (!match) continue;
           out = translated;
-          names.forEach((name,i) => { const value = ['status','kind','platform','action'].includes(name) ? (extraAr[match[i+1]] ?? ar[match[i+1]] ?? match[i+1]) : match[i+1]; out = out.split(`{${name}}`).join(value); });
+          names.forEach((name,i) => { const value = ['status','kind','platform','action','reason','method'].includes(name) ? (extraAr[match[i+1]] ?? ar[match[i+1]] ?? match[i+1]) : match[i+1]; out = out.split(`{${name}}`).join(value); });
           break;
         }
       }

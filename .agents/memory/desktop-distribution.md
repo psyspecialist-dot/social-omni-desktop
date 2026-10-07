@@ -20,3 +20,16 @@ Keep the internal Electron application identity stable during public rebranding 
 **Why:** The public brand changed to Social Najhin, but changing the package identity can change Electron's user-data location and make existing local records and sessions appear lost.
 
 **How to apply:** Rename visible titles, logos, metadata and download labels independently of the existing storage identity.
+
+Browser controls should acknowledge queued work promptly rather than hold an IPC
+invocation open for the entire authentication or automation run. Send progress
+and failures separately, and do not automatically retry an uncertain request.
+
+**Why:** Manual QR sign-in can take several minutes. Waiting for it in the request
+would look like a frozen interface; retrying after a transport timeout could
+duplicate an already-submitted action.
+
+**How to apply:** Keep long-running browser work asynchronous, retain visible job
+status, and make transport timeouts tell users to check the current task before
+retrying. Keep persistent account profiles in the existing desktop user-data
+location; branding changes must not create new session locations.

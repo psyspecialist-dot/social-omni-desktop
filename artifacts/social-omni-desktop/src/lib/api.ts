@@ -70,6 +70,9 @@ function workspaceId(): string {
   return id;
 }
 export async function apiRequest(method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE', route: string, body?: unknown): Promise<ApiState> {
+  if (window.socialOmni?.startBrowserJob && method === 'POST' && route === '/browser/jobs') {
+    return window.socialOmni.startBrowserJob(body) as Promise<ApiState>;
+  }
   if (window.socialOmni) return window.socialOmni.apiRequest(method, route, body) as Promise<ApiState>;
   const response = await fetch(`/api/socialomni${route}`, {
     method,

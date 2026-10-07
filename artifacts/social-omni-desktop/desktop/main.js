@@ -6,6 +6,7 @@ const { randomBytes } = require('node:crypto');
 const initSqlJs = require('sql.js');
 const express = require('express');
 const createService = require('./api-service.cjs');
+const registerBrowserIpc = require('./browser-ipc.cjs');
 // Visible macOS app name changes independently of the existing storage location.
 const existingUserDataPath = app.getPath('userData');
 app.setName('Social Najhin');
@@ -65,20 +66,7 @@ async function openDatabase() {
 }
 
 function registerIpc() {
-  ipcMain.handle('socialomni:api-request', async (event, method, route, body) => {
-    assertTrustedSender(event);
-    if (!['GET', 'POST', 'PATCH', 'PUT', 'DELETE'].includes(method) || typeof route !== 'string' || !/^\/[a-z0-9/-]{1,120}$/i.test(route)) {
-      throw new Error('Invalid local API request.');
-    }
-    const result = await fetch(`http://127.0.0.1:${apiPort}/api/socialomni${route}`, {
-      method,
-      headers: { 'content-type': 'application/json', 'x-socialomni-secret': apiSecret, 'x-socialomni-workspace': desktopWorkspace },
-      body: body === undefined ? undefined : JSON.stringify(body),
-    });
-    const data = await result.json();
-    if (!result.ok) throw new Error(data.error || `Local request failed (${result.status}).`);
-    return data;
-  });
+  registerBrowserIpc({ ipcMain, assertTrustedSender, getConnection: () => ({ port: apiPort, secret: apiSecret, workspace: desktopWorkspace }) });
   ipcMain.handle('socialomni:get-item', (event, key) => {
     assertTrustedSender(event);
     assertKey(key);
@@ -118,7 +106,15 @@ function registerIpc() {
 async function startApi() {
   apiService = createService({
     express, dbPath: path.join(app.getPath('userData'), 'socialomni-workspace.sqlite'), secret: apiSecret,
-    automation: { chromium: require('playwright').chromium, profileDir: path.join(app.getPath('userData'), 'browser-profiles') },
+    automation: {
+      chromium: require('playwright').chromium,
+      profileDir: path.join(app.getPath('userData'), 'browser-profiles'),
+      onEvent: (event) => {
+        const log = event.level === 'warning' ? console.warn : console.info;
+        log(`[Social Najhin · ${event.platform} · ${event.status}] ${event.message}`);
+        if (window && !window.isDestroyed()) window.webContents.send('socialomni:browser-event', event);
+      },
+    },
     secureStore: {available:()=>safeStorage.isEncryptionAvailable() && (process.platform!=='linux' || safeStorage.getSelectedStorageBackend()!=='basic_text'),
       encrypt:value=>safeStorage.encryptString(value),decrypt:value=>safeStorage.decryptString(value)},
   });
@@ -193,10 +189,21 @@ app.whenReady().then(async () => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
-app.on('will-quit', () => {
-  if (apiServer) apiServer.close();
-  if (apiService) apiService.close();
-  if (database) {
-    database.close();
-  }
+let quitting = false;
+let readyToQuit = false;
+app.on('before-quit', (event) => {
+  if (readyToQuit) return;
+  event.preventDefault();
+  if (quitting) return;
+  quitting = true;
+  // Give persistent contexts time to flush cookies without trapping the app on exit.
+  Promise.race([
+    Promise.resolve(apiService?.close()),
+    new Promise(resolve => { const timer = setTimeout(resolve, 5000); timer.unref(); }),
+  ]).catch(error => console.warn('Browser shutdown:', error.message)).finally(() => {
+    if (apiServer) apiServer.close();
+    if (database) database.close();
+    readyToQuit = true;
+    app.quit();
+  });
 });
