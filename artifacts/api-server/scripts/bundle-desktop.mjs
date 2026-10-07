@@ -24,6 +24,8 @@ for (const required of ['main.js', 'preload.js', 'package.json', 'README.md', 'r
   if (!existsSync(path.join(frontend, 'desktop', required))) throw new Error(`Missing desktop file: ${required}. Run desktop:export first.`);
 }
 add(path.join(frontend, 'desktop'), '');
+// Keep the original branding assets available when rebuilding the included source.
+add(path.join(frontend, 'public', 'assets'), 'source/artifacts/social-omni-desktop/public/assets');
 // Include the complete application source alongside the ready-to-run desktop root.
 for (const artifact of ['social-omni-desktop', 'api-server']) {
   for (const entry of readdirSync(path.join(root, 'artifacts', artifact)).sort()) {

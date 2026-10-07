@@ -18,6 +18,7 @@ const platformUrls = Object.freeze({
   whatsapp: 'https://web.whatsapp.com/',
 });
 const rendererPath = path.join(__dirname, 'renderer', 'index.html');
+const appIconPath = path.join(__dirname, 'renderer', 'assets', 'images', 'app-icon.png');
 const rendererUrl = pathToFileURL(rendererPath).href;
 const maxValueBytes = 10 * 1024 * 1024;
 let database;
@@ -142,6 +143,7 @@ function createWindow() {
     minWidth: 980,
     minHeight: 680,
     title: 'Social Najhin',
+    icon: appIconPath,
     backgroundColor: '#101827',
     autoHideMenuBar: true,
     webPreferences: {
@@ -175,6 +177,7 @@ app.on('second-instance', () => {
 });
 app.whenReady().then(async () => {
   try {
+    if (process.platform === 'darwin' && app.dock) app.dock.setIcon(appIconPath);
     await openDatabase();
     await startApi();
     registerIpc();

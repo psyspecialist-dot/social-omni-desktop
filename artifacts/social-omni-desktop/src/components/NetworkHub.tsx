@@ -40,7 +40,8 @@ export default function NetworkHub({ data }: { data: HubData }) {
       {layout.map(n => <g key={n.href}><path d={n.d} className={`nj-line ${hot === n.href ? 'hot' : ''}`} /><path d={n.d} className={`nj-flow tone-${data.tones[n.href] || 'none'} ${hot === n.href ? 'hot' : ''}`} /></g>)}
     </svg>
     <div className="nj-hub" aria-hidden="false"><i className="nj-ring r1" /><i className="nj-ring r2" /><i className="nj-ring r3" />
-      <div className="nj-core"><span className="nj-mono">SN</span><h2>Social Najhin</h2><small>{t('all modules · one local workspace')}</small></div></div>
+      <div className="nj-core"><img className="nj-logo" src={`${import.meta.env.BASE_URL}assets/images/logo.png`} alt="Social Najhin" width={1024} height={1024} fetchPriority="high" data-testid="network-brand-logo" /><h2 className="sr-only">Social Najhin</h2></div>
+      <small className="nj-hub-caption">{t('all modules · one local workspace')}</small></div>
     <ul className="nj-nodes">{layout.map(n => { const Icon = n.icon; const tone = data.tones[n.href];
       return <li key={n.href} style={{ left: `${n.x}%`, top: `${n.y}%` }} className="nj-li">
         <Link href={n.href} className={`nj-node ${tone ? `tone-${tone}` : ''}`} onMouseEnter={() => setHot(n.href)} onMouseLeave={() => setHot(null)} onFocus={() => setHot(n.href)} onBlur={() => setHot(null)} data-testid={`node-${n.href.slice(1)}`}>

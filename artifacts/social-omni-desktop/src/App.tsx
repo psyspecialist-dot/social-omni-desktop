@@ -271,7 +271,7 @@ function Sidebar({ active, open, close }: { active: string; open: boolean; close
     { href: '/chatbots', title: 'Auto-Reply / Chatbot', icon: Activity },
   ];
   return <aside className={`sidebar ${open ? 'open' : ''}`}>
-    <div className="brand"><div className="brand-mark">SN</div><div><div className="brand-name">Social Najhin</div><div className="brand-sub">{t('desktop management suite')}</div></div>
+    <div className="brand"><div className="brand-mark"><img src={`${import.meta.env.BASE_URL}assets/images/app-icon.png`} alt="" width={35} height={35} /></div><div><div className="brand-name">Social Najhin</div><div className="brand-sub">{t('desktop management suite')}</div></div>
       <button className="small-icon" style={{ color: 'inherit', marginInlineStart: 'auto' }} onClick={close} aria-label={t('Close navigation')} data-testid="button-sidebar-close"><X /></button>
     </div>
     <Link href="/help" onClick={close} className={`nav-link nav-help ${active === '/help' ? 'active' : ''}`} data-testid="link-nav-help"><BookOpen /><span>{t('Help & Guidelines')}</span></Link>
