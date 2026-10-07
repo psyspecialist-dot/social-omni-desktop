@@ -17,12 +17,12 @@ export interface MediaAsset { id: string; name: string; mime: string; size: numb
 export interface SimulationTarget {
   id: string; name: string;
   joinStatus: 'Pending' | 'Joined' | 'Requested' | 'Needs review';
-  postStatus: 'Pending' | 'Posted' | 'Not posted';
-  sendStatus: 'Pending' | 'Sent';
+  postStatus: 'Pending' | 'Posted' | 'Not posted' | 'Unconfirmed';
+  sendStatus: 'Pending' | 'Sent' | 'Unconfirmed';
 }
 export interface SimulationJob {
   mode?: 'live';
-  platform?: 'WhatsApp' | 'Facebook';
+  platform?: 'WhatsApp' | 'Facebook' | 'Maps';
   action?: string;
   discoveredGroups?: { name: string; url: string }[];
   id: string;
@@ -38,13 +38,14 @@ export interface SimulationJob {
   totalCount?: number;
   nextActionAt?: string | null;
   phase?: string;
+  error?: string;
   accountName?: string;
   mediaName?: string | null;
   messageContent?: string;
 }
 export interface Lead {
   id: string; businessName: string; phoneNumber: string; address: string; website: string;
-  keyword: string; city: string; jobId: string; createdAt: string; simulated: true;
+  keyword: string; city: string; jobId: string; createdAt: string; simulated: boolean;
 }
 export interface LeadWorkspace { keyword: string; city: string; targetCount: number; results: Lead[] }
 export interface SimulationAnalytics { messagesSent: number; realMessagesSent?: number }

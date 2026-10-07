@@ -108,7 +108,7 @@ export default function WhatsApp({ settings, media, accounts, jobs, perform, onS
         </section>
       </form>
       <section className="panel" style={{ position: 'sticky', top: 12 }}>
-        <div className="panel-head"><div><div className="panel-title">{t('Live queue')}</div><div className="panel-caption">{t('Per-recipient progress, all simulated.')}</div></div></div>
+        <div className="panel-head"><div><div className="panel-title">{t('Live queue')}</div><div className="panel-caption">{t('Observed live outcomes and explicitly labelled rehearsals.')}</div></div></div>
         <div className="panel-body">
           {relevant.length ? relevant.slice(0, 3).map(j => <SimQueue key={j.id} job={j} testId={j.id} />)
             : <div className="empty-state"><b>{t('No run yet')}</b><p>{t('Add numbers and a message, then choose live sending or Rehearse only.')}</p></div>}

@@ -16,7 +16,7 @@ export type TFn = (key: string, vars?: Record<string, string | number>) => strin
  * English output), so stored enum values (Draft, Running, Opted in, ...) are never changed:
  * only their presentation goes through t(). Missing Arabic keys fall back to English.
  */
-export function makeT(lang: Lang): TFn {
+export function makeT(lang: Lang, depth = 0): TFn {
   return (key, vars) => {
     let out = key;
     if (lang === 'ar') {
@@ -28,7 +28,7 @@ export function makeT(lang: Lang): TFn {
           const match = regex.exec(key);
           if (!match) continue;
           out = translated;
-          names.forEach((name,i) => { const value = ['status','kind','platform','action','reason','method'].includes(name) ? (extraAr[match[i+1]] ?? ar[match[i+1]] ?? match[i+1]) : match[i+1]; out = out.split(`{${name}}`).join(value); });
+          names.forEach((name,i) => { const value = ['status','kind','platform','action','reason','method','label','phase'].includes(name) ? (extraAr[match[i+1]] ?? ar[match[i+1]] ?? (depth < 3 ? makeT(lang, depth + 1)(match[i+1]) : match[i+1])) : match[i+1]; out = out.split(`{${name}}`).join(value); });
           break;
         }
       }

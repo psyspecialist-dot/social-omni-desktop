@@ -3,7 +3,7 @@ export {};
 declare global {
   interface BrowserAutomationEvent {
     jobId: string;
-    platform: 'WhatsApp' | 'Facebook';
+    platform: string;
     status: string;
     phase: string;
     message: string;

@@ -33,6 +33,7 @@ export * from './simulatorAnalytics';
 export * from './simulatorJob';
 export * from './simulatorJobInput';
 export * from './simulatorJobInputKind';
+export * from './simulatorJobInputMode';
 export * from './simulatorJobKind';
 export * from './simulatorJobMode';
 export * from './simulatorJobPlatform';

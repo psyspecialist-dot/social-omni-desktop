@@ -315,6 +315,14 @@ export interface BrowserTaskInput {
   approved?: boolean;
 }
 
+export type SimulatorJobInputMode = typeof SimulatorJobInputMode[keyof typeof SimulatorJobInputMode];
+
+
+export const SimulatorJobInputMode = {
+  live: 'live',
+  rehearsal: 'rehearsal',
+} as const;
+
 export type SimulatorJobInputKind = typeof SimulatorJobInputKind[keyof typeof SimulatorJobInputKind];
 
 
@@ -325,6 +333,7 @@ export const SimulatorJobInputKind = {
 } as const;
 
 export interface SimulatorJobInput {
+  mode?: SimulatorJobInputMode;
   kind: SimulatorJobInputKind;
   campaignId?: string;
 }
@@ -476,6 +485,7 @@ export const SimulatorTargetPostStatus = {
   Pending: 'Pending',
   Posted: 'Posted',
   Not_posted: 'Not posted',
+  Unconfirmed: 'Unconfirmed',
 } as const;
 
 export type SimulatorTargetSendStatus = typeof SimulatorTargetSendStatus[keyof typeof SimulatorTargetSendStatus];
@@ -484,6 +494,7 @@ export type SimulatorTargetSendStatus = typeof SimulatorTargetSendStatus[keyof t
 export const SimulatorTargetSendStatus = {
   Pending: 'Pending',
   Sent: 'Sent',
+  Unconfirmed: 'Unconfirmed',
 } as const;
 
 export interface SimulatorTarget {
@@ -507,6 +518,7 @@ export type SimulatorJobPlatform = typeof SimulatorJobPlatform[keyof typeof Simu
 export const SimulatorJobPlatform = {
   Facebook: 'Facebook',
   WhatsApp: 'WhatsApp',
+  Maps: 'Maps',
 } as const;
 
 export type SimulatorJobKind = typeof SimulatorJobKind[keyof typeof SimulatorJobKind];
@@ -552,6 +564,7 @@ export interface SimulatorJob {
   completedCount?: number;
   totalCount?: number;
   phase?: string;
+  error?: string;
   /** @nullable */
   nextActionAt?: string | null;
   accountName?: string;
@@ -582,7 +595,7 @@ export interface SimulatorLead {
   city: string;
   jobId: string;
   createdAt: string;
-  simulated: true;
+  simulated: boolean;
 }
 
 export type SimulatorLeadWorkspace = SimulatorLeadInput & {

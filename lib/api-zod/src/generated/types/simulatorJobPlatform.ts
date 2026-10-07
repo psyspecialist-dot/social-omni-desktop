@@ -12,4 +12,5 @@ export type SimulatorJobPlatform = typeof SimulatorJobPlatform[keyof typeof Simu
 export const SimulatorJobPlatform = {
   Facebook: 'Facebook',
   WhatsApp: 'WhatsApp',
+  Maps: 'Maps',
 } as const;

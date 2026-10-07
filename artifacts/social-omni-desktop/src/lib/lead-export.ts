@@ -2,7 +2,7 @@ import { strToU8, zipSync } from 'fflate';
 import type { Lead } from './api';
 
 const headers = ['Business Name', 'Phone Number', 'Address', 'Website', 'Data Source'];
-const rows = (leads: Lead[]) => [headers, ...leads.map(l => [l.businessName, l.phoneNumber, l.address, l.website, 'Synthetic local simulation'])];
+const rows = (leads: Lead[]) => [headers, ...leads.map(l => [l.businessName, l.phoneNumber, l.address, l.website, l.simulated ? 'Synthetic local simulation' : 'Public Google Maps listing'])];
 // Remove illegal XML characters and escape all user-provided text.
 const xml = (value: string) => value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
@@ -29,7 +29,7 @@ export function makeLeadXlsx(leads: Lead[]): Uint8Array {
 }
 
 export function downloadLeads(leads: Lead[], format: 'csv' | 'xlsx'): void {
-  if (!leads.length) throw new Error('There are no simulated leads to export.');
+  if (!leads.length) throw new Error('There are no leads to export.');
   const blob = format === 'csv'
     ? new Blob([makeLeadCsv(leads)], { type: 'text/csv;charset=utf-8' })
     : new Blob([new Uint8Array(makeLeadXlsx(leads)).buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });

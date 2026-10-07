@@ -20,7 +20,7 @@ function add(source, destination) {
     files[`social-najhin-desktop/${destination}`] = new Uint8Array(readFileSync(source));
   }
 }
-for (const required of ['main.js', 'preload.js', 'browser-ipc.cjs', 'package.json', 'README.md', 'renderer/index.html', 'api-service.cjs', 'validation.cjs', 'worker.cjs', 'leads.cjs', 'browser-worker.cjs']) {
+for (const required of ['main.js', 'preload.js', 'browser-ipc.cjs', 'package.json', 'README.md', 'renderer/index.html', 'api-service.cjs', 'validation.cjs', 'worker.cjs', 'leads.cjs', 'browser-worker.cjs', 'advanced-browser.cjs', 'automation-errors.cjs']) {
   if (!existsSync(path.join(frontend, 'desktop', required))) throw new Error(`Missing desktop file: ${required}. Run desktop:export first.`);
 }
 add(path.join(frontend, 'desktop'), '');

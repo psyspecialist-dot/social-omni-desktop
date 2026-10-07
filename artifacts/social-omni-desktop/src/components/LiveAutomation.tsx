@@ -22,8 +22,12 @@ export default function LiveAutomation({ platform, accounts, campaigns = [], job
   const [error, setError] = useState('');
   const [events, setEvents] = useState<BrowserAutomationEvent[]>([]);
   useEffect(() => window.socialOmni?.onBrowserEvent?.(event => {
-    if (event.platform === platform) setEvents(previous => [...previous, event].slice(-80));
+    if (event.platform === platform) setEvents(previous => {
+      if (previous.at(-1)?.message === event.message && previous.at(-1)?.status === event.status) return previous;
+      return [...previous, event].slice(-80);
+    });
   }), [platform]);
+  useEffect(() => { if (!accountId && choices.length === 1) setAccountId(choices[0].id); }, [accountId, choices]);
   useEffect(() => { setApproved(false); }, [accountId, campaignId, groups, draftPreview?.phoneNumbers, draftPreview?.messageContent, draftPreview?.mediaId]);
   const selectedAccount = choices.find(a => a.id === accountId);
   const available = isDesktop && Boolean(selectedAccount);
@@ -109,7 +113,7 @@ export default function LiveAutomation({ platform, accounts, campaigns = [], job
           </p>) : <p className="heading-sub">{t('Browser progress and errors appear here when a task starts.')}</p>}
         </div>
       </div>}
-      {latest && <div style={{ marginTop: 18 }}><SimQueue job={latest} testId={`live-${latest.id}`} /></div>}
+      {latest && <div style={{ marginTop: 18 }}><SimQueue job={latest} testId={`live-${latest.id}`} />{latest.error && <p role="alert" className="wa-feedback error">{t(latest.error)}</p>}</div>}
     </div>
   </section>;
 }

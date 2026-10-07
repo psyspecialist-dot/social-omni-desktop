@@ -12,4 +12,5 @@ export type SimulatorTargetSendStatus = typeof SimulatorTargetSendStatus[keyof t
 export const SimulatorTargetSendStatus = {
   Pending: 'Pending',
   Sent: 'Sent',
+  Unconfirmed: 'Unconfirmed',
 } as const;

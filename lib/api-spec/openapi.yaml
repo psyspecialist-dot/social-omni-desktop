@@ -556,6 +556,7 @@ components:
       type: object
       required: [kind]
       properties:
+        mode: {type: string, enum: [live, rehearsal]}
         kind: {type: string, enum: [campaign, whatsapp, leads]}
         campaignId: {type: string}
     SimulatorUploadInput:
@@ -616,15 +617,15 @@ components:
         id: {type: string}
         name: {type: string}
         joinStatus: {type: string, enum: [Pending, Joined, Requested, Needs review]}
-        postStatus: {type: string, enum: [Pending, Posted, Not posted]}
-        sendStatus: {type: string, enum: [Pending, Sent]}
+        postStatus: {type: string, enum: [Pending, Posted, Not posted, Unconfirmed]}
+        sendStatus: {type: string, enum: [Pending, Sent, Unconfirmed]}
     SimulatorJob:
       type: object
       required: [id, kind, status, progress, currentStep, steps, createdAt]
       properties:
         mode: {type: string, enum: [live]}
         action: {type: string}
-        platform: {type: string, enum: [Facebook, WhatsApp]}
+        platform: {type: string, enum: [Facebook, WhatsApp, Maps]}
         discoveredGroups:
           type: array
           items: {$ref: "#/components/schemas/DiscoveredGroup"}
@@ -640,6 +641,7 @@ components:
         completedCount: {type: integer}
         totalCount: {type: integer}
         phase: {type: string}
+        error: {type: string}
         nextActionAt: {type: [string, "null"]}
         accountName: {type: string}
         mediaName: {type: [string, "null"]}
@@ -664,7 +666,7 @@ components:
         city: {type: string}
         jobId: {type: string}
         createdAt: {type: string}
-        simulated: {type: boolean, const: true}
+        simulated: {type: boolean}
     SimulatorLeadWorkspace:
       allOf:
         - {$ref: "#/components/schemas/SimulatorLeadInput"}

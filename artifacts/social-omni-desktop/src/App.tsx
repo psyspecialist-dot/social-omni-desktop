@@ -66,7 +66,7 @@ function Workspace() {
   const [mobileNav, setMobileNav] = useState(false);
   const [dialog, setDialog] = useState<{ type: 'campaign' | 'account' | 'contact'; item?: Campaign | Account | Contact } | null>(null);
   const [confirm, setConfirm] = useState<{ title: string; body: string; onConfirm: () => void } | null>(null);
-  const [path] = useLocation();
+  const [path, setPath] = useLocation();
   const applyState = (data: ApiState) => {
     setStore(data.store);
     setSettings(data.settings);
@@ -119,14 +119,20 @@ function Workspace() {
   useEffect(() => {
     if (!ready) return;
     let cancelled = false;
-    const timer = window.setInterval(() => {
+    let refreshSequence = 0;
+    const refresh = () => {
       if (writes.current) return;
+      const sequence = ++refreshSequence;
       const start = revision.current;
       apiRequest('GET', '/state').then(data => {
-        if (!cancelled && !writes.current && start === revision.current) applyState(data);
+        if (!cancelled && sequence === refreshSequence && !writes.current && start === revision.current) { applyState(data); setStorageError(''); }
       }).catch(error => { if (!cancelled) setStorageError(t('Live updates unavailable: {error}. Saved records have not been replaced.', { error: String(error) })); });
+    };
+    const unsubscribe = window.socialOmni?.onBrowserEvent?.(refresh);
+    const timer = window.setInterval(() => {
+      refresh();
     }, 1000);
-    return () => { cancelled = true; window.clearInterval(timer); };
+    return () => { cancelled = true; unsubscribe?.(); window.clearInterval(timer); };
   }, [ready]);
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -180,8 +186,17 @@ function Workspace() {
   const clearWorkspace = () => setConfirm({ title: t('Clear local workspace?'), body: t('This permanently removes campaigns, accounts, contacts, media, inputs, leads, WaFilter results, CRM notes and chats, chatbot rules, counters, license placeholder, jobs, advanced tasks and results, encrypted SMTP and Telegram connections, activity, and local browser profiles from this workspace. It cannot be undone.'), onConfirm: () => {
     void perform('DELETE', '/state').then(() => setConfirm(null)).catch(report);
   } });
-  const runTask = (kind: 'campaign' | 'whatsapp', campaignId?: string) =>
-    perform('POST', '/jobs', { kind, campaignId }).then(() => undefined);
+  const runTask = async (kind: 'campaign' | 'whatsapp', campaignId?: string) => {
+    if (isDesktop && kind === 'campaign') {
+      const campaign = store.campaigns.find(c => c.id === campaignId);
+      if (campaign?.platform !== 'Facebook') throw new Error(t('Use the approved live task controls in Telegram & Facebook Automation for this platform.'));
+      const accountId = campaign.accountId || store.accounts.find(a => a.platform === 'Facebook' && !a.status.startsWith('Paused'))?.id;
+      await perform('POST', '/browser/jobs', { action: 'search', accountId, keywords: campaign.keywords || settings.keywords });
+      setPath('/automation');
+      return;
+    }
+    await perform('POST', '/jobs', { kind, campaignId, mode: 'rehearsal' });
+  };
   const cancelTask = (id: string) => { void perform('POST', `/jobs/${id}/cancel`).catch(report); };
   const hub: HubData = (() => {
     const count = (kinds: string[]) => advanced.tasks.filter(t => kinds.includes(t.kind));
@@ -307,7 +322,7 @@ function Dashboard({ jobs, store, leads, analytics, onStatus, run }: { jobs: Sim
       <Stat title="Total campaigns" value={store.campaigns.length} note="Saved campaign plans" icon={<ClipboardList />} trend="All platforms" />
       <Stat title="Active accounts" value={store.accounts.filter(a => a.status.startsWith('Active')).length} note="Saved account labels" icon={<AtSign />} trend="Session checked per run" />
       <Stat title="Messages sent" value={analytics.realMessagesSent || 0} note="Server-accepted live sends" icon={<MessageCircle />} trend={t('{n} simulated', { n: analytics.messagesSent })} />
-      <Stat title="Scraped leads" value={leads.results.length} note="Saved synthetic results" icon={<MapPin />} trend="No real scraping" />
+      <Stat title="Scraped leads" value={leads.results.length} note="Saved extraction results" icon={<MapPin />} trend="Review data source" />
     </div>
     <div className="dash-grid">
       <section className="panel">

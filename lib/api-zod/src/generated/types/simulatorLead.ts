@@ -16,5 +16,5 @@ export interface SimulatorLead {
   city: string;
   jobId: string;
   createdAt: string;
-  simulated: true;
+  simulated: boolean;
 }

@@ -13,4 +13,5 @@ export const SimulatorTargetPostStatus = {
   Pending: 'Pending',
   Posted: 'Posted',
   Not_posted: 'Not posted',
+  Unconfirmed: 'Unconfirmed',
 } as const;

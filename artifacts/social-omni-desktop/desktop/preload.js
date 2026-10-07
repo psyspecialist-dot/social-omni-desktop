@@ -1,4 +1,11 @@
 const { contextBridge, ipcRenderer } = require('electron');
+const browserListeners = new Set();
+const browserListener = (_event, data) => {
+  console.info(`[Social Najhin · ${data.platform} · ${data.status}] ${data.message}`);
+  for (const callback of browserListeners) {
+    try { callback(data); } catch (error) { console.error('Automation feedback handler failed:', error.message); }
+  }
+};
 
 async function invokeBackend(channel, ...args) {
   try { return await ipcRenderer.invoke(channel, ...args); }
@@ -18,11 +25,11 @@ contextBridge.exposeInMainWorld('socialOmni', Object.freeze({
   startBrowserJob: (body) => invokeBackend('socialomni:start-browser-job', body),
   onBrowserEvent: (callback) => {
     if (typeof callback !== 'function') throw new Error('A browser-event callback is required.');
-    const listener = (_event, data) => {
-      console.info(`[Social Najhin · ${data.platform} · ${data.status}] ${data.message}`);
-      callback(data);
+    if (!browserListeners.size) ipcRenderer.on('socialomni:browser-event', browserListener);
+    browserListeners.add(callback);
+    return () => {
+      browserListeners.delete(callback);
+      if (!browserListeners.size) ipcRenderer.removeListener('socialomni:browser-event', browserListener);
     };
-    ipcRenderer.on('socialomni:browser-event', listener);
-    return () => ipcRenderer.removeListener('socialomni:browser-event', listener);
   },
 }));

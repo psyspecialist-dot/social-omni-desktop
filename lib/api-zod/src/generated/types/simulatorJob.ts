@@ -30,6 +30,7 @@ export interface SimulatorJob {
   completedCount?: number;
   totalCount?: number;
   phase?: string;
+  error?: string;
   /** @nullable */
   nextActionAt?: string | null;
   accountName?: string;

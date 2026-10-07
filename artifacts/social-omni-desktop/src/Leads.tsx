@@ -57,8 +57,8 @@ export default function Leads({ leads, jobs, perform, onCancel }: Props) {
     setBusy('run');
     try {
       if (dirty) { await perform('PUT', '/leads', draft()); touched.current = false; }
-      await perform('POST', '/jobs', { kind: 'leads' });
-      setOk(t('Simulated extraction started.'));
+      await perform('POST', '/jobs', { kind: 'leads', mode: isDesktop ? 'live' : 'rehearsal' });
+      setOk(isDesktop ? t('Live extraction started.') : t('Simulated extraction started.'));
     } catch (err) { setError(msg(err)); } finally { setBusy(''); }
   };
   const clear = async () => {
@@ -69,7 +69,7 @@ export default function Leads({ leads, jobs, perform, onCancel }: Props) {
   const exportAs = (fmt: 'csv' | 'xlsx') => {
     try {
       downloadLeads(leads.results, fmt);
-      setExportMsg({ kind: 'ok', text: t('Exported {n} synthetic results as {fmt}.', { n: leads.results.length, fmt: fmt.toUpperCase() }) + (q.trim() ? ' ' + t('(all results, not only the filtered view)') : '') });
+        setExportMsg({ kind: 'ok', text: t('Exported {n} results as {fmt}.', { n: leads.results.length, fmt: fmt.toUpperCase() }) + (q.trim() ? ' ' + t('(all results, not only the filtered view)') : '') });
     } catch (err) { setExportMsg({ kind: 'err', text: t('Export failed: {message}', { message: msg(err) }) }); }
   };
 
@@ -83,12 +83,12 @@ export default function Leads({ leads, jobs, perform, onCancel }: Props) {
   const done = latest?.completedCount ?? 0, goal = latest?.totalCount ?? 0;
 
   return <main className="page leads-page">
-    <div className="page-heading"><div><div className="eyebrow">{t('GMB Scraper · local simulation')}</div><h1>{t('Google Maps Lead Extractor')}</h1>
-      <p className="heading-sub">{t('Rehearse a business lead search for a niche and city. Every business below is invented.')}</p></div>
+    <div className="page-heading"><div><div className="eyebrow">{isDesktop ? t('GMB Scraper · live extraction') : t('GMB Scraper · local simulation')}</div><h1>{t('Google Maps Lead Extractor')}</h1>
+      <p className="heading-sub">{isDesktop ? t('Extract public business listings for a niche and city. Missing details stay blank.') : t('Rehearse a business lead search for a niche and city. Every business below is invented.')}</p></div>
       <div style={{ display: 'flex', gap: 8 }}>
         {active && <button type="button" className="button button-secondary" onClick={() => onCancel(active.id)} data-testid="button-stop-leads"><Square /> {t('Stop')}</button>}
         <button type="button" className="button button-primary" onClick={run} disabled={busy !== '' || Boolean(active)} data-testid="button-run-leads"><Play /> {busy === 'run' ? t('Starting…') : active ? t('Extraction in progress…') : t('Run extraction')}</button></div></div>
-    <div className="ld-note" role="note"><strong>{t('Simulation only.')}</strong> {t('No requests are made to Google Maps or any real directory. Businesses, phone numbers, addresses and websites are synthetic and do not belong to real companies.')} {isDesktop ? t('Drafts and results are stored locally on this computer.') : t('In this hosted preview, drafts and results are stored on the preview server, not your device.')}</div>
+    <div className="ld-note" role="note">{isDesktop ? t('A visible browser reads public Google Maps listings and saves observed details in local SQLite. Restrictions stop extraction; contact details do not establish marketing consent.') : <><strong>{t('Simulation only.')}</strong> {t('No requests are made to Google Maps or any real directory. Businesses, phone numbers, addresses and websites are synthetic and do not belong to real companies.')}</>}</div>
     {error && <div className="ld-fb err" role="alert" data-testid="error-leads" style={{ marginBottom: 12 }}>{error}</div>}
     {ok && <div className="ld-fb ok" role="status" data-testid="status-leads" style={{ marginBottom: 12 }}>{ok}</div>}
     <div className="ld-grid">
@@ -116,12 +116,13 @@ export default function Leads({ leads, jobs, perform, onCancel }: Props) {
             <div className="ld-bar" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${pct}%` }} /></div>
             <div className="ld-meta"><span>{t(latest.phase || latest.steps[latest.currentStep] || 'Queued')}</span>
               {active && latest.nextActionAt && <span>{t('next {time}', { time: new Date(latest.nextActionAt).toLocaleTimeString(locale) })}</span>}</div>
+             {latest.error && <p role="alert" className="ld-fb err">{t(latest.error)}</p>}
           </div> : <div className="empty-state"><b>{t('No run yet')}</b><p>{t('Fill in a niche and city, then choose Run extraction.')}</p></div>}
         </section>
       </div>
       <section className="panel" style={{ minWidth: 0 }}>
-        <div className="panel-head"><div><div className="panel-title">{t('Results')}</div><div className="panel-caption" data-testid="text-lead-count">{(total === 1 ? t('{n} saved synthetic lead') : t('{n} saved synthetic leads')).replace('{n}', String(total))}{q.trim() ? ', ' + t('{n} match the filter', { n: shown.length }) : ''}</div></div>
-          <span className="mono-tag">{t('simulated')}</span></div>
+        <div className="panel-head"><div><div className="panel-title">{t('Results')}</div><div className="panel-caption" data-testid="text-lead-count">{t('{n} saved results', { n: total })}{q.trim() ? ', ' + t('{n} match the filter', { n: shown.length }) : ''}</div></div>
+          <span className="mono-tag">{isDesktop ? t('Live') : t('simulated')}</span></div>
         <div className="ld-tools">
           <div className="search-wrap"><Search /><input className="search-input" placeholder={t('Filter results')} value={q} onChange={e => setQ(e.target.value)} aria-label={t('Filter results')} data-testid="input-lead-filter" /></div>
           <span style={{ flex: 1 }} />
@@ -131,15 +132,15 @@ export default function Leads({ leads, jobs, perform, onCancel }: Props) {
         </div>
         {(exportMsg || confirmClear) && <div style={{ padding: '0 20px 14px' }}>
           {exportMsg && <div className={`ld-fb ${exportMsg.kind}`} role={exportMsg.kind === 'err' ? 'alert' : 'status'} data-testid="status-export">{exportMsg.text}</div>}
-          {confirmClear && <div className="ld-confirm" role="alertdialog" aria-label={t('Clear synthetic lead results')}>
-            <b>{t('Delete all {n} saved results?', { n: total })}</b> {t('This removes synthetic results only; your search draft stays.')} {active ? t('A run is active, so clearing will be refused until you stop it.') : t('This cannot be undone.')}
+          {confirmClear && <div className="ld-confirm" role="alertdialog" aria-label={t('Clear lead results')}>
+            <b>{t('Delete all {n} saved results?', { n: total })}</b> {t('Your search draft stays.')} {active ? t('A run is active, so clearing will be refused until you stop it.') : t('This cannot be undone.')}
             <div className="ld-actions"><button type="button" className="button button-danger" onClick={clear} disabled={busy === 'clear'} data-testid="button-confirm-clear">{busy === 'clear' ? t('Clearing…') : t('Delete results')}</button>
               <button type="button" className="button button-secondary" onClick={() => setConfirmClear(false)}>{t('Keep them')}</button></div></div>}
         </div>}
-        {total === 0 ? <div className="empty-state"><div className="empty-symbol"><MapPin /></div><b>{t('No results yet')}</b><p>{t('Run an extraction to generate synthetic businesses. They are saved and kept across runs.')}</p></div>
+        {total === 0 ? <div className="empty-state"><div className="empty-symbol"><MapPin /></div><b>{t('No results yet')}</b><p>{t('Fill in a niche and city, then choose Run extraction.')}</p></div>
           : shown.length === 0 ? <div className="empty-state"><b>{t('No matches')}</b><p>{t('Nothing matches "{q}". Exports still include all {n} results.', { q, n: total })}</p></div>
           : <div className="ld-scroll"><table className="ld-table"><thead><tr><th>{t('Business Name')}</th><th>{t('Phone Number')}</th><th>{t('Address')}</th><th>{t('Website')}</th></tr></thead>
-            <tbody>{shown.map(l => <tr key={l.id} data-testid={`row-lead-${l.id}`}><td className="ld-name">{l.businessName}</td><td className="ld-mono">{l.phoneNumber}</td><td>{l.address}</td><td className="ld-mono">{l.website}</td></tr>)}</tbody></table></div>}
+            <tbody>{shown.map(l => <tr key={l.id} data-testid={`row-lead-${l.id}`}><td className="ld-name">{l.businessName} <small>{l.simulated ? t('simulated') : t('Live')}</small></td><td className="ld-mono">{l.phoneNumber}</td><td>{l.address}</td><td className="ld-mono">{l.website}</td></tr>)}</tbody></table></div>}
       </section>
     </div>
   </main>;

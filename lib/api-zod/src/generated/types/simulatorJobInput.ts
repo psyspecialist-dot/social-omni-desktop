@@ -6,8 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { SimulatorJobInputKind } from './simulatorJobInputKind';
+import type { SimulatorJobInputMode } from './simulatorJobInputMode';
 
 export interface SimulatorJobInput {
+  mode?: SimulatorJobInputMode;
   kind: SimulatorJobInputKind;
   campaignId?: string;
 }

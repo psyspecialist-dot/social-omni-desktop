@@ -220,7 +220,7 @@ export const CreateAdvancedTaskResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -237,12 +237,13 @@ export const CreateAdvancedTaskResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -278,7 +279,7 @@ export const CreateAdvancedTaskResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -504,7 +505,7 @@ export const EditAdvancedTaskResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -521,12 +522,13 @@ export const EditAdvancedTaskResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -562,7 +564,7 @@ export const EditAdvancedTaskResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -760,7 +762,7 @@ export const DeleteAdvancedTaskResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -777,12 +779,13 @@ export const DeleteAdvancedTaskResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -818,7 +821,7 @@ export const DeleteAdvancedTaskResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -1020,7 +1023,7 @@ export const RunAdvancedTaskResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -1037,12 +1040,13 @@ export const RunAdvancedTaskResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -1078,7 +1082,7 @@ export const RunAdvancedTaskResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -1276,7 +1280,7 @@ export const CancelAdvancedTaskResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -1293,12 +1297,13 @@ export const CancelAdvancedTaskResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -1334,7 +1339,7 @@ export const CancelAdvancedTaskResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -1543,7 +1548,7 @@ export const SaveAdvancedConnectionResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -1560,12 +1565,13 @@ export const SaveAdvancedConnectionResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -1601,7 +1607,7 @@ export const SaveAdvancedConnectionResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -1799,7 +1805,7 @@ export const DeleteAdvancedConnectionResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -1816,12 +1822,13 @@ export const DeleteAdvancedConnectionResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -1857,7 +1864,7 @@ export const DeleteAdvancedConnectionResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -2060,7 +2067,7 @@ export const AuthorizeTelegramResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -2077,12 +2084,13 @@ export const AuthorizeTelegramResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -2118,7 +2126,7 @@ export const AuthorizeTelegramResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -2316,7 +2324,7 @@ export const DeleteAdvancedResultResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -2333,12 +2341,13 @@ export const DeleteAdvancedResultResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -2374,7 +2383,7 @@ export const DeleteAdvancedResultResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -2576,7 +2585,7 @@ export const SaveWaFilterResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -2593,12 +2602,13 @@ export const SaveWaFilterResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -2634,7 +2644,7 @@ export const SaveWaFilterResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -2845,7 +2855,7 @@ export const CreateCrmThreadResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -2862,12 +2872,13 @@ export const CreateCrmThreadResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -2903,7 +2914,7 @@ export const CreateCrmThreadResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -3118,7 +3129,7 @@ export const EditCrmThreadResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -3135,12 +3146,13 @@ export const EditCrmThreadResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -3176,7 +3188,7 @@ export const EditCrmThreadResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -3374,7 +3386,7 @@ export const RemoveCrmThreadResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -3391,12 +3403,13 @@ export const RemoveCrmThreadResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -3432,7 +3445,7 @@ export const RemoveCrmThreadResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -3654,7 +3667,7 @@ export const CreateChatbotRuleResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -3671,12 +3684,13 @@ export const CreateChatbotRuleResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -3712,7 +3726,7 @@ export const CreateChatbotRuleResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -3938,7 +3952,7 @@ export const EditChatbotRuleResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -3955,12 +3969,13 @@ export const EditChatbotRuleResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -3996,7 +4011,7 @@ export const EditChatbotRuleResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -4194,7 +4209,7 @@ export const RemoveChatbotRuleResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -4211,12 +4226,13 @@ export const RemoveChatbotRuleResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -4252,7 +4268,7 @@ export const RemoveChatbotRuleResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -4452,7 +4468,7 @@ export const StartWaSuiteSessionResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -4469,12 +4485,13 @@ export const StartWaSuiteSessionResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -4510,7 +4527,7 @@ export const StartWaSuiteSessionResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -4722,7 +4739,7 @@ export const StartLocalBrowserTaskResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -4739,12 +4756,13 @@ export const StartLocalBrowserTaskResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -4780,7 +4798,7 @@ export const StartLocalBrowserTaskResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -4994,7 +5012,7 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -5011,12 +5029,13 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -5052,7 +5071,7 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -5249,7 +5268,7 @@ export const ClearSocialOmniLeadsResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -5266,12 +5285,13 @@ export const ClearSocialOmniLeadsResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -5307,7 +5327,7 @@ export const ClearSocialOmniLeadsResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -5501,7 +5521,7 @@ export const GetSocialOmniStateResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -5518,12 +5538,13 @@ export const GetSocialOmniStateResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -5559,7 +5580,7 @@ export const GetSocialOmniStateResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -5753,7 +5774,7 @@ export const ClearSocialOmniStateResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -5770,12 +5791,13 @@ export const ClearSocialOmniStateResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -5811,7 +5833,7 @@ export const ClearSocialOmniStateResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -6035,7 +6057,7 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -6052,12 +6074,13 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -6093,7 +6116,7 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -6111,6 +6134,7 @@ export const CreateSocialOmniJobHeader = zod.object({
 })
 
 export const CreateSocialOmniJobBody = zod.object({
+  "mode": zod.enum(['live', 'rehearsal']).optional(),
   "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
   "campaignId": zod.string().optional()
 })
@@ -6295,7 +6319,7 @@ export const CreateSocialOmniJobResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -6312,12 +6336,13 @@ export const CreateSocialOmniJobResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -6353,7 +6378,7 @@ export const CreateSocialOmniJobResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -6551,7 +6576,7 @@ export const CancelSocialOmniJobResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -6568,12 +6593,13 @@ export const CancelSocialOmniJobResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -6609,7 +6635,7 @@ export const CancelSocialOmniJobResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -6816,7 +6842,7 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -6833,12 +6859,13 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -6874,7 +6901,7 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -7072,7 +7099,7 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -7089,12 +7116,13 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -7130,7 +7158,7 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -7331,7 +7359,7 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -7348,12 +7376,13 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -7389,7 +7418,7 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -7613,7 +7642,7 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -7630,12 +7659,13 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -7671,7 +7701,7 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -7899,7 +7929,7 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -7916,12 +7946,13 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -7957,7 +7988,7 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
@@ -8156,7 +8187,7 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
   "action": zod.string().optional(),
-  "platform": zod.enum(['Facebook', 'WhatsApp']).optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
   "discoveredGroups": zod.array(zod.object({
   "name": zod.string(),
   "url": zod.string()
@@ -8173,12 +8204,13 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "id": zod.string(),
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
-  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted']),
-  "sendStatus": zod.enum(['Pending', 'Sent'])
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
   "phase": zod.string().optional(),
+  "error": zod.string().optional(),
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
@@ -8214,7 +8246,7 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "city": zod.string(),
   "jobId": zod.string(),
   "createdAt": zod.string(),
-  "simulated": zod.literal(true)
+  "simulated": zod.boolean()
 }))
 })),
   "analytics": zod.object({
