@@ -33,7 +33,7 @@ export default function LiveAutomation({ platform, accounts, campaigns = [], job
   const available = isDesktop && Boolean(selectedAccount);
   const active = jobs.find(j => ['Pending', 'Running'].includes(j.status));
   const latest = jobs.find(j => j.mode === 'live' && j.platform === platform);
-  const search = jobs.find(j => j.mode === 'live' && j.platform === 'Facebook' && j.discoveredGroups?.length);
+  const search = jobs.find(j => j.mode === 'live' && j.platform === 'Facebook' && j.accountId === accountId && j.discoveredGroups?.length);
   const start = async (action: 'connect' | 'search' | 'send' | 'join' | 'publish') => {
     if (busy) return;
     setBusy(action); setError(''); setEvents([]);
@@ -80,13 +80,15 @@ export default function LiveAutomation({ platform, accounts, campaigns = [], job
           <label className="live-field">{t('Group search keywords')}<input className="field-input" value={keywords} onChange={e => setKeywords(e.target.value)} placeholder={t('e.g. local photography')} disabled={Boolean(active)} /></label>
           <button type="button" className="button button-secondary" onClick={() => start('search')} disabled={!available || !keywords.trim() || Boolean(active) || Boolean(busy)} data-testid="live-search-facebook">{busy === 'search' ? t('Starting…') : t('Search groups for review')}</button>
         </div>
-        {search?.discoveredGroups && <div style={{ marginTop: 12 }}>{search.discoveredGroups.map(group => <label key={group.url} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-          <input type="checkbox" disabled={Boolean(active)} checked={groups.split('\n').includes(group.url)} onChange={e => {
+        {search?.discoveredGroups && <div className="sq-table-wrap" style={{ marginTop: 12 }}><table className="sq-table" aria-label={t('Discovered Facebook groups')}>
+          <thead><tr><th>{t('Select')}</th><th>{t('Group name')}</th><th>{t('Group URL')}</th></tr></thead>
+          <tbody>{search.discoveredGroups.map(group => <tr key={group.url}>
+          <td><input type="checkbox" aria-label={t('Select group {name}', { name: group.name })} disabled={Boolean(active)} checked={groups.split('\n').includes(group.url)} onChange={e => {
             const urls = groups.split('\n').filter(Boolean);
             setGroups(e.target.checked ? [...new Set([...urls, group.url])].join('\n') : urls.filter(u => u !== group.url).join('\n'));
             setApproved(false);
-          }} /> <span>{group.name} <small>{group.url}</small></span>
-        </label>)}</div>}
+          }} /></td><td>{group.name}</td><td style={{ whiteSpace: 'normal', overflowWrap: 'anywhere' }}>{group.url}</td>
+        </tr>)}</tbody></table></div>}
         <div className="live-controls" style={{ marginTop: 16 }}>
           <label className="live-field">{t('Facebook campaign')}<select className="field-select" value={campaignId} onChange={e => { setCampaignId(e.target.value); setApproved(false); }} disabled={Boolean(active)}>
             <option value="">{t('Choose saved text campaign')}</option>{campaigns.filter(c => c.platform === 'Facebook').map(c => <option key={c.id} value={c.id}>{c.title}</option>)}

@@ -24,6 +24,7 @@ export interface SimulationTarget {
 export interface SimulationJob {
   mode?: 'live';
   platform?: 'WhatsApp' | 'Facebook' | 'Maps';
+  accountId?: string | null;
   action?: string;
   discoveredGroups?: { name: string; url: string }[];
   id: string;

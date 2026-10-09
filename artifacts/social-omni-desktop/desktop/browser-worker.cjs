@@ -33,7 +33,7 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
     return job;
   };
   async function execute(workspace, jobId) {
-    let context;
+    let context, currentTargetId;
     try {
       const job = update(workspace, jobId, j => { j.status = 'Running'; j.phase = 'Connecting…'; }, 'Connecting to a visible local browser. Sign in manually; passwords and QR codes are not captured by the app.');
       const profile = path.join(automation.profileDir, job.kind === 'leads' ? 'maps-research' : job.accountId);
@@ -122,6 +122,7 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
         ], 'Facebook search input');
         await act('Typing Facebook search keywords…', () => searchInput.fill(job.keywords));
         await act('Submitting Facebook search…', () => searchInput.press('Enter'));
+        await page.waitForURL(url => url.hostname === 'www.facebook.com' && url.pathname.startsWith('/search/'), { timeout: 30000 });
         if (!new URL(page.url()).pathname.startsWith('/search/groups')) {
           const groupsFilter = await readable(page, [
             page.locator('a[href*="/search/groups/"]'),
@@ -130,9 +131,13 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
           ], 'Facebook Groups search filter');
           await act('Searching Facebook groups…', () => groupsFilter.click());
         }
-        await readable(page, [page.locator('a[href*="/groups/"]')], 'Facebook group search result link');
+        await page.waitForURL(url => url.hostname === 'www.facebook.com' && url.pathname.startsWith('/search/groups'), { timeout: 30000 });
+        // The main results region excludes sidebar shortcuts to unrelated groups.
+        const main = page.getByRole('main');
+        const resultLinks = await main.count() ? main.locator('a[href*="/groups/"]') : page.locator('a[href*="/groups/"]');
+        await readable(page, [resultLinks], 'Facebook group search result link');
         await restriction();
-        const results = await page.locator('a[href*="/groups/"]').evaluateAll(links => links.map(a => ({ url: a.href.split('?')[0], name: a.innerText.trim() })).filter(a => a.name));
+        const results = await resultLinks.filter({ visible: true }).evaluateAll(links => links.map(a => ({ url: a.href.split('?')[0], name: a.innerText.trim() })).filter(a => a.name));
         const groups = [];
         for (const result of results) {
           try {
@@ -146,6 +151,7 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
       }
       if (job.action === 'join') {
         for (const target of job.targets) {
+          currentTargetId = target.id;
           await act(`Opening approved group ${target.name}…`,()=>page.goto(groupUrl(target.name),{waitUntil:'domcontentloaded'}));
           if (groupUrl(page.url())!==groupUrl(target.name)) throw new Error('Facebook redirected away from the approved group.');
            const join=page.getByRole('button',{name:/^(Join group|انضمام إلى المجموعة)$/i}).first();
@@ -163,10 +169,12 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
             j.completedCount++;j.progress=Math.round(j.completedCount/j.totalCount*100);
           }, requested?'Membership requested; administrator approval may be required.':joined?'Membership detected.':'Membership outcome unclear; review manually.','warning');
           if(!requested && !joined) throw new Error('Membership outcome unclear. No automatic retry.');
+           currentTargetId = undefined;
         }
       }
       if (job.action === 'send' || job.action === 'publish') {
         for (const target of job.targets) {
+          currentTargetId = target.id;
           guard();
           if (job.platform === 'WhatsApp') {
             await act(`Opening chat for ${target.name}…`, () => page.goto(`https://web.whatsapp.com/send?phone=${target.name.replace('+', '')}`, { waitUntil: 'domcontentloaded' }));
@@ -186,13 +194,13 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
               }, `WhatsApp rejected ${target.name}. No message was submitted; continuing with the next recipient.`, 'warning');
               continue;
             }
-            const input = await readable(page, [page.locator('footer [contenteditable="true"][role="textbox"]'), page.locator('footer [contenteditable="true"][data-tab]')], 'WhatsApp direct-chat message composer', 60000);
+            const input = await readable(page, [page.locator('footer [contenteditable="true"][role="textbox"]'), page.locator('footer [contenteditable="true"][data-tab]')], 'WhatsApp direct-chat message composer', Math.max(1, deadline - Date.now()));
             await act(`Typing message for ${target.name}…`, () => input.fill(job.messageContent));
             const outgoing = page.locator('.message-out').filter({ hasText: job.messageContent });
             const count = await outgoing.count();
             const send = await readable(page, [page.locator('button:has([data-icon="send"]), [role="button"]:has([data-icon="send"])'), page.getByRole('button', { name: /^(send|إرسال)$/i })], 'WhatsApp Send button');
             await act(`Sending to ${target.name}…`, async () => {
-              update(workspace, jobId, j => { j.targets.find(t => t.id === target.id).sendStatus = 'Unconfirmed'; });
+              update(workspace, jobId, j => { j.targets.find(t => t.id === target.id).sendStatus = 'Unconfirmed'; }, 'Waiting for WhatsApp server acknowledgement. No automatic retry.');
               await send.click();
             });
             // Confirm a NEW outgoing bubble and a server-accepted check, not just a click.
@@ -234,7 +242,7 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
              await act('Typing approved group post…', () => editor.fill(job.messageContent));
              const post = await readable(page, [dialog.getByRole('button', { name: /^(post|نشر)$/i })], 'Facebook Post button');
              await act('Publishing approved group post…', async () => {
-               update(workspace, jobId, j => { j.targets.find(t => t.id === target.id).postStatus = 'Unconfirmed'; });
+                update(workspace, jobId, j => { j.targets.find(t => t.id === target.id).postStatus = 'Unconfirmed'; }, 'Waiting for Facebook post confirmation. No automatic retry.');
                await post.click();
              });
             await dialog.waitFor({ state: 'hidden', timeout: 30000 });
@@ -245,9 +253,11 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
           update(workspace, jobId, j => {
             j.completedCount++; j.currentStep++; j.progress = Math.round(j.currentStep / j.totalCount * 100);
           });
+          currentTargetId = undefined;
         }
       }
       }
+      currentTargetId = undefined;
       const rejected = get(workspace).jobs.find(j => j.id === jobId).targets?.some(t => t.sendStatus === 'Failed');
       update(workspace, jobId, (j, state) => {
         j.status = rejected ? 'Failed' : 'Completed'; j.phase = rejected ? 'Finished with errors' : 'Done'; j.progress = 100; j.nextActionAt = null;
@@ -270,12 +280,13 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
             ? 'This account profile is already in use. Close its other browser window before retrying. Do not delete the saved profile.'
             : error.publicMessage || error.name === 'TimeoutError' ? publicError(error, failedPhase) : error.message.slice(0, 2000);
         job.error = reason;
-        if (job.platform === 'WhatsApp' && job.action === 'send') {
-          const row = job.targets.find(t => t.sendStatus === 'Unconfirmed') || job.targets[job.currentStep];
-          if (row) {
-            if (row.sendStatus === 'Pending') row.sendStatus = 'Failed';
-            row.error = reason;
-          }
+        const row = job.targets?.find(t => t.id === currentTargetId);
+        if (row) {
+          if (job.platform === 'WhatsApp' && row.sendStatus === 'Pending') row.sendStatus = 'Failed';
+          if (job.platform === 'Facebook' && job.action === 'publish' && row.postStatus === 'Pending') row.postStatus = 'Not posted';
+          if (job.platform === 'Facebook' && row.joinStatus === 'Pending') row.joinStatus = 'Needs review';
+          // Preserve Unconfirmed after a submission; never turn uncertainty into success.
+          row.error = reason;
         }
         const message = `Browser task stopped: ${reason}. If an action was submitted, verify it manually before retrying to avoid duplicates.`;
         recordActivity(state, message, 'warning');

@@ -1,5 +1,12 @@
 /** Display-only translations for shared controls and locally recorded service events. */
 export const extraAr: Record<string,string> = {
+  'Discovered Facebook groups':'مجموعات فيسبوك المكتشفة',
+  'Select':'اختيار',
+  'Group name':'اسم المجموعة',
+  'Group URL':'رابط المجموعة',
+  'Select group {name}':'اختيار المجموعة {name}',
+  'Waiting for WhatsApp server acknowledgement. No automatic retry.':'في انتظار تأكيد خادم واتساب. لا توجد إعادة محاولة تلقائية.',
+  'Waiting for Facebook post confirmation. No automatic retry.':'في انتظار تأكيد منشور فيسبوك. لا توجد إعادة محاولة تلقائية.',
   'I reviewed every selected group, am eligible to request membership, and approve membership requests and, if selected, the saved post. I have permission for this content.':'راجعت كل مجموعة محددة وأنا مؤهل لطلب العضوية، وأوافق على طلبات العضوية وعلى المنشور المحفوظ إذا تم اختياره. لدي إذن بنشر هذا المحتوى.',
   'Request membership only':'طلب العضوية فقط',
   'Facebook search input':'حقل بحث فيسبوك',
