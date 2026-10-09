@@ -1,0 +1,64 @@
+name: Build standalone desktop installers
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @workspace/social-omni-desktop run desktop:export
+      - uses: actions/upload-artifact@v4
+        with:
+          name: standalone-source
+          path: artifacts/social-omni-desktop/public/downloads/social-najhin-desktop.zip
+          retention-days: 7
+  installers:
+    needs: source
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            command: build:win
+          - os: macos-14
+            command: build:mac
+    runs-on: ${{ matrix.os }}
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+    steps:
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@v4
+        with:
+          name: standalone-source
+          path: ${{ runner.temp }}/najhin-source
+      - shell: pwsh
+        run: |
+          Expand-Archive -Path "$env:RUNNER_TEMP/najhin-source/social-najhin-desktop.zip" -DestinationPath "$env:RUNNER_TEMP/najhin-release"
+      # Deliberately outside the pnpm monorepo: collect standalone production dependencies.
+      - shell: pwsh
+        working-directory: ${{ runner.temp }}/najhin-release/social-najhin-desktop
+        run: |
+          pnpm install --frozen-lockfile --ignore-workspace
+          pnpm run check
+          pnpm run ${{ matrix.command }} --publish never
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.os }}
+          path: ${{ runner.temp }}/najhin-release/social-najhin-desktop/dist/installers/*
+          if-no-files-found: error
+          retention-days: 14

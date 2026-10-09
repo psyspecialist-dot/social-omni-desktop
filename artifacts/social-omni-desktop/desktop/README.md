@@ -1,5 +1,14 @@
 # Social Najhin
 
+## Production installers
+
+Customers should use the standalone Windows `.exe` or macOS `.dmg`/app `.zip`,
+not the developer source ZIP described below. These installers include Electron,
+Chromium and SQLite; customers do not need Node.js, Terminal or npm.
+See [RELEASE.md](RELEASE.md) for publisher build commands, signing requirements
+and the commercial release checklist. For source-only development, install
+dependencies and run `npm run browser:install` before `npm start`.
+
 ## WhatsApp modules
 
 - **WaFilter:** paste numbers or import TXT/CSV/XLSX (up to 200 unique entries). Include country codes; store Excel phone cells as text. Save the list, select a WhatsApp account, confirm authorization, then start live verification. Format-only results remain Unverified; only an actual WhatsApp composer enables Active/Valid export. CSV and Excel exports include active numbers only. Inactive can mean invalid format or an explicit platform rejection; inspect the reason. Network failures remain Unknown and stop the run.

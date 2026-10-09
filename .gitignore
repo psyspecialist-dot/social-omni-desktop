@@ -48,3 +48,6 @@ Thumbs.db
 .cache/
 .local/
 artifacts/api-server/data/
+/generated-artifacts/
+artifacts/social-omni-desktop/desktop/browser-runtime/
+artifacts/social-omni-desktop/public/downloads/native-*

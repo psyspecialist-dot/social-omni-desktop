@@ -21,3 +21,4 @@ timeoutMs = 20000
 
 [nix]
 channel = "stable-25_05"
+packages = ["wineWowPackages.stable", "glib", "nss", "nspr", "atk", "cups", "libdrm", "libxkbcommon", "pango", "cairo", "alsa-lib", "xorg.libX11", "xorg.libXcomposite", "xorg.libXdamage", "xorg.libXext", "xorg.libXfixes", "xorg.libXrandr", "mesa", "gtk3", "libgbm", "wineWow64Packages.stable", "xorg.xorgserver"]

@@ -1,6 +1,8 @@
 const { app, BrowserWindow, dialog, ipcMain, shell, safeStorage } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
+// Browser binaries live outside ASAR and do not depend on the customer's cache.
+if (app.isPackaged) process.env.PLAYWRIGHT_BROWSERS_PATH = path.join(process.resourcesPath, 'browser-runtime');
 const { pathToFileURL } = require('node:url');
 const { randomBytes } = require('node:crypto');
 const initSqlJs = require('sql.js');
@@ -54,7 +56,7 @@ function flushDatabase() {
 
 async function openDatabase() {
   const SQL = await initSqlJs({
-    locateFile: (file) => path.join(__dirname, 'node_modules', 'sql.js', 'dist', file),
+    locateFile: (file) => require.resolve(`sql.js/dist/${file}`),
   });
   fs.mkdirSync(app.getPath('userData'), { recursive: true, mode: 0o700 });
   databasePath = path.join(app.getPath('userData'), 'socialomni.sqlite');
@@ -104,10 +106,14 @@ function registerIpc() {
 }
 
 async function startApi() {
+  const chromium = require('playwright').chromium;
+  if (app.isPackaged && !fs.existsSync(chromium.executablePath())) {
+    throw new Error('The installed browser runtime is missing. Reinstall Social Najhin using the complete installer; no separate Node.js installation is required.');
+  }
   apiService = createService({
     express, dbPath: path.join(app.getPath('userData'), 'socialomni-workspace.sqlite'), secret: apiSecret,
     automation: {
-      chromium: require('playwright').chromium,
+      chromium,
       profileDir: path.join(app.getPath('userData'), 'browser-profiles'),
       onEvent: (event) => {
         const log = event.level === 'warning' ? console.warn : console.info;

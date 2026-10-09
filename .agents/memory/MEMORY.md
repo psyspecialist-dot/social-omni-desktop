@@ -6,3 +6,4 @@
 - [Advanced provider scope](advanced-provider-scope.md) — personal Telegram API, own SMTP and public business sites; native verification and uncertain outcomes need explicit limits.
 - [Optional dependency bundling](optional-dependency-bundling.md) — esbuild expands variable require paths as globs, including non-JavaScript pnpm shims.
 - [Bilingual product scope](bilingual-product-scope.md) — AR/EN covers every module and guide; Arabic RTL, English LTR, without rewriting user content or API values.
+- [Electron release packaging](electron-release-packaging.md) — isolate standalone builds from the monorepo; cross-Windows builds need 64-bit Wine and a display.

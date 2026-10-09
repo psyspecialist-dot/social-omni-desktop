@@ -7,7 +7,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../.
 const frontend = path.join(root, 'artifacts/social-omni-desktop');
 const { zipSync } = createRequire(path.join(frontend, 'package.json'))('fflate');
 const files = {};
-const excluded = new Set(['node_modules', '.git', '.replit-artifact', 'data', 'dist', 'downloads', '.agents', '.local']);
+const excluded = new Set(['node_modules', '.git', '.replit-artifact', 'data', 'dist', 'downloads', 'browser-runtime', 'generated-artifacts', '.agents', '.local']);
 function add(source, destination) {
   const stat = lstatSync(source);
   if (stat.isSymbolicLink()) return;
@@ -37,6 +37,7 @@ add(path.join(root, 'lib'), 'source/lib');
 for (const entry of ['package.json', 'pnpm-workspace.yaml', 'pnpm-lock.yaml', 'tsconfig.json', 'tsconfig.base.json']) {
   if (existsSync(path.join(root, entry))) add(path.join(root, entry), `source/${entry}`);
 }
+add(path.join(root, '.github', 'workflows', 'desktop-installers.yml'), 'source/.github/workflows/desktop-installers.yml');
 const output = path.join(frontend, 'public/downloads/social-najhin-desktop.zip');
 mkdirSync(path.dirname(output), { recursive: true });
 writeFileSync(`${output}.tmp`, zipSync(files, { level: 6 }));

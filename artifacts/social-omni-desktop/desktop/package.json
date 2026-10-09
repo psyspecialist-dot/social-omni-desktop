@@ -6,20 +6,104 @@
   "main": "main.js",
   "type": "commonjs",
   "private": true,
+  "author": "Social Najhin",
   "scripts": {
     "start": "electron .",
-    "postinstall": "playwright install chromium",
-    "check": "node --check main.js && node --check preload.js"
+    "postinstall": "electron-builder install-app-deps",
+    "browser:install": "playwright install chromium --no-shell",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:mac:zip": "electron-builder --mac zip",
+    "check": "node --check main.js && node --check preload.js && node --test scripts/packaging.test.cjs"
+  },
+  "build": {
+    "appId": "com.socialnajhin.desktop",
+    "productName": "Social Najhin",
+    "copyright": "Copyright © 2026 Social Najhin",
+    "asar": true,
+    "npmRebuild": false,
+    "directories": {
+      "output": "dist/installers",
+      "buildResources": "build"
+    },
+    "files": [
+      "*.js",
+      "*.cjs",
+      "renderer/**/*",
+      "package.json",
+      "!renderer/downloads/**/*"
+    ],
+    "asarUnpack": [
+      "**/*.wasm",
+      "**/*.node"
+    ],
+    "extraResources": [
+      {
+        "from": "browser-runtime/${os}-${arch}",
+        "to": "browser-runtime"
+      }
+    ],
+    "beforePack": "scripts/prepare-browsers.cjs",
+    "afterPack": "scripts/verify-package.cjs",
+    "artifactName": "Social-Najhin-${version}-${os}-${arch}.${ext}",
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "build/icon.icns",
+      "category": "public.app-category.business",
+      "minimumSystemVersion": "12.0.0",
+      "hardenedRuntime": true,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "notarize": false
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Social Najhin",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "deleteAppDataOnUninstall": false
+    }
   },
   "dependencies": {
     "cheerio": "^1.2.0",
-    "nodemailer": "^10.0.15",
-    "telegram": "^2.26.22",
     "express": "^5.2.1",
+    "nodemailer": "^10.0.15",
     "playwright": "^1.58.0",
-    "sql.js": "^1.13.0"
+    "sql.js": "^1.13.0",
+    "telegram": "^2.26.22"
   },
   "devDependencies": {
-    "electron": "^40.0.0"
+    "electron": "^40.0.0",
+    "electron-builder": "26.15.3"
   }
 }
