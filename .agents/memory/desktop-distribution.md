@@ -33,3 +33,9 @@ duplicate an already-submitted action.
 status, and make transport timeouts tell users to check the current task before
 retrying. Keep persistent account profiles in the existing desktop user-data
 location; branding changes must not create new session locations.
+
+The user explicitly requires real, functional browser automation, moving away from mockup UI behaviors. Primary WhatsApp/Facebook controls must execute DOM actions; demonstrations must stay separate and clearly labelled.
+
+**Why:** The user repeatedly clarified that this is not a UI-only project and requested actual sending, search, joining/posting, and live IPC feedback.
+
+**How to apply:** Scope future automation work around the full button-to-worker-to-saved-outcome journey, not merely interface changes or simulated success states.

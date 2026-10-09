@@ -1,5 +1,16 @@
 /** Display-only translations for shared controls and locally recorded service events. */
 export const extraAr: Record<string,string> = {
+  'I reviewed every selected group, am eligible to request membership, and approve membership requests and, if selected, the saved post. I have permission for this content.':'راجعت كل مجموعة محددة وأنا مؤهل لطلب العضوية، وأوافق على طلبات العضوية وعلى المنشور المحفوظ إذا تم اختياره. لدي إذن بنشر هذا المحتوى.',
+  'Request membership only':'طلب العضوية فقط',
+  'Facebook search input':'حقل بحث فيسبوك',
+  'Facebook Groups search filter':'مرشح المجموعات في بحث فيسبوك',
+  'Facebook membership confirmation':'تأكيد عضوية فيسبوك',
+  'Typing Facebook search keywords…':'جارٍ كتابة كلمات البحث في فيسبوك…',
+  'Submitting Facebook search…':'جارٍ تنفيذ بحث فيسبوك…',
+  'Finished with errors':'انتهى مع أخطاء',
+  'WhatsApp rejected this phone number. No message was submitted.':'رفض واتساب رقم الهاتف هذا. لم يتم إرسال أي رسالة.',
+  'WhatsApp rejected {phone}. No message was submitted; continuing with the next recipient.':'رفض واتساب {phone}. لم يتم إرسال أي رسالة؛ جارٍ الانتقال إلى المستلم التالي.',
+  'Some recipients failed. Review the recipient table. Confirmed sends are not retried.':'فشل الإرسال إلى بعض المستلمين. راجع جدول المستلمين. لا تتم إعادة إرسال الرسائل المؤكدة.',
   'Choose the approved live browser controls, or explicitly select rehearsal mode. No simulated action was started.':'اختر أدوات المتصفح الفعلية المعتمدة أو حدّد وضع التجربة صراحة. لم يتم بدء أي إجراء محاكاة.',
   'Facebook group post composer':'أداة إنشاء منشور مجموعة فيسبوك',
   'Facebook group post editor':'محرر منشور مجموعة فيسبوك',

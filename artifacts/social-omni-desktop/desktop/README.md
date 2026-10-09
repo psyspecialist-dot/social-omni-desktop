@@ -12,6 +12,15 @@
 Social Najhin is a local Electron social-management suite with approved browser
 automation and separate, clearly labeled rehearsal tools.
 
+## Live WhatsApp and Facebook execution
+
+- WhatsApp opens the saved account profile for a manual QR scan, navigates to each reviewed phone number, fills the visible contenteditable composer, and clicks Send. Each browser action uses the configured random 5–12-second delay. A new outgoing message and server-accepted check are required for **Sent**; this does not prove recipient delivery.
+- Explicit invalid-number responses are recorded as **Failed** and the next recipient is processed. Selector failures, verification challenges, or uncertain submissions stop the run. A submission without confirmation remains **Unconfirmed**; never retry it without reviewing WhatsApp.
+- Facebook opens manual sign-in, types keywords in its search field, presses Enter, selects the Groups search filter, and saves observed group links/names for review. Select or paste permitted group URLs before approving membership requests or text posts.
+- **Request membership only** does not post. Group joins record observed **Requested**, **Joined**, or **Needs review** states; questions and administrator approval remain manual. Posting fills the group composer, clicks Post, and requires a newly visible matching post before recording **Posted**.
+- Native IPC checks the trusted app sender; the local API checks accounts, action/platform matching, consent and group URLs. Progress events update the console and recipient/group tables, with one-second saved-state polling as a fallback. Outcomes and errors persist in the existing local SQLite workspace.
+- Real Chromium tests use controlled platform pages; the email network test uses a local authenticated TLS SMTP server. These do not verify native macOS/Electron, real account authorization, or real-platform delivery.
+
 ## Run on macOS (iMac)
 
 1. Install Node.js 24 LTS for macOS from https://nodejs.org. Choose Apple Silicon

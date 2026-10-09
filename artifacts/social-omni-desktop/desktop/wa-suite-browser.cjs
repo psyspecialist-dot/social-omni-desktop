@@ -23,7 +23,7 @@ async function filter({ page, job, act, update, guard, restriction }) {
     let status = 'Unknown', reason = 'No definitive platform response. Not classified as inactive.';
     while (Date.now() < deadline) {
       guard(); await restriction();
-      if (await page.getByText(/phone number shared via url is invalid|phone number.*is(n't| not) on whatsapp|is not registered on whatsapp/i).first().isVisible().catch(() => false)) {
+      if (await page.getByText(/phone number shared via url is invalid|phone number.*is(n't| not) on whatsapp|is not registered on whatsapp|رقم الهاتف.*(غير صحيح|غير صالح|ليس.*واتساب|غير مسجل)/i).first().isVisible().catch(() => false)) {
         status = 'Inactive'; reason = 'WhatsApp explicitly reported an invalid or unregistered number.'; break;
       }
       if (await page.locator('footer [contenteditable="true"][role="textbox"]').first().isVisible().catch(() => false)) {

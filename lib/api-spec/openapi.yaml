@@ -546,7 +546,7 @@ components:
       type: object
       required: [action, accountId]
       properties:
-        action: {type: string, enum: [connect, search, send, publish]}
+        action: {type: string, enum: [connect, search, send, join, publish]}
         accountId: {type: string}
         campaignId: {type: string}
         keywords: {type: string, maxLength: 300}
@@ -618,7 +618,8 @@ components:
         name: {type: string}
         joinStatus: {type: string, enum: [Pending, Joined, Requested, Needs review]}
         postStatus: {type: string, enum: [Pending, Posted, Not posted, Unconfirmed]}
-        sendStatus: {type: string, enum: [Pending, Sent, Unconfirmed]}
+        sendStatus: {type: string, enum: [Pending, Sent, Unconfirmed, Failed]}
+        error: {type: string}
     SimulatorJob:
       type: object
       required: [id, kind, status, progress, currentStep, steps, createdAt]

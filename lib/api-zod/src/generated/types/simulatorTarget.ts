@@ -15,4 +15,5 @@ export interface SimulatorTarget {
   joinStatus: SimulatorTargetJoinStatus;
   postStatus: SimulatorTargetPostStatus;
   sendStatus: SimulatorTargetSendStatus;
+  error?: string;
 }

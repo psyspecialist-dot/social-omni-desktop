@@ -18,7 +18,8 @@ export interface SimulationTarget {
   id: string; name: string;
   joinStatus: 'Pending' | 'Joined' | 'Requested' | 'Needs review';
   postStatus: 'Pending' | 'Posted' | 'Not posted' | 'Unconfirmed';
-  sendStatus: 'Pending' | 'Sent' | 'Unconfirmed';
+  sendStatus: 'Pending' | 'Sent' | 'Unconfirmed' | 'Failed';
+  error?: string;
 }
 export interface SimulationJob {
   mode?: 'live';

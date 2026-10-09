@@ -38,7 +38,7 @@ export default function SimQueue({ job, testId }: { job: SimulationJob; testId: 
     {(job.accountName || job.mediaName) && <div className="sq-meta">{job.accountName && <span>{t('Account:')} {job.accountName}</span>}{job.mediaName && <span>{t('Media:')} {job.mediaName}</span>}</div>}
     {targets.length > 0 ? <div className="sq-table-wrap"><table className="sq-table" aria-label={isWa ? t('Recipient queue') : t('Group queue')}>
       <thead><tr><th>{isWa ? t('Recipient') : job.mode === 'live' ? t('Approved group') : t('Hypothetical group')}</th>{!isWa && <th>{t('Join status')}</th>}<th>{isFilter ? t('Check progress') : isWa ? t('Send status') : t('Post status')}</th></tr></thead>
-      <tbody>{targets.map((tg, index) => <tr key={tg.id}><td className="sq-name">{tg.name}</td>
+      <tbody>{targets.map((tg, index) => <tr key={tg.id}><td className="sq-name">{tg.name}{tg.error && <small role="note" style={{ display: 'block', whiteSpace: 'normal' }}>{t(tg.error)}</small>}</td>
         {isWa
           ? <td><span className={`sq-chip ${!isFilter && tg.sendStatus === 'Sent' ? 'on' : ''}`}>{isFilter ? index < done ? t('Checked · see WaFilter results') : t('Pending check') : tg.sendStatus === 'Sent' ? job.mode === 'live' ? t('Sent · server accepted') : t('Sent (simulated)') : t(tg.sendStatus)}</span></td>
           : <><td><span className={`sq-chip ${tg.joinStatus === 'Joined' ? 'on' : ''}`}>{tg.joinStatus === 'Joined' ? job.mode === 'live' ? t('Joined') : t('Joined (simulated)') : t(tg.joinStatus)}</span></td>

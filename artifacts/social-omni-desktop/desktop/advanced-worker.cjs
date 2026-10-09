@@ -3,6 +3,7 @@ const {defaults,lines,active,email,validateRun} = require('./advanced.cjs');
 const network = require('./advanced-network.cjs');
 const deps = require('./advanced-deps.cjs');
 const browser = require('./advanced-browser.cjs');
+const {publicError} = require('./automation-errors.cjs');
 
 module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runtime,vault,kickLegacy,cancelLegacy,readMedia}) {
   const running=new Map(),auth=new Map();
@@ -37,8 +38,8 @@ module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runt
       vault.write(id,'telegram',{...config,session:client.session.save()});
       stage(id,'connected');
       touch(id,s=>recordActivity(s,'Telegram account authorized; encrypted session stored locally.','success'));
-    } catch {
-      if(!closed) stage(id,'error','Telegram authorization failed or timed out. Check API settings, phone/code and 2FA, then start again.');
+    } catch (error) {
+      if(!closed) stage(id,'error',publicError(error,'Telegram authorization'));
     } finally {
       const session=auth.get(id); if(session?.timer) clearTimeout(session.timer);
       if(client) await client.disconnect().catch(()=>{});
@@ -172,10 +173,10 @@ module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runt
         const t=get(id).advanced.tasks.find(t=>t.id===taskId);
         if(t && active(t)) touch(id,s=>{
           const task=s.advanced.tasks.find(t=>t.id===taskId);
+          const failedPhase=task.phase;
           task.status='Failed';task.phase='Stopped — review required';task.nextActionAt=null;
           // Never persist provider error bodies: SMTP and auth errors may contain credentials.
-          task.error=error.message?.startsWith('A recipient is opted out')?error.message:
-            'Task stopped: permission, connection, restriction, or unreadable platform response. Review any Unconfirmed attempts manually; nothing is retried automatically.';
+          task.error=publicError(error, failedPhase);
           recordActivity(s,`${task.kind}: ${task.error}`,'warning');
         });
       }
@@ -200,7 +201,8 @@ module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runt
       const task=[...state.advanced.tasks].reverse().find(t=>t.status==='Queued' || t.status==='Scheduled' && Date.parse(t.scheduledAt)<=Date.now());
       if(task) {
         if(task.status==='Scheduled') touch(id,s=>{const t=s.advanced.tasks.find(t=>t.id===task.id);t.status='Queued';});
-        running.set(id,{taskId:task.id,controller:new AbortController()});void execute(id,task.id);
+        const session={taskId:task.id,controller:new AbortController()};
+        running.set(id,session);session.promise=execute(id,task.id);
       }
     }
   },1000);
@@ -219,8 +221,8 @@ module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runt
           await transport.verify();
           touch(id,s=>{const c=s.advanced.connections.find(c=>c.id==='smtp');if(c){c.connected=true;c.stage='connected';c.error='';}
             recordActivity(s,'SMTP connection verified. No email was sent.','success');});
-        } catch {
-          if(!closed) touch(id,s=>{const c=s.advanced.connections.find(c=>c.id==='smtp');if(c){c.connected=false;c.stage='error';c.error='SMTP connection failed. Check host, TLS port and authentication; no email was sent.';}});
+        } catch (error) {
+          if(!closed) touch(id,s=>{const c=s.advanced.connections.find(c=>c.id==='smtp');if(c){c.connected=false;c.stage='error';c.error=publicError(error,'SMTP connection');}});
         } finally {transport?.close();auth.delete(id);}
       });
     },
@@ -228,7 +230,15 @@ module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runt
     answerAuth(id,kind,value){const session=auth.get(id);if(!session?.resolve || session.kind!==kind) throw Object.assign(new Error('No matching Telegram sign-in prompt.'),{status:400});
       clearTimeout(session.timer);const resolve=session.resolve;session.resolve=null;resolve(value);},
     cancel(id,taskId){const session=running.get(id);if(session?.taskId===taskId){session.controller.abort();session.transport?.close();void session.client?.disconnect().catch(()=>{});void session.context?.close().catch(()=>{});}cancelLegacy(id,taskId);},
-    close(){closed=true;clearInterval(timer);for(const session of running.values()){session.controller.abort();session.transport?.close();void session.context?.close().catch(()=>{});void session.client?.disconnect().catch(()=>{});}
-      for(const session of auth.values()){clearTimeout(session.timer);session.reject?.(new Error('Closing'));void session.client?.disconnect().catch(()=>{});}},
+    close(){closed=true;clearInterval(timer);
+      const sessions=[...running.values()];
+      for(const session of sessions){session.controller.abort();session.transport?.close();}
+      for(const session of auth.values()){clearTimeout(session.timer);session.reject?.(new Error('Closing'));void session.client?.disconnect().catch(()=>{});}
+      return Promise.allSettled(sessions.map(async session=>{
+        await session.context?.close().catch(()=>{});
+        await session.client?.disconnect().catch(()=>{});
+        await session.promise;
+      }));
+    },
   };
 };

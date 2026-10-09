@@ -13,5 +13,6 @@ export const BrowserTaskInputAction = {
   connect: 'connect',
   search: 'search',
   send: 'send',
+  join: 'join',
   publish: 'publish',
 } as const;

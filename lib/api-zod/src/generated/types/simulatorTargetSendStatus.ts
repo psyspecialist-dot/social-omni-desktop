@@ -13,4 +13,5 @@ export const SimulatorTargetSendStatus = {
   Pending: 'Pending',
   Sent: 'Sent',
   Unconfirmed: 'Unconfirmed',
+  Failed: 'Failed',
 } as const;

@@ -34,7 +34,7 @@ export default function LiveAutomation({ platform, accounts, campaigns = [], job
   const active = jobs.find(j => ['Pending', 'Running'].includes(j.status));
   const latest = jobs.find(j => j.mode === 'live' && j.platform === platform);
   const search = jobs.find(j => j.mode === 'live' && j.platform === 'Facebook' && j.discoveredGroups?.length);
-  const start = async (action: 'connect' | 'search' | 'send' | 'publish') => {
+  const start = async (action: 'connect' | 'search' | 'send' | 'join' | 'publish') => {
     if (busy) return;
     setBusy(action); setError(''); setEvents([]);
     try {
@@ -97,9 +97,10 @@ export default function LiveAutomation({ platform, accounts, campaigns = [], job
       </>}
       <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginTop: 18 }}>
         <input type="checkbox" checked={approved} onChange={e => setApproved(e.target.checked)} disabled={!isDesktop || Boolean(active)} data-testid={`live-consent-${platform.toLowerCase()}`} />
-        <span>{platform === 'WhatsApp' ? t('I confirm every listed recipient opted in to this message, and approve sending the saved text now.') : t('I reviewed every selected group, am eligible to request membership, have permission for this content, and approve submitting the saved post now.')}</span>
+        <span>{platform === 'WhatsApp' ? t('I confirm every listed recipient opted in to this message, and approve sending the saved text now.') : t('I reviewed every selected group, am eligible to request membership, and approve membership requests and, if selected, the saved post. I have permission for this content.')}</span>
       </label>
       <div className="live-controls" style={{ marginTop: 18 }}>
+        {platform === 'Facebook' && <button type="button" className="button button-secondary" onClick={() => start('join')} disabled={!available || !approved || !groups.trim() || Boolean(active) || Boolean(busy)} data-testid="live-join-facebook">{t('Request membership only')}</button>}
         <button type="button" className="button button-primary" onClick={() => start(platform === 'WhatsApp' ? 'send' : 'publish')} disabled={!available || !approved || Boolean(active) || Boolean(busy) || (platform === 'Facebook' && (!campaignId || !groups.trim()))} data-testid={`live-run-${platform.toLowerCase()}`}><Play size={15} /> {busy ? t('Starting…') : platform === 'WhatsApp' ? t('Send approved messages') : t('Join / post to approved groups')}</button>
         {active?.mode === 'live' && <button type="button" className="button button-danger" onClick={stop} disabled={Boolean(busy)}><Square size={14} /> {t('Stop browser task')}</button>}
       </div>

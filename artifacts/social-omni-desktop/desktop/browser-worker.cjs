@@ -2,6 +2,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const waSuiteBrowser = require('./wa-suite-browser.cjs');
+const mapsBrowser = require('./advanced-browser.cjs');
+const { readable, publicError } = require('./automation-errors.cjs');
 const firstJob = state => state.jobs.filter(j => ['Pending', 'Running'].includes(j.status))
   .sort((a, b) => a.createdAt.localeCompare(b.createdAt))[0];
 const groupUrl = value => {
@@ -34,7 +36,7 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
     let context;
     try {
       const job = update(workspace, jobId, j => { j.status = 'Running'; j.phase = 'Connecting…'; }, 'Connecting to a visible local browser. Sign in manually; passwords and QR codes are not captured by the app.');
-      const profile = path.join(automation.profileDir, job.accountId);
+      const profile = path.join(automation.profileDir, job.kind === 'leads' ? 'maps-research' : job.accountId);
       fs.mkdirSync(profile, { recursive: true, mode: 0o700 });
       context = await automation.chromium.launchPersistentContext(profile, {
         headless: false, viewport: null, locale: 'en-US', timeout: 30000,
@@ -70,14 +72,34 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
         await operation();
         await restriction();
       };
-      await act('Opening sign-in…', () => page.goto(job.platform === 'WhatsApp' ? 'https://web.whatsapp.com/' : 'https://www.facebook.com/', { waitUntil: 'domcontentloaded' }));
+      if (job.kind === 'leads') {
+        await mapsBrowser.execute({
+          runtime: automation, existingContext: context,
+          task: { kind: 'maps', query: job.keywords, limit: job.totalCount },
+          guard, setContext() {},
+          pace: phase => act(phase, async () => {}),
+          result: data => update(workspace, jobId, (j, state) => {
+            if (state.leads.results.length >= 2000) throw new Error('Saved lead limit reached. Export and remove old results.');
+            state.leads.results.push({ id: require('node:crypto').randomUUID(), jobId, keyword: job.keyword, city: job.city,
+              businessName: data.name, phoneNumber: data.phone || '', address: data.address || '', website: data.website || '',
+              createdAt: new Date().toISOString(), simulated: false });
+            j.completedCount++; j.currentStep++; j.progress = Math.min(99, Math.round(j.completedCount / j.totalCount * 100));
+          }, `Extracted public business: ${data.name}. Missing details stay blank.`, 'success'),
+        });
+      } else {
+      // Navigate immediately: sign-in must not open a blank browser for a pacing interval.
+      update(workspace, jobId, j => { j.phase = 'Opening sign-in…'; }, 'Opening sign-in…');
+      await page.goto(job.platform === 'WhatsApp' ? 'https://web.whatsapp.com/' : 'https://www.facebook.com/', { waitUntil: 'domcontentloaded', timeout: 45000 });
       update(workspace, jobId, j => { j.phase = 'Waiting for sign-in / QR'; }, `Complete ${job.platform === 'WhatsApp' ? 'the WhatsApp QR scan' : 'Facebook sign-in'} in the local browser. Waiting up to five minutes.`);
       const deadline = Date.now() + 300000;
       while (true) {
         await restriction();
         const signedIn = job.platform === 'WhatsApp'
-          ? await page.locator('#pane-side').isVisible().catch(() => false)
-          : !/\/login|\/recover/i.test(page.url()) && await page.getByRole('button', { name: /^(your profile|account)$/i }).first().isVisible().catch(() => false);
+          ? await page.locator('#pane-side').isVisible().catch(() => false) ||
+            await page.locator('[aria-label="Chat list"],[aria-label="قائمة الدردشات"]').first().isVisible().catch(() => false)
+          : !/\/login|\/recover/i.test(page.url()) && (
+            await page.getByRole('button', { name: /^(your profile|account|حسابك|ملفك الشخصي)$/i }).first().isVisible().catch(() => false) ||
+            await page.getByRole('link', { name: /^(your profile|ملفك الشخصي)$/i }).first().isVisible().catch(() => false));
         if (signedIn) break;
         if (Date.now() > deadline) throw new Error('Sign-in timed out. Connect again and complete sign-in in the browser.');
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -93,8 +115,22 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
         });
       }
       if (job.action === 'search') {
-        await act('Searching Facebook groups…', () => page.goto(`https://www.facebook.com/search/groups/?q=${encodeURIComponent(job.keywords)}`, { waitUntil: 'domcontentloaded' }));
-        await page.locator('a[href*="/groups/"]').first().waitFor({ timeout: 20000 });
+        const searchInput = await readable(page, [
+          page.getByRole('combobox', { name: /search facebook|بحث في فيسبوك/i }),
+          page.getByRole('textbox', { name: /search facebook|بحث في فيسبوك/i }),
+          page.locator('input[placeholder="Search Facebook"], input[aria-label="Search Facebook"], input[placeholder="بحث في فيسبوك"]'),
+        ], 'Facebook search input');
+        await act('Typing Facebook search keywords…', () => searchInput.fill(job.keywords));
+        await act('Submitting Facebook search…', () => searchInput.press('Enter'));
+        if (!new URL(page.url()).pathname.startsWith('/search/groups')) {
+          const groupsFilter = await readable(page, [
+            page.locator('a[href*="/search/groups/"]'),
+            page.getByRole('link', { name: /^(groups|المجموعات)$/i }),
+            page.getByRole('button', { name: /^(groups|المجموعات)$/i }),
+          ], 'Facebook Groups search filter');
+          await act('Searching Facebook groups…', () => groupsFilter.click());
+        }
+        await readable(page, [page.locator('a[href*="/groups/"]')], 'Facebook group search result link');
         await restriction();
         const results = await page.locator('a[href*="/groups/"]').evaluateAll(links => links.map(a => ({ url: a.href.split('?')[0], name: a.innerText.trim() })).filter(a => a.name));
         const groups = [];
@@ -112,11 +148,16 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
         for (const target of job.targets) {
           await act(`Opening approved group ${target.name}…`,()=>page.goto(groupUrl(target.name),{waitUntil:'domcontentloaded'}));
           if (groupUrl(page.url())!==groupUrl(target.name)) throw new Error('Facebook redirected away from the approved group.');
-          const join=page.getByRole('button',{name:/^Join group$/i}).first();
-          if(await join.isVisible()) await act(`Requesting group membership…`,()=>join.click());
+           const join=page.getByRole('button',{name:/^(Join group|انضمام إلى المجموعة)$/i}).first();
+           const member=page.getByRole('button',{name:/^(joined|member|تم الانضمام|عضو)$/i}).first();
+           if(!await member.isVisible().catch(()=>false) && await join.isVisible()) await act(`Requesting group membership…`,async()=>{
+             update(workspace,jobId,j=>{j.targets.find(t=>t.id===target.id).joinStatus='Needs review';});
+             await join.click();
+           });
           await restriction();
-          const requested=await page.getByRole('button',{name:/cancel request/i}).first().isVisible().catch(()=>false);
-          const joined=await page.getByRole('button',{name:/^(joined|member)$/i}).first().isVisible().catch(()=>false);
+           await readable(page,[member,page.getByRole('button',{name:/cancel request|إلغاء الطلب/i})],'Facebook membership confirmation',10000).catch(error=>{if(!error.publicMessage)throw error;});
+           const requested=await page.getByRole('button',{name:/cancel request|إلغاء الطلب/i}).first().isVisible().catch(()=>false);
+           const joined=await member.isVisible().catch(()=>false);
           update(workspace,jobId,j=>{
             j.targets.find(t=>t.id===target.id).joinStatus=requested?'Requested':joined?'Joined':'Needs review';
             j.completedCount++;j.progress=Math.round(j.completedCount/j.totalCount*100);
@@ -129,12 +170,31 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
           guard();
           if (job.platform === 'WhatsApp') {
             await act(`Opening chat for ${target.name}…`, () => page.goto(`https://web.whatsapp.com/send?phone=${target.name.replace('+', '')}`, { waitUntil: 'domcontentloaded' }));
-            const input = page.locator('footer [contenteditable="true"][role="textbox"]').first();
-            await input.waitFor({ timeout: 60000 });
+            // An explicit invalid-number response is safe to skip; ambiguous sends stop.
+            const invalid = page.getByText(/phone number shared via url is invalid|phone number.*is(n't| not) on whatsapp|is not registered on whatsapp|رقم الهاتف.*(غير صحيح|غير صالح|ليس.*واتساب|غير مسجل)/i).first();
+            const deadline = Date.now() + 60000;
+            while (!await page.locator('footer [contenteditable="true"][role="textbox"],footer [contenteditable="true"][data-tab]').first().isVisible().catch(() => false)) {
+              await restriction();
+              if (await invalid.isVisible().catch(() => false) || Date.now() >= deadline) break;
+              await page.waitForTimeout(200);
+            }
+            if (await invalid.isVisible().catch(() => false)) {
+              update(workspace, jobId, j => {
+                const row = j.targets.find(t => t.id === target.id);
+                row.sendStatus = 'Failed'; row.error = 'WhatsApp rejected this phone number. No message was submitted.';
+                j.currentStep++; j.progress = Math.round(j.currentStep / j.totalCount * 100);
+              }, `WhatsApp rejected ${target.name}. No message was submitted; continuing with the next recipient.`, 'warning');
+              continue;
+            }
+            const input = await readable(page, [page.locator('footer [contenteditable="true"][role="textbox"]'), page.locator('footer [contenteditable="true"][data-tab]')], 'WhatsApp direct-chat message composer', 60000);
             await act(`Typing message for ${target.name}…`, () => input.fill(job.messageContent));
             const outgoing = page.locator('.message-out').filter({ hasText: job.messageContent });
             const count = await outgoing.count();
-            await act(`Sending to ${target.name}…`, () => page.locator('button:has([data-icon="send"]), [role="button"]:has([data-icon="send"])').first().click());
+            const send = await readable(page, [page.locator('button:has([data-icon="send"]), [role="button"]:has([data-icon="send"])'), page.getByRole('button', { name: /^(send|إرسال)$/i })], 'WhatsApp Send button');
+            await act(`Sending to ${target.name}…`, async () => {
+              update(workspace, jobId, j => { j.targets.find(t => t.id === target.id).sendStatus = 'Unconfirmed'; });
+              await send.click();
+            });
             // Confirm a NEW outgoing bubble and a server-accepted check, not just a click.
             await outgoing.nth(count).waitFor({ timeout: 30000 });
             await outgoing.nth(count).locator('[data-icon="msg-check"], [data-icon="msg-dblcheck"]').first().waitFor({ timeout: 30000 });
@@ -146,11 +206,15 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
           } else {
             await act(`Opening approved group ${target.name}…`, () => page.goto(groupUrl(target.name), { waitUntil: 'domcontentloaded' }));
             if (groupUrl(page.url()) !== groupUrl(target.name)) throw new Error('Facebook redirected away from the approved group. No join or post attempted.');
-            const matchingPosts = page.getByText(job.messageContent, { exact: true });
+             const matchingPosts = page.getByText(job.messageContent, { exact: true }).filter({ visible: true });
             const previousPostCount = await matchingPosts.count();
-            const join = page.getByRole('button', { name: /^Join group$/i }).first();
-            if (await join.isVisible()) {
-              await act(`Requesting membership in ${target.name}…`, () => join.click());
+             const member = page.getByRole('button', { name: /^(joined|member|تم الانضمام|عضو)$/i }).first();
+             const join = page.getByRole('button', { name: /^(Join group|انضمام إلى المجموعة)$/i }).first();
+             if (!await member.isVisible().catch(() => false) && await join.isVisible()) {
+               await act(`Requesting membership in ${target.name}…`, async () => {
+                 update(workspace, jobId, j => { j.targets.find(t => t.id === target.id).joinStatus = 'Needs review'; });
+                 await join.click();
+               });
               // Membership may need admin approval or questions. Never invent answers.
               const composer = page.getByRole('button', { name: /write something/i }).first();
               if (!await composer.isVisible()) {
@@ -161,41 +225,58 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
                 continue;
               }
             }
-            const composer = page.getByRole('button', { name: /write something/i }).first();
-            if (!await composer.isVisible()) throw new Error('Group composer is unavailable. Review membership, language and posting permission manually.');
-            update(workspace, jobId, j => { j.targets.find(t => t.id === target.id).joinStatus = 'Joined'; });
+             const composer = await readable(page, [page.getByRole('button', { name: /write something|create.*post|اكتب شيئ|إنشاء منشور/i })], 'Facebook group post composer');
+             const joined = await member.isVisible().catch(() => false);
+             update(workspace, jobId, j => { j.targets.find(t => t.id === target.id).joinStatus = joined ? 'Joined' : 'Needs review'; });
             await act('Opening group post editor…', () => composer.click());
-            const dialog = page.getByRole('dialog').last();
-            await act('Typing approved group post…', () => dialog.locator('[contenteditable="true"][role="textbox"]').first().fill(job.messageContent));
-            await act('Publishing approved group post…', () => dialog.getByRole('button', { name: /^Post$/i }).click());
+             const dialog = page.getByRole('dialog').last();
+             const editor = await readable(page, [dialog.locator('[contenteditable="true"][role="textbox"]'), dialog.locator('textarea')], 'Facebook group post editor');
+             await act('Typing approved group post…', () => editor.fill(job.messageContent));
+             const post = await readable(page, [dialog.getByRole('button', { name: /^(post|نشر)$/i })], 'Facebook Post button');
+             await act('Publishing approved group post…', async () => {
+               update(workspace, jobId, j => { j.targets.find(t => t.id === target.id).postStatus = 'Unconfirmed'; });
+               await post.click();
+             });
             await dialog.waitFor({ state: 'hidden', timeout: 30000 });
             await matchingPosts.nth(previousPostCount).waitFor({ timeout: 30000 });
             await restriction();
             update(workspace, jobId, j => { j.targets.find(t => t.id === target.id).postStatus = 'Posted'; }, `Post appeared in ${target.name}; moderation may still apply.`, 'success');
           }
           update(workspace, jobId, j => {
-            j.completedCount++; j.currentStep++; j.progress = Math.round(j.completedCount / j.totalCount * 100);
+            j.completedCount++; j.currentStep++; j.progress = Math.round(j.currentStep / j.totalCount * 100);
           });
         }
       }
+      }
+      const rejected = get(workspace).jobs.find(j => j.id === jobId).targets?.some(t => t.sendStatus === 'Failed');
       update(workspace, jobId, (j, state) => {
-        j.status = 'Completed'; j.phase = 'Done'; j.progress = 100; j.nextActionAt = null;
+        j.status = rejected ? 'Failed' : 'Completed'; j.phase = rejected ? 'Finished with errors' : 'Done'; j.progress = 100; j.nextActionAt = null;
+        if (rejected) j.error = 'Some recipients failed. Review the recipient table. Confirmed sends are not retried.';
         const campaign = state.store.campaigns.find(c => c.id === j.campaignId);
         if (campaign) {
           campaign.status = j.targets.every(t => t.postStatus === 'Posted') ? 'Sent' : 'Ready for review';
           campaign.updatedAt = new Date().toISOString();
         }
-      }, 'Local browser task done. Review actual platform outcomes; pending membership requests are not completed joins.', 'success');
+      }, rejected ? 'Some recipients failed. Review the recipient table. Confirmed sends are not retried.' : job.kind === 'leads' ? 'Public Google Maps extraction completed. Results contain observed listings only.' : 'Local browser task done. Review actual platform outcomes; pending membership requests are not completed joins.', rejected ? 'warning' : 'success');
     } catch (error) {
       if (closed) return;
       const state = get(workspace), job = state.jobs.find(j => j.id === jobId);
       if (job && ['Pending', 'Running'].includes(job.status)) {
+        const failedPhase = job.phase;
         job.status = 'Failed'; job.phase = 'Stopped — review required'; job.nextActionAt = null;
         const reason = /executable doesn't exist|please run.*playwright install/is.test(error.message)
           ? 'Chromium is missing. Run npx playwright install chromium in the desktop folder, then try again.'
           : /processsingleton|singletonlock|profile.*(in use|locked)/i.test(error.message)
             ? 'This account profile is already in use. Close its other browser window before retrying. Do not delete the saved profile.'
-            : error.message;
+            : error.publicMessage || error.name === 'TimeoutError' ? publicError(error, failedPhase) : error.message.slice(0, 2000);
+        job.error = reason;
+        if (job.platform === 'WhatsApp' && job.action === 'send') {
+          const row = job.targets.find(t => t.sendStatus === 'Unconfirmed') || job.targets[job.currentStep];
+          if (row) {
+            if (row.sendStatus === 'Pending') row.sendStatus = 'Failed';
+            row.error = reason;
+          }
+        }
         const message = `Browser task stopped: ${reason}. If an action was submitted, verify it manually before retrying to avoid duplicates.`;
         recordActivity(state, message, 'warning');
         save(workspace, state);

@@ -238,7 +238,8 @@ export const CreateAdvancedTaskResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -523,7 +524,8 @@ export const EditAdvancedTaskResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -780,7 +782,8 @@ export const DeleteAdvancedTaskResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -1041,7 +1044,8 @@ export const RunAdvancedTaskResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -1298,7 +1302,8 @@ export const CancelAdvancedTaskResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -1566,7 +1571,8 @@ export const SaveAdvancedConnectionResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -1823,7 +1829,8 @@ export const DeleteAdvancedConnectionResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -2085,7 +2092,8 @@ export const AuthorizeTelegramResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -2342,7 +2350,8 @@ export const DeleteAdvancedResultResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -2603,7 +2612,8 @@ export const SaveWaFilterResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -2873,7 +2883,8 @@ export const CreateCrmThreadResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -3147,7 +3158,8 @@ export const EditCrmThreadResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -3404,7 +3416,8 @@ export const RemoveCrmThreadResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -3685,7 +3698,8 @@ export const CreateChatbotRuleResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -3970,7 +3984,8 @@ export const EditChatbotRuleResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -4227,7 +4242,8 @@ export const RemoveChatbotRuleResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -4486,7 +4502,8 @@ export const StartWaSuiteSessionResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -4551,7 +4568,7 @@ export const startLocalBrowserTaskBodyGroupUrlsMax = 5000;
 
 
 export const StartLocalBrowserTaskBody = zod.object({
-  "action": zod.enum(['connect', 'search', 'send', 'publish']),
+  "action": zod.enum(['connect', 'search', 'send', 'join', 'publish']),
   "accountId": zod.string(),
   "campaignId": zod.string().optional(),
   "keywords": zod.string().max(startLocalBrowserTaskBodyKeywordsMax).optional(),
@@ -4757,7 +4774,8 @@ export const StartLocalBrowserTaskResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -5030,7 +5048,8 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -5286,7 +5305,8 @@ export const ClearSocialOmniLeadsResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -5539,7 +5559,8 @@ export const GetSocialOmniStateResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -5792,7 +5813,8 @@ export const ClearSocialOmniStateResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -6075,7 +6097,8 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -6337,7 +6360,8 @@ export const CreateSocialOmniJobResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -6594,7 +6618,8 @@ export const CancelSocialOmniJobResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -6860,7 +6885,8 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -7117,7 +7143,8 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -7377,7 +7404,8 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -7660,7 +7688,8 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -7947,7 +7976,8 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),
@@ -8205,7 +8235,8 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
-  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed'])
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
 })).optional(),
   "completedCount": zod.number().int().optional(),
   "totalCount": zod.number().int().optional(),

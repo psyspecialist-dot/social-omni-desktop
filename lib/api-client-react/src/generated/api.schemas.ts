@@ -300,6 +300,7 @@ export const BrowserTaskInputAction = {
   connect: 'connect',
   search: 'search',
   send: 'send',
+  join: 'join',
   publish: 'publish',
 } as const;
 
@@ -495,6 +496,7 @@ export const SimulatorTargetSendStatus = {
   Pending: 'Pending',
   Sent: 'Sent',
   Unconfirmed: 'Unconfirmed',
+  Failed: 'Failed',
 } as const;
 
 export interface SimulatorTarget {
@@ -503,6 +505,7 @@ export interface SimulatorTarget {
   joinStatus: SimulatorTargetJoinStatus;
   postStatus: SimulatorTargetPostStatus;
   sendStatus: SimulatorTargetSendStatus;
+  error?: string;
 }
 
 export type SimulatorJobMode = typeof SimulatorJobMode[keyof typeof SimulatorJobMode];
