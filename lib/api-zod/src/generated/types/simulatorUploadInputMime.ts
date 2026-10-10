@@ -16,4 +16,5 @@ export const SimulatorUploadInputMime = {
   'image/gif': 'image/gif',
   'video/mp4': 'video/mp4',
   'video/webm': 'video/webm',
+  'application/pdf': 'application/pdf',
 } as const;

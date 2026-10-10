@@ -7,7 +7,13 @@ Do not interpret newly mounted WhatsApp DOM elements as newly received messages.
 
 **Why:** WhatsApp remounts messages when conversations switch or history scrolls. Treating a new DOM node as a new event can reply to old messages or to the wrong conversation. The user requested extending monitoring to unread inbox conversations, not just the open chat.
 
-**How to apply:** Baseline pre-existing unread history as well as the open chat. Require unread evidence or newly appended messages, preserve message identity and durable reply reservations, and recheck the peer and consent before Send. Explain rendered-list limits rather than promising all-chat synchronization. Never switch chats or overwrite a person's unsent composer draft.
+**How to apply:** Baseline pre-existing unread history as well as the open chat by default. An explicit startup approval may include existing unread messages, but only the badge-indicated unread tail of opted-in direct chats—not arbitrary historical messages. Preserve message identity and durable reply reservations, and recheck the peer and consent before Send. Explain rendered-list limits rather than promising all-chat synchronization. Never switch chats or overwrite a person's unsent composer draft.
+
+Explicit startup approval is distinct from permission for future auto-replies.
+
+**Why:** The user requested an active unread-badge listener that responds promptly. Importing every existing unread chat without replies can appear inactive, but silently replaying history is unsafe.
+
+**How to apply:** Offer the startup choice visibly, keep it off by default, and retain the same rule matching, consent, deduplication and cooldown checks for both startup and later unread messages.
 
 Reply cooldowns and ambiguous-send reservations must survive message-history pruning.
 

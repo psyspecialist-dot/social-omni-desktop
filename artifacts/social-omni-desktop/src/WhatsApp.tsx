@@ -61,7 +61,7 @@ export default function WhatsApp({ settings, media, accounts, jobs, perform, onS
         {active && <button type="button" className="button button-secondary" onClick={() => onCancel(active.id)} data-testid="button-cancel-run"><Square /> {t('Stop')}</button>}
         </div></div>
     <LiveAutomation platform="WhatsApp" accounts={accounts} jobs={jobs} perform={perform} draftPreview={d} beforeSend={async () => { if (problem) throw new Error(problem); await onSave(d); }} />
-    <div className="wa-sim-note" role="note">{t('Real actions only. WhatsApp stays open until you close the browser or quit the app. Text sending requires approval; attachments are not supported yet.')}</div>
+    <div className="wa-sim-note" role="note">{t('Real actions only. WhatsApp stays open until you close the browser or quit the app. Approved campaigns support text, images, videos and PDFs.')}</div>
     {error && <div className="wa-feedback err" role="alert" data-testid="error-run">{error}</div>}
     <div className="wa-grid wide">
       <form className="wa-stack" onSubmit={save}>

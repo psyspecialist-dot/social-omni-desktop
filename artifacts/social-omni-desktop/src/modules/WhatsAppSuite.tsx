@@ -40,12 +40,13 @@ function InboxControl({ accounts, jobs, perform }: { accounts: Account[]; jobs: 
   const list = waAccounts(accounts);
   const [acc, setAcc] = useState('');
   const [ok, setOk] = useState(false);
+  const [existingUnread, setExistingUnread] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const active = jobs.find(j => j.platform === 'WhatsApp' && j.action === 'inbox' && ['Pending', 'Running'].includes(j.status));
   const other = jobs.find(j => ['Pending', 'Running'].includes(j.status) && j !== active);
   const accountId = acc || list[0]?.id || '';
-  const start = async () => { setBusy(true); setErr(''); try { await perform('POST', '/suite/session', { action: 'inbox', accountId, approved: true }); } catch (e) { setErr(msg(e, t)); } finally { setBusy(false); } };
+  const start = async () => { setBusy(true); setErr(''); try { await perform('POST', '/suite/session', { action: 'inbox', accountId, approved: true, replyToExistingUnread: existingUnread }); } catch (e) { setErr(msg(e, t)); } finally { setBusy(false); } };
   const stop = async () => { if (!active) return; setBusy(true); setErr(''); try { await perform('POST', `/jobs/${active.id}/cancel`); } catch (e) { setErr(msg(e, t)); } finally { setBusy(false); } };
   const can = isDesktop && ok && !!accountId && !other && !busy;
   return <section className="wa-card" aria-label={t('Inbox listener')} data-testid="panel-wa-inbox">
@@ -55,7 +56,8 @@ function InboxControl({ accounts, jobs, perform }: { accounts: Account[]; jobs: 
     <div style={{ height: 10 }} />
     {!isDesktop && <Banner kind="warn">{t(SESSION_NOTE)}</Banner>}
     <div style={{ height: 8 }} />
-    <Banner kind="info">{t('Initial unread history is imported without replies. New unread direct messages can trigger enabled rules for opted-in clients. Group chats never reply. Ambiguous replies are never retried automatically.')}</Banner>
+    <Banner kind="info">{t('By default, initial unread history is imported without replies. You can explicitly include existing unread messages below. Only opted-in direct chats trigger enabled rules; group chats never reply and ambiguous sends are never retried.')}</Banner>
+    <label className="check-row"><input type="checkbox" checked={active ? Boolean(active.replyToExistingUnread) : existingUnread} disabled={!!active} onChange={e => setExistingUnread(e.target.checked)} data-testid="check-wa-existing-unread" />{t('Also reply to existing unread messages when starting (opted-in clients only).')}</label>
     {other && <><div style={{ height: 8 }} /><Banner kind="warn">{t('Another {task} task is running. The queue is exclusive; stop it first.', { task: `${other.platform || ''} ${other.action || other.kind}`.trim() })}</Banner></>}
     <div className="wa-row" style={{ marginTop: 12, alignItems: 'flex-end' }}>
       <label className="wa-lbl" style={{ margin: 0, minWidth: 190, flex: 1 }}>{t('WhatsApp account')}
@@ -165,7 +167,7 @@ function FilterView({ suite, accounts, jobs, perform }: Props) {
 /* ───────── CRM ───────── */
 const STATUSES: CrmThreadInput['status'][] = ['New', 'Follow-up', 'Closed/Won', 'Urgent'];
 const sTone: Record<string, string> = { New: 'blue', 'Follow-up': 'amber', 'Closed/Won': 'green', Urgent: 'red' };
-const blank: CrmThreadInput = { name: '', phone: '', status: 'New', notes: '', optedIn: false };
+const blank: CrmThreadInput = { name: '', phone: '', status: 'New', notes: '', tags: [], optedIn: false };
 const mTone: Record<string, string> = { Received: 'blue', Accepted: 'green', Unconfirmed: 'amber' };
 
 function CrmView({ suite, accounts, contacts, jobs, perform }: Props) {
@@ -175,6 +177,7 @@ function CrmView({ suite, accounts, contacts, jobs, perform }: Props) {
   const [sf, setSf] = useState('All');
   const [sel, setSel] = useState<string | 'new' | null>(null);
   const [form, setForm] = useState<CrmThreadInput>(blank);
+  const [tagText, setTagText] = useState('');
   const [dirty, setDirty] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
@@ -185,16 +188,16 @@ function CrmView({ suite, accounts, contacts, jobs, perform }: Props) {
   const consentTouched = useRef(false);
   useEffect(() => {
     if (!sel || sel === 'new') return;
-    if ((loaded.current !== sel || !dirty) && thread) { loaded.current = sel; setForm({ name: thread.name, phone: thread.phone, status: thread.status, notes: thread.notes, optedIn: thread.optedIn }); setDirty(false); }
+    if ((loaded.current !== sel || !dirty) && thread) { loaded.current = sel; setForm({ name: thread.name, phone: thread.phone, status: thread.status, notes: thread.notes, tags: thread.tags || [], optedIn: thread.optedIn }); setTagText((thread.tags || []).join(', ')); setDirty(false); }
     else if (thread && !consentTouched.current) setForm(f => ({ ...f, optedIn: thread.optedIn }));
   }, [sel, thread, dirty]);
-  const pick = (id: string | 'new') => { if (dirty && !window.confirm(t('Discard unsaved changes?'))) return; loaded.current = null; consentTouched.current = false; setErr(''); setSel(id); if (id === 'new') { setForm(blank); setDirty(false); } };
+  const pick = (id: string | 'new') => { if (dirty && !window.confirm(t('Discard unsaved changes?'))) return; loaded.current = null; consentTouched.current = false; setErr(''); setSel(id); if (id === 'new') { setForm(blank); setTagText(''); setDirty(false); } };
   const set = <K extends keyof CrmThreadInput>(k: K, v: CrmThreadInput[K]) => { if (k === 'optedIn') consentTouched.current = true; setDirty(true); setForm(f => ({ ...f, [k]: v })); };
-  const list = threads.filter(t => (sf === 'All' || t.status === sf) && `${t.name} ${t.phone}`.toLowerCase().includes(q.toLowerCase()));
+  const list = threads.filter(t => (sf === 'All' || t.status === sf) && `${t.name} ${t.phone} ${(t.tags || []).join(' ')} ${t.notes}`.toLowerCase().includes(q.toLowerCase()));
   const save = async () => {
     if (!form.name.trim() && !form.phone.trim()) { setErr(t('Enter a name or phone number.')); return; }
     setBusy(true); setErr('');
-    try { await perform(sel === 'new' ? 'POST' : 'PATCH', sel === 'new' ? '/suite/threads' : `/suite/threads/${sel}`, { ...form, consentChanged: sel === 'new' || consentTouched.current }); consentTouched.current = false; setDirty(false); if (sel === 'new') { setSel(null); setForm(blank); } }
+    try { await perform(sel === 'new' ? 'POST' : 'PATCH', sel === 'new' ? '/suite/threads' : `/suite/threads/${sel}`, { ...form, tags: tagText.split(',').map(tag => tag.trim()).filter(Boolean), consentChanged: sel === 'new' || consentTouched.current }); consentTouched.current = false; setDirty(false); if (sel === 'new') { setSel(null); setForm(blank); setTagText(''); } }
     catch (e) { setErr(msg(e, t)); } finally { setBusy(false); }
   };
   const remove = async () => { if (!del) return; setBusy(true); try { await perform('DELETE', `/suite/threads/${del.id}`); if (sel === del.id) { setSel(null); setDirty(false); } setDel(null); } catch (e) { setErr(msg(e, t)); setDel(null); } finally { setBusy(false); } };
@@ -230,7 +233,8 @@ function CrmView({ suite, accounts, contacts, jobs, perform }: Props) {
           <div className="wa-grid2"><label className="wa-lbl">{t('Name')}<input className="field-input" maxLength={150} value={form.name} onChange={e => set('name', e.target.value)} data-testid="input-wa-thread-name" /></label>
             <label className="wa-lbl">{t('Phone')}<input className="field-input" maxLength={30} value={form.phone} onChange={e => set('phone', e.target.value)} placeholder="+14155550123" data-testid="input-wa-thread-phone" /></label></div>
           <label className="wa-lbl">{t('Status')}<select className="field-select" style={{ width: '100%' }} value={form.status} onChange={e => set('status', e.target.value as CrmThreadInput['status'])} data-testid="select-wa-thread-status">{STATUSES.map(s => <option key={s} value={s}>{t(s)}</option>)}</select></label>
-          <label className="wa-lbl">{t('Notes & tags')} <small>{form.notes.length}/10000</small><textarea className="field-textarea" maxLength={10000} value={form.notes} onChange={e => set('notes', e.target.value)} placeholder={t('#vip prefers evenings…')} data-testid="input-wa-thread-notes" /></label>
+           <label className="wa-lbl">{t('Customer tags (comma separated)')}<input className="field-input" value={tagText} onChange={e => { setTagText(e.target.value); setDirty(true); }} data-testid="input-wa-thread-tags" /></label>
+           <label className="wa-lbl">{t('Notes')} <small>{form.notes.length}/10000</small><textarea className="field-textarea" maxLength={10000} value={form.notes} onChange={e => set('notes', e.target.value)} placeholder={t('#vip prefers evenings…')} data-testid="input-wa-thread-notes" /></label>
           <label className="check-row"><input type="checkbox" checked={form.optedIn} onChange={e => set('optedIn', e.target.checked)} data-testid="check-wa-thread-consent" />{t('Opted in. This contact consented to automatic replies. Required for chatbot rules.')}</label>
           {err && <p className="wa-err" role="alert" data-testid="error-wa-crm">{err}</p>}
           <div className="form-actions"><button className="button button-primary" onClick={save} disabled={busy || (sel !== 'new' && !dirty)} data-testid="button-wa-save-thread"><Save /> {busy ? t('Saving…') : sel === 'new' ? t('Add record') : t('Save changes')}</button></div></>}

@@ -43,6 +43,8 @@ export interface SimulationJob {
   error?: string;
   accountName?: string;
   mediaName?: string | null;
+  mediaId?: string | null;
+  replyToExistingUnread?: boolean;
   messageContent?: string;
 }
 export interface Lead {

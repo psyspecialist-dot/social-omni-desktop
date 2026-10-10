@@ -2,6 +2,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const waSuiteBrowser = require('./wa-suite-browser.cjs');
+const waMedia = require('./whatsapp-media.cjs');
+const facebookMedia = require('./facebook-media.cjs');
 const mapsBrowser = require('./advanced-browser.cjs');
 const { readable, publicError } = require('./automation-errors.cjs');
 const firstJob = state => state.jobs.filter(j => ['Pending', 'Running'].includes(j.status))
@@ -12,7 +14,7 @@ const groupUrl = value => {
   return `https://www.facebook.com${url.pathname.replace(/\/?$/, '/')}`;
 };
 
-module.exports = function createBrowserWorker({ get, save, recordActivity, automation, kick }) {
+module.exports = function createBrowserWorker({ get, save, recordActivity, automation, kick, readMedia }) {
   const running = new Map();
   const sessions = new Map();
   let closed = false;
@@ -65,7 +67,8 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
       }
       running.get(workspace).context = context;
       update(workspace, jobId, j => { j.phase = 'Browser opened'; }, 'Browser opened. Using the saved private account session.');
-      const page = context.pages()[0] || await context.newPage();
+      const page = (persistent && context.pages().find(p => !p.isClosed() && p.url().startsWith('https://web.whatsapp.com/')))
+        || context.pages().find(p => !p.isClosed()) || await context.newPage();
       page.setDefaultTimeout(15000);
       const guard = () => {
         if (closed) throw new Error('Application closing.');
@@ -221,10 +224,18 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
               continue;
             }
             const input = await readable(page, [page.locator('footer [contenteditable="true"][role="textbox"]'), page.locator('footer [contenteditable="true"][data-tab]')], 'WhatsApp direct-chat message composer', Math.max(1, deadline - Date.now()));
-            await act(`Typing message for ${target.name}…`, () => input.fill(job.messageContent));
-            const outgoing = page.locator('.message-out').filter({ hasText: job.messageContent });
+            let mediaSend;
+            if (job.mediaId) {
+              if ((await input.textContent() || '').trim()) throw new Error('A human draft is present. Attachment sending stopped; inspect the browser.');
+              const media = readMedia?.(workspace, job.mediaId);
+              mediaSend = await waMedia.attach(page, media, job.messageContent, { guard, restriction, act });
+            } else {
+              await act(`Typing message for ${target.name}…`, () => input.fill(job.messageContent));
+            }
+            const outgoing = job.messageContent.trim()
+              ? page.locator('.message-out').filter({ hasText: job.messageContent }) : page.locator('.message-out');
             const count = await outgoing.count();
-            const send = await readable(page, [page.locator('button:has([data-icon="send"]), [role="button"]:has([data-icon="send"])'), page.getByRole('button', { name: /^(send|إرسال)$/i })], 'WhatsApp Send button');
+            const send = mediaSend || await readable(page, [page.locator('button:has([data-icon="send"]), [role="button"]:has([data-icon="send"])'), page.getByRole('button', { name: /^(send|إرسال)$/i })], 'WhatsApp Send button');
             await act(`Sending to ${target.name}…`, async () => {
               update(workspace, jobId, j => { j.targets.find(t => t.id === target.id).sendStatus = 'Unconfirmed'; }, 'Waiting for WhatsApp server acknowledgement. No automatic retry.');
               await send.click();
@@ -266,6 +277,7 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
              const dialog = page.getByRole('dialog').last();
              const editor = await readable(page, [dialog.locator('[contenteditable="true"][role="textbox"]'), dialog.locator('textarea')], 'Facebook group post editor');
              await act('Typing approved group post…', () => editor.fill(job.messageContent));
+             if (job.mediaId) await facebookMedia.attach(page, dialog, readMedia?.(workspace, job.mediaId), { act, guard, restriction });
              const post = await readable(page, [dialog.getByRole('button', { name: /^(post|نشر)$/i })], 'Facebook Post button');
              await act('Publishing approved group post…', async () => {
                 update(workspace, jobId, j => { j.targets.find(t => t.id === target.id).postStatus = 'Unconfirmed'; }, 'Waiting for Facebook post confirmation. No automatic retry.');

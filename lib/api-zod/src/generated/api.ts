@@ -58,6 +58,10 @@ export const createAdvancedTaskResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const createAdvancedTaskResponseWaSuiteThreadsItemOneNotesMax = 10000;
 
+export const createAdvancedTaskResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const createAdvancedTaskResponseWaSuiteThreadsItemOneTagsMax = 20;
+
 export const createAdvancedTaskResponseWaSuiteRulesItemOneNameMax = 100;
 
 export const createAdvancedTaskResponseWaSuiteRulesItemOneKeywordMax = 200;
@@ -167,6 +171,7 @@ export const CreateAdvancedTaskResponse = zod.object({
   "phone": zod.string().max(createAdvancedTaskResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(createAdvancedTaskResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(createAdvancedTaskResponseWaSuiteThreadsItemOneTagsItemMax)).max(createAdvancedTaskResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -248,6 +253,8 @@ export const CreateAdvancedTaskResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -343,6 +350,10 @@ export const editAdvancedTaskResponseWaSuiteThreadsItemOneNameMax = 150;
 export const editAdvancedTaskResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const editAdvancedTaskResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const editAdvancedTaskResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const editAdvancedTaskResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const editAdvancedTaskResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -453,6 +464,7 @@ export const EditAdvancedTaskResponse = zod.object({
   "phone": zod.string().max(editAdvancedTaskResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(editAdvancedTaskResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(editAdvancedTaskResponseWaSuiteThreadsItemOneTagsItemMax)).max(editAdvancedTaskResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -534,6 +546,8 @@ export const EditAdvancedTaskResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -601,6 +615,10 @@ export const deleteAdvancedTaskResponseWaSuiteThreadsItemOneNameMax = 150;
 export const deleteAdvancedTaskResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const deleteAdvancedTaskResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const deleteAdvancedTaskResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const deleteAdvancedTaskResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const deleteAdvancedTaskResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -711,6 +729,7 @@ export const DeleteAdvancedTaskResponse = zod.object({
   "phone": zod.string().max(deleteAdvancedTaskResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(deleteAdvancedTaskResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(deleteAdvancedTaskResponseWaSuiteThreadsItemOneTagsItemMax)).max(deleteAdvancedTaskResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -792,6 +811,8 @@ export const DeleteAdvancedTaskResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -863,6 +884,10 @@ export const runAdvancedTaskResponseWaSuiteThreadsItemOneNameMax = 150;
 export const runAdvancedTaskResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const runAdvancedTaskResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const runAdvancedTaskResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const runAdvancedTaskResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const runAdvancedTaskResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -973,6 +998,7 @@ export const RunAdvancedTaskResponse = zod.object({
   "phone": zod.string().max(runAdvancedTaskResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(runAdvancedTaskResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(runAdvancedTaskResponseWaSuiteThreadsItemOneTagsItemMax)).max(runAdvancedTaskResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -1054,6 +1080,8 @@ export const RunAdvancedTaskResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -1121,6 +1149,10 @@ export const cancelAdvancedTaskResponseWaSuiteThreadsItemOneNameMax = 150;
 export const cancelAdvancedTaskResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const cancelAdvancedTaskResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const cancelAdvancedTaskResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const cancelAdvancedTaskResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const cancelAdvancedTaskResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -1231,6 +1263,7 @@ export const CancelAdvancedTaskResponse = zod.object({
   "phone": zod.string().max(cancelAdvancedTaskResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(cancelAdvancedTaskResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(cancelAdvancedTaskResponseWaSuiteThreadsItemOneTagsItemMax)).max(cancelAdvancedTaskResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -1312,6 +1345,8 @@ export const CancelAdvancedTaskResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -1390,6 +1425,10 @@ export const saveAdvancedConnectionResponseWaSuiteThreadsItemOneNameMax = 150;
 export const saveAdvancedConnectionResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const saveAdvancedConnectionResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const saveAdvancedConnectionResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const saveAdvancedConnectionResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const saveAdvancedConnectionResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -1500,6 +1539,7 @@ export const SaveAdvancedConnectionResponse = zod.object({
   "phone": zod.string().max(saveAdvancedConnectionResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(saveAdvancedConnectionResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(saveAdvancedConnectionResponseWaSuiteThreadsItemOneTagsItemMax)).max(saveAdvancedConnectionResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -1581,6 +1621,8 @@ export const SaveAdvancedConnectionResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -1648,6 +1690,10 @@ export const deleteAdvancedConnectionResponseWaSuiteThreadsItemOneNameMax = 150;
 export const deleteAdvancedConnectionResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const deleteAdvancedConnectionResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const deleteAdvancedConnectionResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const deleteAdvancedConnectionResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const deleteAdvancedConnectionResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -1758,6 +1804,7 @@ export const DeleteAdvancedConnectionResponse = zod.object({
   "phone": zod.string().max(deleteAdvancedConnectionResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(deleteAdvancedConnectionResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(deleteAdvancedConnectionResponseWaSuiteThreadsItemOneTagsItemMax)).max(deleteAdvancedConnectionResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -1839,6 +1886,8 @@ export const DeleteAdvancedConnectionResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -1911,6 +1960,10 @@ export const authorizeTelegramResponseWaSuiteThreadsItemOneNameMax = 150;
 export const authorizeTelegramResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const authorizeTelegramResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const authorizeTelegramResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const authorizeTelegramResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const authorizeTelegramResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -2021,6 +2074,7 @@ export const AuthorizeTelegramResponse = zod.object({
   "phone": zod.string().max(authorizeTelegramResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(authorizeTelegramResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(authorizeTelegramResponseWaSuiteThreadsItemOneTagsItemMax)).max(authorizeTelegramResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -2102,6 +2156,8 @@ export const AuthorizeTelegramResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -2169,6 +2225,10 @@ export const deleteAdvancedResultResponseWaSuiteThreadsItemOneNameMax = 150;
 export const deleteAdvancedResultResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const deleteAdvancedResultResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const deleteAdvancedResultResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const deleteAdvancedResultResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const deleteAdvancedResultResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -2279,6 +2339,7 @@ export const DeleteAdvancedResultResponse = zod.object({
   "phone": zod.string().max(deleteAdvancedResultResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(deleteAdvancedResultResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(deleteAdvancedResultResponseWaSuiteThreadsItemOneTagsItemMax)).max(deleteAdvancedResultResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -2360,6 +2421,8 @@ export const DeleteAdvancedResultResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -2431,6 +2494,10 @@ export const saveWaFilterResponseWaSuiteThreadsItemOneNameMax = 150;
 export const saveWaFilterResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const saveWaFilterResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const saveWaFilterResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const saveWaFilterResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const saveWaFilterResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -2541,6 +2608,7 @@ export const SaveWaFilterResponse = zod.object({
   "phone": zod.string().max(saveWaFilterResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(saveWaFilterResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(saveWaFilterResponseWaSuiteThreadsItemOneTagsItemMax)).max(saveWaFilterResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -2622,6 +2690,8 @@ export const SaveWaFilterResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -2674,6 +2744,10 @@ export const createCrmThreadBodyPhoneMax = 30;
 
 export const createCrmThreadBodyNotesMax = 10000;
 
+export const createCrmThreadBodyTagsItemMax = 50;
+
+export const createCrmThreadBodyTagsMax = 20;
+
 
 
 export const CreateCrmThreadBody = zod.object({
@@ -2682,6 +2756,7 @@ export const CreateCrmThreadBody = zod.object({
   "phone": zod.string().max(createCrmThreadBodyPhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(createCrmThreadBodyNotesMax),
+  "tags": zod.array(zod.string().min(1).max(createCrmThreadBodyTagsItemMax)).max(createCrmThreadBodyTagsMax).optional(),
   "optedIn": zod.boolean()
 })
 
@@ -2702,6 +2777,10 @@ export const createCrmThreadResponseWaSuiteThreadsItemOneNameMax = 150;
 export const createCrmThreadResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const createCrmThreadResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const createCrmThreadResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const createCrmThreadResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const createCrmThreadResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -2812,6 +2891,7 @@ export const CreateCrmThreadResponse = zod.object({
   "phone": zod.string().max(createCrmThreadResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(createCrmThreadResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(createCrmThreadResponseWaSuiteThreadsItemOneTagsItemMax)).max(createCrmThreadResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -2893,6 +2973,8 @@ export const CreateCrmThreadResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -2949,6 +3031,10 @@ export const editCrmThreadBodyPhoneMax = 30;
 
 export const editCrmThreadBodyNotesMax = 10000;
 
+export const editCrmThreadBodyTagsItemMax = 50;
+
+export const editCrmThreadBodyTagsMax = 20;
+
 
 
 export const EditCrmThreadBody = zod.object({
@@ -2957,6 +3043,7 @@ export const EditCrmThreadBody = zod.object({
   "phone": zod.string().max(editCrmThreadBodyPhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(editCrmThreadBodyNotesMax),
+  "tags": zod.array(zod.string().min(1).max(editCrmThreadBodyTagsItemMax)).max(editCrmThreadBodyTagsMax).optional(),
   "optedIn": zod.boolean()
 })
 
@@ -2977,6 +3064,10 @@ export const editCrmThreadResponseWaSuiteThreadsItemOneNameMax = 150;
 export const editCrmThreadResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const editCrmThreadResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const editCrmThreadResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const editCrmThreadResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const editCrmThreadResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -3087,6 +3178,7 @@ export const EditCrmThreadResponse = zod.object({
   "phone": zod.string().max(editCrmThreadResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(editCrmThreadResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(editCrmThreadResponseWaSuiteThreadsItemOneTagsItemMax)).max(editCrmThreadResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -3168,6 +3260,8 @@ export const EditCrmThreadResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -3235,6 +3329,10 @@ export const removeCrmThreadResponseWaSuiteThreadsItemOneNameMax = 150;
 export const removeCrmThreadResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const removeCrmThreadResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const removeCrmThreadResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const removeCrmThreadResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const removeCrmThreadResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -3345,6 +3443,7 @@ export const RemoveCrmThreadResponse = zod.object({
   "phone": zod.string().max(removeCrmThreadResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(removeCrmThreadResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(removeCrmThreadResponseWaSuiteThreadsItemOneTagsItemMax)).max(removeCrmThreadResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -3426,6 +3525,8 @@ export const RemoveCrmThreadResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -3517,6 +3618,10 @@ export const createChatbotRuleResponseWaSuiteThreadsItemOneNameMax = 150;
 export const createChatbotRuleResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const createChatbotRuleResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const createChatbotRuleResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const createChatbotRuleResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const createChatbotRuleResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -3627,6 +3732,7 @@ export const CreateChatbotRuleResponse = zod.object({
   "phone": zod.string().max(createChatbotRuleResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(createChatbotRuleResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(createChatbotRuleResponseWaSuiteThreadsItemOneTagsItemMax)).max(createChatbotRuleResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -3708,6 +3814,8 @@ export const CreateChatbotRuleResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -3803,6 +3911,10 @@ export const editChatbotRuleResponseWaSuiteThreadsItemOneNameMax = 150;
 export const editChatbotRuleResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const editChatbotRuleResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const editChatbotRuleResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const editChatbotRuleResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const editChatbotRuleResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -3913,6 +4025,7 @@ export const EditChatbotRuleResponse = zod.object({
   "phone": zod.string().max(editChatbotRuleResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(editChatbotRuleResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(editChatbotRuleResponseWaSuiteThreadsItemOneTagsItemMax)).max(editChatbotRuleResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -3994,6 +4107,8 @@ export const EditChatbotRuleResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -4061,6 +4176,10 @@ export const removeChatbotRuleResponseWaSuiteThreadsItemOneNameMax = 150;
 export const removeChatbotRuleResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const removeChatbotRuleResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const removeChatbotRuleResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const removeChatbotRuleResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const removeChatbotRuleResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -4171,6 +4290,7 @@ export const RemoveChatbotRuleResponse = zod.object({
   "phone": zod.string().max(removeChatbotRuleResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(removeChatbotRuleResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(removeChatbotRuleResponseWaSuiteThreadsItemOneTagsItemMax)).max(removeChatbotRuleResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -4252,6 +4372,8 @@ export const RemoveChatbotRuleResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -4298,10 +4420,13 @@ export const StartWaSuiteSessionHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
 })
 
+export const startWaSuiteSessionBodyReplyToExistingUnreadDefault = false;
+
 export const StartWaSuiteSessionBody = zod.object({
   "action": zod.enum(['filter', 'inbox']),
   "accountId": zod.string(),
-  "approved": zod.boolean()
+  "approved": zod.boolean(),
+  "replyToExistingUnread": zod.boolean().default(startWaSuiteSessionBodyReplyToExistingUnreadDefault).describe('Explicitly approve replies to existing unread messages in opted-in direct chats')
 })
 
 export const startWaSuiteSessionResponseAdvancedTasksItemOneNameMax = 150;
@@ -4321,6 +4446,10 @@ export const startWaSuiteSessionResponseWaSuiteThreadsItemOneNameMax = 150;
 export const startWaSuiteSessionResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const startWaSuiteSessionResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const startWaSuiteSessionResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const startWaSuiteSessionResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const startWaSuiteSessionResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -4431,6 +4560,7 @@ export const StartWaSuiteSessionResponse = zod.object({
   "phone": zod.string().max(startWaSuiteSessionResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(startWaSuiteSessionResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(startWaSuiteSessionResponseWaSuiteThreadsItemOneTagsItemMax)).max(startWaSuiteSessionResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -4512,6 +4642,8 @@ export const StartWaSuiteSessionResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -4593,6 +4725,10 @@ export const startLocalBrowserTaskResponseWaSuiteThreadsItemOneNameMax = 150;
 export const startLocalBrowserTaskResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const startLocalBrowserTaskResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const startLocalBrowserTaskResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const startLocalBrowserTaskResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const startLocalBrowserTaskResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -4703,6 +4839,7 @@ export const StartLocalBrowserTaskResponse = zod.object({
   "phone": zod.string().max(startLocalBrowserTaskResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(startLocalBrowserTaskResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(startLocalBrowserTaskResponseWaSuiteThreadsItemOneTagsItemMax)).max(startLocalBrowserTaskResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -4784,6 +4921,8 @@ export const StartLocalBrowserTaskResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -4867,6 +5006,10 @@ export const saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOneNameMax = 150;
 export const saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const saveSocialOmniLeadDraftResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -4977,6 +5120,7 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
   "phone": zod.string().max(saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOneTagsItemMax)).max(saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -5058,6 +5202,8 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -5124,6 +5270,10 @@ export const clearSocialOmniLeadsResponseWaSuiteThreadsItemOneNameMax = 150;
 export const clearSocialOmniLeadsResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const clearSocialOmniLeadsResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const clearSocialOmniLeadsResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const clearSocialOmniLeadsResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const clearSocialOmniLeadsResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -5234,6 +5384,7 @@ export const ClearSocialOmniLeadsResponse = zod.object({
   "phone": zod.string().max(clearSocialOmniLeadsResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(clearSocialOmniLeadsResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(clearSocialOmniLeadsResponseWaSuiteThreadsItemOneTagsItemMax)).max(clearSocialOmniLeadsResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -5315,6 +5466,8 @@ export const ClearSocialOmniLeadsResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -5378,6 +5531,10 @@ export const getSocialOmniStateResponseWaSuiteThreadsItemOneNameMax = 150;
 export const getSocialOmniStateResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const getSocialOmniStateResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const getSocialOmniStateResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const getSocialOmniStateResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const getSocialOmniStateResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -5488,6 +5645,7 @@ export const GetSocialOmniStateResponse = zod.object({
   "phone": zod.string().max(getSocialOmniStateResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(getSocialOmniStateResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(getSocialOmniStateResponseWaSuiteThreadsItemOneTagsItemMax)).max(getSocialOmniStateResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -5569,6 +5727,8 @@ export const GetSocialOmniStateResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -5632,6 +5792,10 @@ export const clearSocialOmniStateResponseWaSuiteThreadsItemOneNameMax = 150;
 export const clearSocialOmniStateResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const clearSocialOmniStateResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const clearSocialOmniStateResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const clearSocialOmniStateResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const clearSocialOmniStateResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -5742,6 +5906,7 @@ export const ClearSocialOmniStateResponse = zod.object({
   "phone": zod.string().max(clearSocialOmniStateResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(clearSocialOmniStateResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(clearSocialOmniStateResponseWaSuiteThreadsItemOneTagsItemMax)).max(clearSocialOmniStateResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -5823,6 +5988,8 @@ export const ClearSocialOmniStateResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -5916,6 +6083,10 @@ export const updateSocialOmniSettingsResponseWaSuiteThreadsItemOneNameMax = 150;
 export const updateSocialOmniSettingsResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const updateSocialOmniSettingsResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const updateSocialOmniSettingsResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const updateSocialOmniSettingsResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const updateSocialOmniSettingsResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -6026,6 +6197,7 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "phone": zod.string().max(updateSocialOmniSettingsResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(updateSocialOmniSettingsResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(updateSocialOmniSettingsResponseWaSuiteThreadsItemOneTagsItemMax)).max(updateSocialOmniSettingsResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -6107,6 +6279,8 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -6179,6 +6353,10 @@ export const createSocialOmniJobResponseWaSuiteThreadsItemOneNameMax = 150;
 export const createSocialOmniJobResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const createSocialOmniJobResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const createSocialOmniJobResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const createSocialOmniJobResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const createSocialOmniJobResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -6289,6 +6467,7 @@ export const CreateSocialOmniJobResponse = zod.object({
   "phone": zod.string().max(createSocialOmniJobResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(createSocialOmniJobResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(createSocialOmniJobResponseWaSuiteThreadsItemOneTagsItemMax)).max(createSocialOmniJobResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -6370,6 +6549,8 @@ export const CreateSocialOmniJobResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -6437,6 +6618,10 @@ export const cancelSocialOmniJobResponseWaSuiteThreadsItemOneNameMax = 150;
 export const cancelSocialOmniJobResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const cancelSocialOmniJobResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const cancelSocialOmniJobResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const cancelSocialOmniJobResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const cancelSocialOmniJobResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -6547,6 +6732,7 @@ export const CancelSocialOmniJobResponse = zod.object({
   "phone": zod.string().max(cancelSocialOmniJobResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(cancelSocialOmniJobResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(cancelSocialOmniJobResponseWaSuiteThreadsItemOneTagsItemMax)).max(cancelSocialOmniJobResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -6628,6 +6814,8 @@ export const CancelSocialOmniJobResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -6671,7 +6859,7 @@ export const CancelSocialOmniJobResponse = zod.object({
 
 
 /**
- * Stores image/video bytes in local SQLite, limited to 5 MiB per file and 50 MiB per workspace.
+ * Stores image, video, or PDF bytes in local SQLite, limited to 5 MiB per file and 50 MiB per workspace. Live desktop WhatsApp jobs can attach these files.
  */
 export const UploadSocialOmniMediaHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
@@ -6683,7 +6871,7 @@ export const uploadSocialOmniMediaBodyNameMax = 200;
 
 export const UploadSocialOmniMediaBody = zod.object({
   "name": zod.string().max(uploadSocialOmniMediaBodyNameMax),
-  "mime": zod.enum(['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'video/mp4', 'video/webm']),
+  "mime": zod.enum(['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'video/mp4', 'video/webm', 'application/pdf']),
   "data": zod.string().describe('Base64 encoded file without a data URL prefix')
 })
 
@@ -6704,6 +6892,10 @@ export const uploadSocialOmniMediaResponseWaSuiteThreadsItemOneNameMax = 150;
 export const uploadSocialOmniMediaResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const uploadSocialOmniMediaResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const uploadSocialOmniMediaResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const uploadSocialOmniMediaResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const uploadSocialOmniMediaResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -6814,6 +7006,7 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "phone": zod.string().max(uploadSocialOmniMediaResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(uploadSocialOmniMediaResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(uploadSocialOmniMediaResponseWaSuiteThreadsItemOneTagsItemMax)).max(uploadSocialOmniMediaResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -6895,6 +7088,8 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -6962,6 +7157,10 @@ export const readSocialOmniMediaResponseWaSuiteThreadsItemOneNameMax = 150;
 export const readSocialOmniMediaResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const readSocialOmniMediaResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const readSocialOmniMediaResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const readSocialOmniMediaResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const readSocialOmniMediaResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -7072,6 +7271,7 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "phone": zod.string().max(readSocialOmniMediaResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(readSocialOmniMediaResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(readSocialOmniMediaResponseWaSuiteThreadsItemOneTagsItemMax)).max(readSocialOmniMediaResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -7153,6 +7353,8 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -7223,6 +7425,10 @@ export const deleteSocialOmniMediaResponseWaSuiteThreadsItemOneNameMax = 150;
 export const deleteSocialOmniMediaResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const deleteSocialOmniMediaResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const deleteSocialOmniMediaResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const deleteSocialOmniMediaResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const deleteSocialOmniMediaResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -7333,6 +7539,7 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "phone": zod.string().max(deleteSocialOmniMediaResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(deleteSocialOmniMediaResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(deleteSocialOmniMediaResponseWaSuiteThreadsItemOneTagsItemMax)).max(deleteSocialOmniMediaResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -7414,6 +7621,8 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -7507,6 +7716,10 @@ export const createSocialOmniRecordResponseWaSuiteThreadsItemOneNameMax = 150;
 export const createSocialOmniRecordResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const createSocialOmniRecordResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const createSocialOmniRecordResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const createSocialOmniRecordResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const createSocialOmniRecordResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -7617,6 +7830,7 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "phone": zod.string().max(createSocialOmniRecordResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(createSocialOmniRecordResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(createSocialOmniRecordResponseWaSuiteThreadsItemOneTagsItemMax)).max(createSocialOmniRecordResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -7698,6 +7912,8 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -7795,6 +8011,10 @@ export const updateSocialOmniRecordResponseWaSuiteThreadsItemOneNameMax = 150;
 export const updateSocialOmniRecordResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const updateSocialOmniRecordResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const updateSocialOmniRecordResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const updateSocialOmniRecordResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const updateSocialOmniRecordResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -7905,6 +8125,7 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "phone": zod.string().max(updateSocialOmniRecordResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(updateSocialOmniRecordResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(updateSocialOmniRecordResponseWaSuiteThreadsItemOneTagsItemMax)).max(updateSocialOmniRecordResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -7986,6 +8207,8 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),
@@ -8054,6 +8277,10 @@ export const deleteSocialOmniRecordResponseWaSuiteThreadsItemOneNameMax = 150;
 export const deleteSocialOmniRecordResponseWaSuiteThreadsItemOnePhoneMax = 30;
 
 export const deleteSocialOmniRecordResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const deleteSocialOmniRecordResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const deleteSocialOmniRecordResponseWaSuiteThreadsItemOneTagsMax = 20;
 
 export const deleteSocialOmniRecordResponseWaSuiteRulesItemOneNameMax = 100;
 
@@ -8164,6 +8391,7 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "phone": zod.string().max(deleteSocialOmniRecordResponseWaSuiteThreadsItemOnePhoneMax),
   "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
   "notes": zod.string().max(deleteSocialOmniRecordResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(deleteSocialOmniRecordResponseWaSuiteThreadsItemOneTagsItemMax)).max(deleteSocialOmniRecordResponseWaSuiteThreadsItemOneTagsMax).optional(),
   "optedIn": zod.boolean()
 }).and(zod.object({
   "id": zod.string(),
@@ -8245,6 +8473,8 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "nextActionAt": zod.string().nullish(),
   "accountName": zod.string().optional(),
   "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
   "messageContent": zod.string().optional()
 })),
   "initialized": zod.boolean(),

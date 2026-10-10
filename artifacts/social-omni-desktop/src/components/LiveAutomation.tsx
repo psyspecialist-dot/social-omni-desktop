@@ -73,7 +73,7 @@ export default function LiveAutomation({ platform, accounts, campaigns = [], job
           <strong>{t('Recipients:')}</strong> {draftPreview.phoneNumbers || t('Enter recipients in the draft below.')}
           {'\n\n'}<strong>{t('Message:')}</strong> {draftPreview.messageContent || t('Enter a message in the draft below.')}
         </div>
-        {draftPreview.mediaId && <p role="note" className="heading-sub">{t('Remove the draft attachment before live sending. Live execution is text-only.')}</p>}
+        {draftPreview.mediaId && <p role="note" className="heading-sub">{t('The selected attachment will be sent with this message as its caption. Review it in the draft below before approving.')}</p>}
       </div>}
       {platform === 'Facebook' && <>
         <div className="live-controls" style={{ marginTop: 16 }}>
@@ -91,7 +91,7 @@ export default function LiveAutomation({ platform, accounts, campaigns = [], job
         </tr>)}</tbody></table></div>}
         <div className="live-controls" style={{ marginTop: 16 }}>
           <label className="live-field">{t('Facebook campaign')}<select className="field-select" value={campaignId} onChange={e => { setCampaignId(e.target.value); setApproved(false); }} disabled={Boolean(active)}>
-            <option value="">{t('Choose saved text campaign')}</option>{campaigns.filter(c => c.platform === 'Facebook').map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
+            <option value="">{t('Choose saved campaign')}</option>{campaigns.filter(c => c.platform === 'Facebook').map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
           </select></label>
           <label className="live-field">{t('Approved group URLs (one per line, up to 20)')}<textarea className="field-textarea" value={groups} onChange={e => { setGroups(e.target.value); setApproved(false); }} placeholder={t('https://www.facebook.com/groups/your-group/')} disabled={Boolean(active)} /></label>
         </div>
@@ -99,14 +99,14 @@ export default function LiveAutomation({ platform, accounts, campaigns = [], job
       </>}
       <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginTop: 18 }}>
         <input type="checkbox" checked={approved} onChange={e => setApproved(e.target.checked)} disabled={!isDesktop || Boolean(active)} data-testid={`live-consent-${platform.toLowerCase()}`} />
-        <span>{platform === 'WhatsApp' ? t('I confirm every listed recipient opted in to this message, and approve sending the saved text now.') : t('I reviewed every selected group, am eligible to request membership, and approve membership requests and, if selected, the saved post. I have permission for this content.')}</span>
+        <span>{platform === 'WhatsApp' ? t('I confirm every listed recipient opted in, and approve sending the saved message and selected attachment now.') : t('I reviewed every selected group, am eligible to request membership, and approve membership requests and, if selected, the saved post. I have permission for this content.')}</span>
       </label>
       <div className="live-controls" style={{ marginTop: 18 }}>
         {platform === 'Facebook' && <button type="button" className="button button-secondary" onClick={() => start('join')} disabled={!available || !approved || !groups.trim() || Boolean(active) || Boolean(busy)} data-testid="live-join-facebook">{t('Request membership only')}</button>}
         <button type="button" className="button button-primary" onClick={() => start(platform === 'WhatsApp' ? 'send' : 'publish')} disabled={!available || !approved || Boolean(active) || Boolean(busy) || (platform === 'Facebook' && (!campaignId || !groups.trim()))} data-testid={`live-run-${platform.toLowerCase()}`}><Play size={15} /> {busy ? t('Starting…') : platform === 'WhatsApp' ? t('Send approved messages') : t('Join / post to approved groups')}</button>
         {active?.mode === 'live' && <button type="button" className="button button-danger" onClick={stop} disabled={Boolean(busy)}><Square size={14} /> {t('Stop browser task')}</button>}
       </div>
-      <p className="heading-sub">{t('Text-only execution. Sign-in / WhatsApp QR scan happens manually in the browser. Sessions are separate per account. English platform controls are required. Review outcomes before any retry.')}</p>
+      <p className="heading-sub">{t('Live text and media execution. WhatsApp also supports PDFs. Sign in manually in the browser. Sessions are separate per account. Review unconfirmed outcomes before any retry.')}</p>
       {error && <p className="wa-feedback error" role="alert">{t(error)}</p>}
       {isDesktop && <div style={{ marginTop: 18 }}>
         <p className="section-label">{t('Browser activity')}</p>

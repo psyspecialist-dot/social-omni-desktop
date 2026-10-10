@@ -17,5 +17,11 @@ export interface CrmThreadInput {
   status: CrmThreadInputStatus;
   /** @maxLength 10000 */
   notes: string;
+  /**
+     * @maxItems 20
+     * @items.minLength 1
+     * @items.maxLength 50
+     */
+  tags?: string[];
   optedIn: boolean;
 }

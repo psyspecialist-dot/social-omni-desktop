@@ -153,6 +153,8 @@ export interface WaSessionInput {
   action: WaSessionInputAction;
   accountId: string;
   approved: boolean;
+  /** Explicitly approve replies to existing unread messages in opted-in direct chats */
+  replyToExistingUnread?: boolean;
 }
 
 export interface WaFilterInput {
@@ -180,6 +182,12 @@ export interface CrmThreadInput {
   status: CrmThreadInputStatus;
   /** @maxLength 10000 */
   notes: string;
+  /**
+     * @maxItems 20
+     * @items.minLength 1
+     * @items.maxLength 50
+     */
+  tags?: string[];
   optedIn: boolean;
 }
 
@@ -349,6 +357,7 @@ export const SimulatorUploadInputMime = {
   'image/gif': 'image/gif',
   'video/mp4': 'video/mp4',
   'video/webm': 'video/webm',
+  'application/pdf': 'application/pdf',
 } as const;
 
 export interface SimulatorUploadInput {
@@ -573,6 +582,9 @@ export interface SimulatorJob {
   accountName?: string;
   /** @nullable */
   mediaName?: string | null;
+  /** @nullable */
+  mediaId?: string | null;
+  replyToExistingUnread?: boolean;
   messageContent?: string;
 }
 

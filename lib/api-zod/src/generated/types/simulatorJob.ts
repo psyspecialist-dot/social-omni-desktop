@@ -36,5 +36,8 @@ export interface SimulatorJob {
   accountName?: string;
   /** @nullable */
   mediaName?: string | null;
+  /** @nullable */
+  mediaId?: string | null;
+  replyToExistingUnread?: boolean;
   messageContent?: string;
 }

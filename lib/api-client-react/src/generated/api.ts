@@ -2081,7 +2081,7 @@ export const getUploadSocialOmniMediaUrl = () => {
 }
 
 /**
- * Stores image/video bytes in local SQLite, limited to 5 MiB per file and 50 MiB per workspace.
+ * Stores image, video, or PDF bytes in local SQLite, limited to 5 MiB per file and 50 MiB per workspace. Live desktop WhatsApp jobs can attach these files.
  */
 export const uploadSocialOmniMedia = async (simulatorUploadInput: SimulatorUploadInput, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
 

@@ -269,7 +269,7 @@ paths:
   /socialomni/media:
     post:
       operationId: uploadSocialOmniMedia
-      description: Stores image/video bytes in local SQLite, limited to 5 MiB per file and 50 MiB per workspace.
+      description: Stores image, video, or PDF bytes in local SQLite, limited to 5 MiB per file and 50 MiB per workspace. Live desktop WhatsApp jobs can attach these files.
       parameters: [{$ref: "#/components/parameters/Workspace"}]
       requestBody:
         required: true
@@ -462,6 +462,7 @@ components:
         action: {type: string, enum: [filter, inbox]}
         accountId: {type: string}
         approved: {type: boolean}
+        replyToExistingUnread: {type: boolean, default: false, description: Explicitly approve replies to existing unread messages in opted-in direct chats}
     WaFilterInput:
       type: object
       required: [source]
@@ -476,6 +477,7 @@ components:
         phone: {type: string, maxLength: 30}
         status: {type: string, enum: [New, Follow-up, Closed/Won, Urgent]}
         notes: {type: string, maxLength: 10000}
+        tags: {type: array, maxItems: 20, items: {type: string, minLength: 1, maxLength: 50}}
         optedIn: {type: boolean}
     ChatbotRuleInput:
       type: object
@@ -564,7 +566,7 @@ components:
       required: [name, mime, data]
       properties:
         name: {type: string, maxLength: 200}
-        mime: {type: string, enum: [image/png, image/jpeg, image/webp, image/gif, video/mp4, video/webm]}
+        mime: {type: string, enum: [image/png, image/jpeg, image/webp, image/gif, video/mp4, video/webm, application/pdf]}
         data: {type: string, description: Base64 encoded file without a data URL prefix}
     SimulatorSettings:
       type: object
@@ -646,6 +648,8 @@ components:
         nextActionAt: {type: [string, "null"]}
         accountName: {type: string}
         mediaName: {type: [string, "null"]}
+        mediaId: {type: [string, "null"]}
+        replyToExistingUnread: {type: boolean}
         messageContent: {type: string}
     SimulatorLeadInput:
       type: object

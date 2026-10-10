@@ -11,4 +11,6 @@ export interface WaSessionInput {
   action: WaSessionInputAction;
   accountId: string;
   approved: boolean;
+  /** Explicitly approve replies to existing unread messages in opted-in direct chats */
+  replyToExistingUnread?: boolean;
 }
