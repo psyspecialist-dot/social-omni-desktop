@@ -56,7 +56,7 @@ export default function LiveAutomation({ platform, accounts, campaigns = [], job
     <div style={{ padding: 20 }}>
       <p className="live-warning">{isDesktop
         ? t('Live sends, membership requests and posts cannot be undone by cancelling. Use only opted-in recipients and groups that permit your content. Pacing does not prevent bans. Restrictions and verification challenges stop the task.')
-        : t('Live automation is desktop-only. Download Social Najhin from Settings and run it locally. The hosted preview cannot launch a browser on your computer; its rehearsal controls remain simulated.')}</p>
+        : t('Live automation is desktop-only. The hosted preview cannot open a browser on your computer. Simulation is disabled; no fake actions or completion are generated.')}</p>
       <div className="live-controls">
         <label className="live-field">{t('Saved account')}
           <select className="field-select" value={accountId} onChange={e => setAccountId(e.target.value)} data-testid={`live-account-${platform.toLowerCase()}`} disabled={Boolean(active)}>

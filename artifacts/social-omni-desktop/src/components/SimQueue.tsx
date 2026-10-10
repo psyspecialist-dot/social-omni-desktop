@@ -34,7 +34,8 @@ export default function SimQueue({ job, testId }: { job: SimulationJob; testId: 
       </div>
       <span className="status" data-testid={`status-phase-${testId}`}>{waiting ? t('Waiting {n}s', { n: remaining }) : t(phase)}</span>
     </div>
-    <div className="wa-bar" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${pct}%` }} /></div>
+    {isInbox ? <p role="status">{t('Synced {n} messages', { n: job.currentStep })}</p>
+      : <div className="wa-bar" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${pct}%` }} /></div>}
     {(job.accountName || job.mediaName) && <div className="sq-meta">{job.accountName && <span>{t('Account:')} {job.accountName}</span>}{job.mediaName && <span>{t('Media:')} {job.mediaName}</span>}</div>}
     {targets.length > 0 ? <div className="sq-table-wrap"><table className="sq-table" aria-label={isWa ? t('Recipient queue') : t('Group queue')}>
       <thead><tr><th>{isWa ? t('Recipient') : job.mode === 'live' ? t('Approved group') : t('Hypothetical group')}</th>{!isWa && <th>{t('Join status')}</th>}<th>{isFilter ? t('Check progress') : isWa ? t('Send status') : t('Post status')}</th></tr></thead>

@@ -12,14 +12,15 @@ dependencies and run `npm run browser:install` before `npm start`.
 ## WhatsApp modules
 
 - **WaFilter:** paste numbers or import TXT/CSV/XLSX (up to 200 unique entries). Include country codes; store Excel phone cells as text. Save the list, select a WhatsApp account, confirm authorization, then start live verification. Format-only results remain Unverified; only an actual WhatsApp composer enables Active/Valid export. CSV and Excel exports include active numbers only. Inactive can mean invalid format or an explicit platform rejection; inspect the reason. Network failures remain Unknown and stop the run.
-- **WA-CRM:** add clients or import saved phone contacts. Notes, statuses, consent and observed text messages persist in local SQLite. Editing CRM consent also updates its linked contact. Deleting a thread retains that contact. Sync requires starting the Inbox listener and opening a direct client conversation in the browser yourself. Only the open, visible conversation is monitored; it is not an all-chat background inbox. Message times are local observation times, not the original platform timestamps.
-- **Auto-Reply / Chatbot:** manage exact/contains keyword rules, response templates (`{{name}}` supported), enabled state, 3–8-second delays and a 1–1440-minute cooldown per client/rule. Newest matching enabled rule wins. Start the same Inbox listener and complete the initial conversation sync before testing a new incoming text. Initial history never triggers replies; only opted-in direct chats qualify. Groups, media messages and background conversations do not trigger replies. STOP/unsubscribe opts a client out.
+- **WA-CRM:** add clients or import saved phone contacts. Notes, statuses, consent and observed text messages persist in local SQLite. Editing CRM consent also updates its linked contact. Deleting a thread retains that contact. Start the Inbox listener to observe the open conversation and readable unread entries in the rendered chat list. Virtualized, unrendered chats are not a guaranteed all-chat synchronization feed. Message times are local observation times, not original platform timestamps.
+- **Auto-Reply / Chatbot:** manage exact/contains keyword rules, response templates (`{{name}}` supported), enabled state, 3–8-second delays and a 1–1440-minute cooldown per client/rule. Newest matching enabled rule wins. The Inbox listener imports initial unread history without replying. Only new messages in opted-in direct chats qualify; groups and media messages do not trigger replies. STOP/unsubscribe opts a client out.
 - Other browser actions retain 5–12-second pacing. Random delays are rate controls, not ban protection. Challenges/restrictions, ambiguous sends, browser closure and unavailable selectors stop execution. Never automatically retry an Unconfirmed reply; inspect WhatsApp first.
 - Stop the listener before starting other browser tasks or deleting a CRM thread. Changing consent or disabling a rule suppresses a queued response. The visible browser must stay open; this is not a macOS background service.
 - Live platform controls require English WhatsApp controls and the locally downloaded application. The hosted preview supports local module CRUD/imports but cannot verify numbers or run chatbot replies on your computer.
 
 Social Najhin is a local Electron social-management suite with approved browser
-automation and separate, clearly labeled rehearsal tools.
+automation. Simulation execution is disabled; unsupported provider actions fail
+explicitly rather than inventing successful outcomes.
 
 ## Live WhatsApp and Facebook execution
 
@@ -50,7 +51,7 @@ Electron opens a native application window. It is not a signed installer.
 The Electron runtime cannot be launched or tested through the browser preview.
 The first install needs internet access to download Electron, Playwright Chromium,
 and dependencies (the Chromium download runs automatically during npm install);
-afterward `npm start` opens the local simulator. No Replit connection or separate
+afterward `npm start` opens the local application. No Replit connection or separate
 backend command is needed. The interface is already built; the local backend
 starts automatically. Close the application window to quit.
 
@@ -186,31 +187,28 @@ relative asset paths and hash routing so it runs from a local file.
 
 ## What this edition does
 
-Plan drafts, keep contact records, organize simulated accounts, and review
+Plan drafts, keep contact records, organize saved account labels, and review
 scheduled work. WhatsApp saves comma/newline-separated phone lists and formatted
 message templates. Campaigns save keywords, captions, a target group count
 (1–1,000), and optional account/media selections. Image and video attachments
 (up to 5 MB each, 50 MB per workspace) are saved as SQLite blobs.
 
-Rehearsal buttons trigger background simulations with persistent
-per-target queues, counters, randomized 5–12 second pauses, and live logs. Jobs
-run one at a time per workspace. Queue results say Sent/Joined/Posted only as
-simulated results; nothing is transmitted externally. Group names are generated
-hypothetical names, not real search results. Active simulated accounts are not
-connected accounts. Only fake session references beginning with `demo-` are
-accepted; never enter actual credentials or cookies.
+Real background workers update persistent per-target queues, counters and logs.
+Simulation requests are rejected, and legacy pending simulations are cancelled.
+Historical records remain unchanged. Sign in manually in the visible browser;
+never enter passwords or cookies into account labels.
 
 Overview shows total saved campaigns, active account labels, server-accepted
-live messages (with a separate simulated count), and saved synthetic leads. Facebook & Instagram Automation
+live messages (with a separate historical simulated count), and saved leads. Facebook & Instagram Automation
 has its own sidebar module. Google Maps Lead Extractor saves niche/location
-drafts and generates clearly labeled fictional businesses with reserved phone
-numbers and .example websites; it never contacts or scrapes Google Maps.
+drafts and extracts observed public listings in the local browser. Missing
+details remain blank; hosted preview cannot run extraction or generate substitutes.
 Results accumulate in SQLite (up to 2,000) and can be exported as CSV or real
 Excel .xlsx files. Excel cells are text; CSV guards formula-like values.
-Lead simulations run in the same sequential queue and can be stopped.
+Live lead extraction runs in the sequential browser queue and can be stopped.
 Settings includes a saved future-license placeholder, not an activation service.
 
-Drafts, attachments and results survive restarts. An in-progress rehearsal is
+Drafts, attachments and results survive restarts. An in-progress browser task is
 marked interrupted when the process restarts; it is not automatically resumed.
 Live publishing and messaging require explicit approval in the local app. A due
 item becomes ready for review, not automatically sent. Clearing the workspace
@@ -239,12 +237,28 @@ analytics counters, and the license placeholder (appearance is retained).
    every navigation, typing, join and send/post action. Pacing is a rate control,
    NOT ban avoidance. Respect platform rules; no setting guarantees against bans.
 7. Watch Connecting, sign-in, Sending, Waiting and Done in the queue and console.
-   Stop closes the task browser; previously submitted actions cannot be undone.
+   Stop cancels the task. WhatsApp stays open for manual interaction and subsequent
+   jobs; only user closure or app shutdown closes its persistent context.
+   Previously submitted actions cannot be undone.
 
 Live execution is text-only and uses English platform controls. Saved media
-remains available for drafts/rehearsals but cannot silently be dropped from a
-live run; remove it first. Instagram, TikTok and Google Maps remain planning or
-simulation tools, not real browser automation.
+remains available for drafts but cannot silently be dropped from a live text run;
+remove it first. Unsupported actions fail explicitly; no simulation fallback runs.
+
+### Persistent WhatsApp, unread observation and SMTP
+
+The QR sign-in job has no automatic timeout or browser closure. The account's
+local browser profile is reused by sending and the CRM/chatbot listener.
+Drafts pause inbox switching. Message identities, cooldowns and durable reply
+reservations prevent replay and automatic retries after uncertain submissions.
+
+Email Marketing uses Host, Port, User, Password and From settings with Nodemailer.
+Recipient lists, TXT/CSV imports, subjects and plain-text bodies are saved as tasks.
+Live SMTP verification, per-recipient acceptance/rejection and progress are
+persisted and polled by the UI. Explicit recipient rejections are reported while
+the batch continues; uncertain submissions stop it. SMTP acceptance is not proof
+of recipient delivery. Credentials require the native encrypted credential store,
+not the hosted preview.
 
 If Chromium installation failed, run `npx playwright install chromium` inside
 this folder, then `npm start`. The hosted preview cannot launch a local browser

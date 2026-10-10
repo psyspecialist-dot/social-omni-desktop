@@ -15,6 +15,22 @@ async function snapshot(page) {
     })).filter(m => m.id && m.text),
   }));
 }
+async function unreadChats(page) {
+  return page.locator('#pane-side').evaluate(pane => {
+    const selector = pane.querySelector('[role="row"]') ? '[role="row"]' : pane.querySelector('[role="listitem"]') ? '[role="listitem"]' : '.cell-frame-container';
+    const rows = Array.from(pane.querySelectorAll(selector));
+    const chats = [];
+    for (const row of rows) {
+      const badge = row.querySelector('[aria-label*="unread" i],[aria-label*="غير مقروء"],[data-testid="icon-unread-count"],[data-icon="unread-count"]');
+      const name = row.querySelector('[title]')?.getAttribute('title');
+      if (!badge || !name) continue;
+      const digits = `${badge.getAttribute('aria-label') || ''} ${badge.textContent || ''}`.replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d))).match(/\d+/);
+      if (!digits || Number(digits[0]) < 1) continue;
+      if (!chats.some(c => c.name === name)) chats.push({ name, count: Number(digits[0]), selector });
+    }
+    return chats;
+  });
+}
 
 async function filter({ page, job, act, update, guard, restriction }) {
   for (const target of job.targets) {
@@ -42,9 +58,32 @@ async function filter({ page, job, act, update, guard, restriction }) {
 
 async function inbox({ page, job, getState, act, update, guard, restriction }) {
   const observed = new Map();
-  update(j => { j.phase = 'Watching open conversation'; }, 'Open a direct client conversation in the local WhatsApp browser. Initial visible history is synced without replies. New incoming text can trigger opted-in rules; groups and background chats are not monitored.');
+  const tails = new Map();
+  // Never answer pre-existing unread history when the listener first starts.
+  const initialUnread = new Set((await unreadChats(page)).map(c => c.name));
+  update(j => { j.phase = 'Watching unread inbox'; }, 'Watching the open chat and visible unread direct conversations. Initial unread history is imported without replies. Only opted-in clients and enabled SQLite rules can send. A human composer draft pauses inbox switching.');
   while (true) {
     guard(); await restriction();
+    let openedUnread = null, initial = false;
+    const draft = page.locator('footer [contenteditable="true"][role="textbox"]').first();
+    const humanDraft = await draft.isVisible().catch(() => false) && (await draft.textContent() || '').trim();
+    if (!humanDraft) {
+      const chats = await unreadChats(page);
+      for (const candidate of chats) {
+        const rows = page.locator(`#pane-side ${candidate.selector}`)
+          .filter({ has: page.locator(`[title=${JSON.stringify(candidate.name)}]`) });
+        // Ambiguous names must never route replies to a different person.
+        if (await rows.count() === 1) {
+          await rows.first().click();
+          await page.locator('#main').waitFor({ timeout: 15000 });
+          // Verify the header changed before reading the newly selected chat.
+          await page.waitForFunction(name => document.querySelector('#main header [title]')?.getAttribute('title') === name, candidate.name, { timeout: 15000 });
+          openedUnread = candidate;
+          initial = initialUnread.delete(candidate.name);
+          break;
+        }
+      }
+    }
     if (!await page.locator('#main').isVisible().catch(() => false)) {
       await new Promise(resolve => setTimeout(resolve, 1000)); continue;
     }
@@ -52,7 +91,8 @@ async function inbox({ page, job, getState, act, update, guard, restriction }) {
     const peer = peerFromId(current.messages.at(-1)?.id);
     if (!directPeer(peer)) { await new Promise(resolve => setTimeout(resolve, 1000)); continue; }
     const key = `${job.accountId}:${peer}`;
-    const baseline = !observed.has(key), known = observed.get(key) || new Set();
+    const stored = getState().waSuite.threads.find(t => t.remoteKey === key);
+    const baseline = !observed.has(key), known = observed.get(key) || new Set(stored?.messages.map(m => m.id) || []);
     const fresh = current.messages.filter(m => peerFromId(m.id) === peer && !known.has(m.id));
     if (fresh.length) {
       update((_j, state) => {
@@ -78,18 +118,25 @@ async function inbox({ page, job, getState, act, update, guard, restriction }) {
         if (fresh.some(m => m.direction === 'incoming' && suite.optOut(m.text))) {
           thread.optedIn = false; suite.linkContact(state, thread);
         }
-        _j.phase = 'Watching open conversation'; _j.nextActionAt = null;
+        _j.phase = 'Watching unread inbox'; _j.nextActionAt = null;
+        _j.currentStep = (_j.currentStep || 0) + fresh.length;
       }, `${baseline ? 'Initial history' : 'New messages'} synced for ${current.name || 'client'} (${fresh.length}).`, 'info');
     }
     for (const m of current.messages) known.add(m.id);
     if (known.size > 50000) throw new Error('Session observation limit reached. Review and restart monitoring.');
     observed.set(key, known);
-    const incoming = baseline ? null : fresh.filter(m => m.direction === 'incoming').at(-1);
+    const previousTail = tails.get(key);
+    const tailIndex = current.messages.findIndex(m => m.id === previousTail);
+    const unreadIds = new Set(openedUnread && !initial
+      ? current.messages.filter(m => m.direction === 'incoming').slice(-openedUnread.count).map(m => m.id) : []);
+    const incoming = fresh.filter(m => m.direction === 'incoming' &&
+      (unreadIds.has(m.id) || (!baseline && tailIndex >= 0 && current.messages.findIndex(x => x.id === m.id) > tailIndex))).at(-1);
+    tails.set(key, current.messages.at(-1)?.id);
     if (incoming && !fresh.some(m => m.direction === 'incoming' && suite.optOut(m.text))) {
       const state = getState(), thread = state.waSuite.threads.find(t => t.remoteKey === key);
       const rules = state.waSuite.rules;
       const eligible = thread?.optedIn && (!thread.contactId || state.store.contacts.find(c => c.id === thread.contactId)?.optedIn);
-      const rule = eligible ? rules.find(r => suite.matches(r, incoming.text)) : null;
+      const rule = eligible && !thread.replyReservations?.[incoming.id] ? rules.find(r => suite.matches(r, incoming.text)) : null;
       const lastAttempt = rule && thread.ruleLastAttempts?.[rule.id];
       if (rule && (!lastAttempt || Date.now() - Date.parse(lastAttempt) >= rule.cooldownMinutes * 60000)) {
         const response = rule.template.replace(/\{\{name\}\}/g, thread.name);
@@ -116,6 +163,8 @@ async function inbox({ page, job, getState, act, update, guard, restriction }) {
           // Reserve a durable attempt BEFORE touching Send. Ambiguous failures never auto-retry.
           update((_j, s) => {
             const t = s.waSuite.threads.find(t => t.id === thread.id);
+            if (Object.keys(t.replyReservations || {}).length >= 50000) throw new Error('Reply reservation limit reached. Stop monitoring and review this client record.');
+            t.replyReservations = { ...t.replyReservations, [incoming.id]: attemptId };
             t.ruleLastAttempts = { ...t.ruleLastAttempts, [rule.id]: new Date().toISOString() };
             t.messages.push({
               id: attemptId, text: response, direction: 'outgoing', status: 'Unconfirmed', timestamp: new Date().toISOString(), ruleId: rule.id,
@@ -126,6 +175,8 @@ async function inbox({ page, job, getState, act, update, guard, restriction }) {
           await restriction();
           const finalState = getState(), finalThread = finalState.waSuite.threads.find(t => t.id === thread.id);
           const finalRule = finalState.waSuite.rules.find(r => r.id === rule.id);
+          const finalSnapshot = await snapshot(page);
+          if (peerFromId(finalSnapshot.messages.at(-1)?.id) !== peer) throw new Error('Conversation changed before Send. Reply not submitted; inspect the browser draft.');
           if (!finalThread?.optedIn || !finalRule?.enabled || finalRule.template !== rule.template ||
             (finalThread.contactId && !finalState.store.contacts.find(c => c.id === finalThread.contactId)?.optedIn)) throw new Error('Consent or rule changed before Send. Reply not submitted; inspect the browser draft.');
           await page.locator('button:has([data-icon="send"]), [role="button"]:has([data-icon="send"])').first().click();
@@ -150,4 +201,4 @@ async function inbox({ page, job, getState, act, update, guard, restriction }) {
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
 }
-module.exports = { filter, inbox, peerFromId, directPeer, snapshot };
+module.exports = { filter, inbox, peerFromId, directPeer, snapshot, unreadChats };

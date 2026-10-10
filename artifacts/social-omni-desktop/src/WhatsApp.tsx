@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from 'react';
 import { useI18n } from '@/i18n';
-import { Play, Save, Square } from 'lucide-react';
+import { Save, Square } from 'lucide-react';
 import type { ApiState, MediaAsset, SimulationJob, SimulationSettings } from '@/lib/api';
 import type { Account } from '@/lib/workspace';
 import MediaUpload from '@/components/MediaUpload';
@@ -19,7 +19,7 @@ interface Props {
 export const parsePhones = (raw: string) => raw.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
 const normalize = (s: string) => s.replace(/[\s().-]/g, '');
 
-export default function WhatsApp({ settings, media, accounts, jobs, perform, onSave, onRun, onCancel }: Props) {
+export default function WhatsApp({ settings, media, accounts, jobs, perform, onSave, onCancel }: Props) {
   const { t } = useI18n();
   const msg = (e: unknown) => (e instanceof Error ? e.message : t('Something went wrong.'));
   const [d, setD] = useState<Draft>({ keywords: settings.keywords, delayMin: settings.delayMin || 5, delayMax: settings.delayMax || 12, phoneNumbers: settings.phoneNumbers || '', messageContent: settings.messageContent || '', mediaId: settings.mediaId ?? null, accountId: settings.accountId ?? null });
@@ -41,19 +41,13 @@ export default function WhatsApp({ settings, media, accounts, jobs, perform, onS
     || d.messageContent !== settings.messageContent || d.mediaId !== (settings.mediaId ?? null) || d.accountId !== (settings.accountId ?? null);
   const active = jobs.find(j => j.kind === 'whatsapp' && ['Pending', 'Running'].includes(j.status));
   const [mediaBusy, setMediaBusy] = useState(false);
-  const relevant = jobs.filter(j => j.kind === 'whatsapp');
-  const needs = !phones.length ? t('Add at least one phone number.') : !d.messageContent.trim() ? t('Write a message first.') : problem;
+  const relevant = jobs.filter(j => j.kind === 'whatsapp' && j.mode === 'live');
 
   const save = async (e?: FormEvent) => {
     e?.preventDefault();
     if (problem) { setError(problem); return; }
     setBusy('save'); setError(''); setSaved(false);
     try { await onSave(d); setSaved(true); } catch (err) { setError(msg(err)); } finally { setBusy(''); }
-  };
-  const run = async () => {
-    if (needs) { setError(needs); return; }
-    setBusy('run'); setError('');
-    try { if (dirty) await onSave(d); await onRun(); setSaved(true); } catch (err) { setError(msg(err)); } finally { setBusy(''); }
   };
   // Media is stored server-side as soon as uploaded; the selection is saved with the form.
   const changeMedia = (id: string | null) => set({ mediaId: id });
@@ -65,9 +59,9 @@ export default function WhatsApp({ settings, media, accounts, jobs, perform, onS
       <p className="heading-sub">{t('Save your message, connect a local browser, and send only to opted-in recipients.')}</p></div>
       <div style={{ display: 'flex', gap: 8 }}>
         {active && <button type="button" className="button button-secondary" onClick={() => onCancel(active.id)} data-testid="button-cancel-run"><Square /> {t('Stop')}</button>}
-        <button type="button" className="button button-secondary" onClick={run} disabled={mediaBusy || busy !== '' || Boolean(active)} data-testid="button-run-task"><Play /> {busy === 'run' ? t('Starting…') : active ? t('Queue active…') : t('Rehearse only')}</button></div></div>
+        </div></div>
     <LiveAutomation platform="WhatsApp" accounts={accounts} jobs={jobs} perform={perform} draftPreview={d} beforeSend={async () => { if (problem) throw new Error(problem); await onSave(d); }} />
-    <div className="wa-sim-note" role="note"><strong>{t('Draft & rehearsal tools.')}</strong> {t('Rehearse only never sends anything. The separate live browser controls above send real messages after your approval. Live sending uses the current text draft; attachments are rehearsal-only.')}</div>
+    <div className="wa-sim-note" role="note">{t('Real actions only. WhatsApp stays open until you close the browser or quit the app. Text sending requires approval; attachments are not supported yet.')}</div>
     {error && <div className="wa-feedback err" role="alert" data-testid="error-run">{error}</div>}
     <div className="wa-grid wide">
       <form className="wa-stack" onSubmit={save}>
@@ -77,9 +71,9 @@ export default function WhatsApp({ settings, media, accounts, jobs, perform, onS
             <div className="field-group"><label className="field-label" htmlFor="wa-phones">{t('Target phone numbers')}<span className="field-hint">{t('comma or new line')}</span></label>
               <textarea id="wa-phones" className="field-textarea" value={d.phoneNumbers} onChange={e => set({ phoneNumbers: e.target.value })} placeholder={'+14155550123, +442071838750\n+819012345678'} data-testid="textarea-phones" />
               {problem ? <div className="wa-feedback err" role="alert" data-testid="error-phones">{problem}</div> : <div className="wa-hint">{t('International format with a leading plus. Spaces and dashes are ignored.')}</div>}</div>
-            <div className="field-group"><label className="field-label" htmlFor="wa-account">{t('Simulated account')}<span className="field-hint">{t('optional')}</span></label>
+            <div className="field-group"><label className="field-label" htmlFor="wa-account">{t('WhatsApp account')}<span className="field-hint">{t('optional')}</span></label>
               <select id="wa-account" className="field-select" style={{ width: '100%' }} value={d.accountId ?? ''} onChange={e => set({ accountId: e.target.value || null })} data-testid="select-account">
-                <option value="">{t('Demo workspace identity')}</option>{waAccounts.map(a => <option key={a.id} value={a.id}>{a.displayLabel} ({t(a.status)})</option>)}</select></div>
+                <option value="">{t('Choose an account')}</option>{waAccounts.map(a => <option key={a.id} value={a.id}>{a.displayLabel} ({t(a.status)})</option>)}</select></div>
           </div>
         </section>
         <section className="panel">
@@ -103,15 +97,15 @@ export default function WhatsApp({ settings, media, accounts, jobs, perform, onS
             </div>
             <div className="form-actions"><button type="submit" className="button button-secondary" disabled={mediaBusy || busy !== ''} data-testid="button-save-settings"><Save /> {mediaBusy ? t('Saving attachment…') : busy === 'save' ? t('Saving…') : t('Save inputs')}</button></div>
             {saved && !dirty && <div className="wa-feedback ok" role="status" data-testid="status-saved">{t('Inputs saved.')}</div>}
-            {dirty && <div className="wa-hint">{t('Unsaved changes. Both live sending and rehearsal save the draft first.')}</div>}
+            {dirty && <div className="wa-hint">{t('Unsaved changes. Live sending saves the draft first.')}</div>}
           </div>
         </section>
       </form>
       <section className="panel" style={{ position: 'sticky', top: 12 }}>
-        <div className="panel-head"><div><div className="panel-title">{t('Live queue')}</div><div className="panel-caption">{t('Observed live outcomes and explicitly labelled rehearsals.')}</div></div></div>
+        <div className="panel-head"><div><div className="panel-title">{t('Live queue')}</div><div className="panel-caption">{t('Observed worker outcomes only.')}</div></div></div>
         <div className="panel-body">
           {relevant.length ? relevant.slice(0, 3).map(j => <SimQueue key={j.id} job={j} testId={j.id} />)
-            : <div className="empty-state"><b>{t('No run yet')}</b><p>{t('Add numbers and a message, then choose live sending or Rehearse only.')}</p></div>}
+            : <div className="empty-state"><b>{t('No run yet')}</b><p>{t('Add numbers and a message, then approve live sending.')}</p></div>}
         </div>
       </section>
     </div>

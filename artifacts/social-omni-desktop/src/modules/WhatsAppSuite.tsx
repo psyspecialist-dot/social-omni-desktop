@@ -49,13 +49,13 @@ function InboxControl({ accounts, jobs, perform }: { accounts: Account[]; jobs: 
   const stop = async () => { if (!active) return; setBusy(true); setErr(''); try { await perform('POST', `/jobs/${active.id}/cancel`); } catch (e) { setErr(msg(e, t)); } finally { setBusy(false); } };
   const can = isDesktop && ok && !!accountId && !other && !busy;
   return <section className="wa-card" aria-label={t('Inbox listener')} data-testid="panel-wa-inbox">
-    <div className="wa-row" style={{ justifyContent: 'space-between' }}><div><h2>{t('Inbox listener')}</h2><p className="wa-sub">{t('A visible local browser reads only the conversation you currently have open.')}</p></div>
+    <div className="wa-row" style={{ justifyContent: 'space-between' }}><div><h2>{t('Inbox listener')}</h2><p className="wa-sub">{t('A visible persistent browser monitors the open chat and unread inbox conversations.')}</p></div>
       <span className={`wa-chip ${active ? 'green' : ''}`} data-testid="status-wa-inbox">{active ? `${t(active.status)}${active.phase ? ` · ${t(active.phase)}` : ''}` : t('Stopped')}</span></div>
-    <ol className="wa-steps"><li>{t('Start the listener and sign in to WhatsApp Web.')}</li><li>{t('Open a client conversation yourself in that browser.')}</li><li>{t('Record consent in CRM (opted in) for that contact.')}</li><li>{t('New inbound texts after the baseline may trigger an enabled rule.')}</li></ol>
+    <ol className="wa-steps"><li>{t('Start the listener and sign in to WhatsApp Web.')}</li><li>{t('The listener opens readable unread chats automatically; a human draft pauses switching.')}</li><li>{t('Record consent in CRM (opted in) for that contact.')}</li><li>{t('New inbound texts after the baseline may trigger an enabled rule.')}</li></ol>
     <div style={{ height: 10 }} />
     {!isDesktop && <Banner kind="warn">{t(SESSION_NOTE)}</Banner>}
     <div style={{ height: 8 }} />
-    <Banner kind="info">{t('Existing history is imported without auto-replies. Background chats are not synced, group chats never reply, and nothing is sent as cold outreach or historic replay.')}</Banner>
+    <Banner kind="info">{t('Initial unread history is imported without replies. New unread direct messages can trigger enabled rules for opted-in clients. Group chats never reply. Ambiguous replies are never retried automatically.')}</Banner>
     {other && <><div style={{ height: 8 }} /><Banner kind="warn">{t('Another {task} task is running. The queue is exclusive; stop it first.', { task: `${other.platform || ''} ${other.action || other.kind}`.trim() })}</Banner></>}
     <div className="wa-row" style={{ marginTop: 12, alignItems: 'flex-end' }}>
       <label className="wa-lbl" style={{ margin: 0, minWidth: 190, flex: 1 }}>{t('WhatsApp account')}

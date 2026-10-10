@@ -14,6 +14,7 @@ const groupUrl = value => {
 
 module.exports = function createBrowserWorker({ get, save, recordActivity, automation, kick }) {
   const running = new Map();
+  const sessions = new Map();
   let closed = false;
   const notify = (job, message, level = 'info') => {
     if (!automation?.onEvent || !message) return;
@@ -27,20 +28,41 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
     if (closed) throw new Error('Application closing.');
     if (!job || !['Pending', 'Running'].includes(job.status)) throw new Error('Task cancelled.');
     change(job, state);
-    if (message) recordActivity(state, message, level);
+    if (message) recordActivity(state, message, level, job);
     save(workspace, state);
     notify(job, message, level);
     return job;
   };
   async function execute(workspace, jobId) {
-    let context, currentTargetId;
+    let context, currentTargetId, persistent = false;
     try {
       const job = update(workspace, jobId, j => { j.status = 'Running'; j.phase = 'Connecting…'; }, 'Connecting to a visible local browser. Sign in manually; passwords and QR codes are not captured by the app.');
       const profile = path.join(automation.profileDir, job.kind === 'leads' ? 'maps-research' : job.accountId);
       fs.mkdirSync(profile, { recursive: true, mode: 0o700 });
-      context = await automation.chromium.launchPersistentContext(profile, {
-        headless: false, viewport: null, locale: 'en-US', timeout: 30000,
-      });
+      persistent = job.platform === 'WhatsApp';
+      const sessionKey = `${workspace}:${job.accountId}`;
+      context = persistent ? sessions.get(sessionKey) : null;
+      const reused = Boolean(context);
+      if (!context) {
+        context = await automation.chromium.launchPersistentContext(profile, {
+          headless: false, viewport: null, locale: 'en-US', timeout: 30000,
+          args: ['--window-size=1440,1000'],
+        });
+        if (closed) { await context.close(); throw new Error('Application closing.'); }
+        if (persistent) {
+          sessions.set(sessionKey, context);
+          context.on?.('close', () => {
+            sessions.delete(sessionKey);
+            if (!closed) {
+              const state = get(workspace), account = state.store.accounts.find(a => a.id === job.accountId);
+              if (account) account.browserConnectedAt = null;
+              recordActivity(state, 'WhatsApp browser closed by the user. Saved login profile is retained.', 'warning',
+                {id:job.accountId,platform:'WhatsApp',status:'Closed',phase:'Browser closed'});
+              save(workspace, state);
+            }
+          });
+        }
+      }
       running.get(workspace).context = context;
       update(workspace, jobId, j => { j.phase = 'Browser opened'; }, 'Browser opened. Using the saved private account session.');
       const page = context.pages()[0] || await context.newPage();
@@ -89,8 +111,12 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
       } else {
       // Navigate immediately: sign-in must not open a blank browser for a pacing interval.
       update(workspace, jobId, j => { j.phase = 'Opening sign-in…'; }, 'Opening sign-in…');
-      await page.goto(job.platform === 'WhatsApp' ? 'https://web.whatsapp.com/' : 'https://www.facebook.com/', { waitUntil: 'domcontentloaded', timeout: 45000 });
-      update(workspace, jobId, j => { j.phase = 'Waiting for sign-in / QR'; }, `Complete ${job.platform === 'WhatsApp' ? 'the WhatsApp QR scan' : 'Facebook sign-in'} in the local browser. Waiting up to five minutes.`);
+       if (!reused || !page.url().startsWith('https://web.whatsapp.com/')) {
+         await page.goto(job.platform === 'WhatsApp' ? 'https://web.whatsapp.com/' : 'https://www.facebook.com/', { waitUntil: 'domcontentloaded', timeout: 45000 });
+       }
+       update(workspace, jobId, j => { j.phase = 'Waiting for sign-in / QR'; }, job.platform === 'WhatsApp'
+         ? 'Scan the WhatsApp QR code in the visible browser. The window stays open until you close it or quit Social Najhin.'
+         : 'Complete Facebook sign-in in the local browser. Waiting up to five minutes.');
       const deadline = Date.now() + 300000;
       while (true) {
         await restriction();
@@ -101,7 +127,7 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
             await page.getByRole('button', { name: /^(your profile|account|حسابك|ملفك الشخصي)$/i }).first().isVisible().catch(() => false) ||
             await page.getByRole('link', { name: /^(your profile|ملفك الشخصي)$/i }).first().isVisible().catch(() => false));
         if (signedIn) break;
-        if (Date.now() > deadline) throw new Error('Sign-in timed out. Connect again and complete sign-in in the browser.');
+         if (job.platform !== 'WhatsApp' && Date.now() > deadline) throw new Error('Sign-in timed out. Connect again and complete sign-in in the browser.');
         await new Promise(resolve => setTimeout(resolve, 500));
       }
       update(workspace, jobId, (_j, state) => {
@@ -289,12 +315,12 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
           row.error = reason;
         }
         const message = `Browser task stopped: ${reason}. If an action was submitted, verify it manually before retrying to avoid duplicates.`;
-        recordActivity(state, message, 'warning');
+        recordActivity(state, message, 'warning', job);
         save(workspace, state);
         notify(job, message, 'warning');
       }
     } finally {
-      if (context) await context.close().catch(() => {});
+       if (context && !persistent) await context.close().catch(() => {});
       running.delete(workspace);
       if (!closed) kick(workspace);
     }
@@ -312,15 +338,17 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
       for (const [workspace, runtime] of running) if (runtime.jobId === jobId) {
         const job = get(workspace).jobs.find(j => j.id === jobId);
         if (job) notify(job, 'Live task cancelled. Already submitted actions cannot be undone.', 'warning');
-        void runtime.context?.close().catch(() => {});
+        if (job?.platform !== 'WhatsApp') void runtime.context?.close().catch(() => {});
       }
     },
     close() {
       closed = true;
-      return Promise.allSettled([...running.values()].map(async runtime => {
-        await runtime.context?.close().catch(() => {});
+       const contexts = new Set([...sessions.values(), ...[...running.values()].map(r => r.context).filter(Boolean)]);
+       sessions.clear();
+       return Promise.allSettled([...contexts].map(context => context.close().catch(() => {}))).then(() =>
+         Promise.allSettled([...running.values()].map(async runtime => {
         await runtime.promise;
-      }));
+       })));
     },
   };
 };

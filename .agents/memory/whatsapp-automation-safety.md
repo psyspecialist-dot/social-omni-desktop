@@ -5,9 +5,9 @@ description: Why watched-chat baselines, module-specific pacing, and durable rep
 
 Do not interpret newly mounted WhatsApp DOM elements as newly received messages. Baseline each direct conversation before allowing automatic replies; require consent and never replay its history.
 
-**Why:** WhatsApp remounts messages when conversations switch or history scrolls. Treating a new DOM node as a new event can reply to old messages or to the wrong conversation. The initial implementation therefore watches only the visible, open direct chat, not an unattended background inbox.
+**Why:** WhatsApp remounts messages when conversations switch or history scrolls. Treating a new DOM node as a new event can reply to old messages or to the wrong conversation. The user requested extending monitoring to unread inbox conversations, not just the open chat.
 
-**How to apply:** Preserve message identity, recheck the conversation and consent immediately before Send, and explain watched-chat scope rather than promising all-chat synchronization. Do not overwrite a person's unsent composer draft.
+**How to apply:** Baseline pre-existing unread history as well as the open chat. Require unread evidence or newly appended messages, preserve message identity and durable reply reservations, and recheck the peer and consent before Send. Explain rendered-list limits rather than promising all-chat synchronization. Never switch chats or overwrite a person's unsent composer draft.
 
 Reply cooldowns and ambiguous-send reservations must survive message-history pruning.
 

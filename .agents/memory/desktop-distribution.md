@@ -34,8 +34,8 @@ status, and make transport timeouts tell users to check the current task before
 retrying. Keep persistent account profiles in the existing desktop user-data
 location; branding changes must not create new session locations.
 
-The user explicitly requires real, functional browser automation, moving away from mockup UI behaviors. Primary WhatsApp/Facebook controls must execute DOM actions; demonstrations must stay separate and clearly labelled.
+The user requires real production executions, not mock or rehearsal modes. WhatsApp browser, SMTP sending, chatbot/CRM observation and global progress must reflect actual backend/provider outcomes. Hosted preview must disable unsupported actions, never simulate success.
 
-**Why:** The user repeatedly clarified that this is not a UI-only project and requested actual sending, search, joining/posting, and live IPC feedback.
+**Why:** The user repeatedly clarified this is not a UI-only project and explicitly asked to remove all mocking and bind controls and progress to real background execution.
 
-**How to apply:** Scope future automation work around the full button-to-worker-to-saved-outcome journey, not merely interface changes or simulated success states.
+**How to apply:** Scope future work around the full button-to-worker-to-saved-outcome journey. Never reintroduce rehearsals as a fallback for missing runtime/provider access. Preserve historical records rather than rewriting their outcomes.
