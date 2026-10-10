@@ -149,6 +149,13 @@ delivery must be verified with your authorized accounts on macOS.
 Dependencies, hosted database files, secrets, and saved contacts are deliberately
 not included. `npm install` supplies the dependencies on your iMac.
 
+The downloaded folder was verified separately in a Linux x64 native Electron
+window on a virtual X11 display. Electron 40.10.6 embeds Node 24.15.0 and SQLite
+3.51.3; its `node:sqlite` module, local API startup, draft/result persistence
+across restarts, and native CSV/XLSX download buttons passed. Windows and macOS
+have not been executed. The test automated the download save path, not the
+operating system's file-picker dialog; a fresh `npm install` was not tested.
+
 ## Development from the full project
 
 After installing the project's renderer dependencies, run this from the
@@ -160,6 +167,12 @@ node scripts/export-desktop.mjs
 
 Then use the steps above inside its `desktop` folder. The exported renderer uses
 relative asset paths and hash routing so it runs from a local file.
+
+From the full workspace, `pnpm run test:desktop` tests the downloadable archive
+in an isolated temporary application-data directory (Linux only). It requires
+an X11 display, or Xvfb, and Electron's Linux shared libraries. It does not use
+the browser preview or hosted API. See `../docs/native-verification.md` in the
+full project for the environment, evidence, and remaining target-OS checks.
 
 ## Local data and security
 

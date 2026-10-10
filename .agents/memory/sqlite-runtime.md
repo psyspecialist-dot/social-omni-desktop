@@ -3,8 +3,8 @@ name: SQLite runtime compatibility
 description: Experimental built-in SQLite behavior in the development and desktop runtimes.
 ---
 
-The preview backend currently runs on a Node version that provides built-in SQLite but prints an experimental-feature warning. Native Electron startup has not been verified in this environment.
+Do not infer desktop SQLite compatibility from hosted Node or browser checks. Native Linux headless verification established that Electron 40's embedded Node can run this app's SQLite service, but it does not establish Windows/macOS or normal desktop sandbox compatibility.
 
 **Why:** A successful browser preview proves the hosted Node runtime works; it does not prove the Electron version's embedded Node supports the same module or behavior.
 
-**How to apply:** Before upgrading or packaging the desktop edition, test the API startup and database persistence in the target Electron runtime. Do not treat the hosted API checks as native-runtime verification.
+**How to apply:** Before upgrading or packaging the desktop edition, test the API startup, database persistence, and native downloads in the target Electron runtime. Keep virtual-display checks separate from target-OS installation and save-dialog checks; do not report the latter as passed when downloads use an automated save path.
