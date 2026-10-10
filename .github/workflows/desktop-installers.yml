@@ -53,12 +53,50 @@ jobs:
         working-directory: ${{ runner.temp }}/najhin-release/social-najhin-desktop
         run: |
           pnpm install --frozen-lockfile --ignore-workspace
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           pnpm run check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           pnpm run ${{ matrix.command }} --publish never
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify and mount both macOS DMGs
+        if: startsWith(matrix.os, 'macos')
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/najhin-release/social-najhin-desktop/dist/installers"
+          count=0
+          mount_point=""
+          cleanup() {
+            if [ -n "$mount_point" ]; then
+              hdiutil detach "$mount_point" || true
+              rmdir "$mount_point" || true
+            fi
+          }
+          trap cleanup EXIT
+          for image in "$output"/*.dmg; do
+            test -f "$image"
+            hdiutil verify "$image"
+            mount_point="$(mktemp -d)"
+            hdiutil attach -readonly -nobrowse -mountpoint "$mount_point" "$image"
+            resources="$mount_point/Social Najhin.app/Contents/Resources"
+            test -f "$resources/app.asar"
+            test -f "$resources/app.asar.unpacked/node_modules/sql.js/dist/sql-wasm.wasm"
+            test -d "$resources/browser-runtime"
+            hdiutil detach "$mount_point"
+            rmdir "$mount_point"
+            mount_point=""
+            count=$((count + 1))
+          done
+          test "$count" -eq 2
       - uses: actions/upload-artifact@v4
         with:
           name: installers-${{ matrix.os }}
-          path: ${{ runner.temp }}/najhin-release/social-najhin-desktop/dist/installers/*
+          path: |
+            ${{ runner.temp }}/najhin-release/social-najhin-desktop/dist/installers/*.dmg
+            ${{ runner.temp }}/najhin-release/social-najhin-desktop/dist/installers/*.zip
+            ${{ runner.temp }}/najhin-release/social-najhin-desktop/dist/installers/*.exe
+            ${{ runner.temp }}/najhin-release/social-najhin-desktop/dist/installers/*.blockmap
+            ${{ runner.temp }}/najhin-release/social-najhin-desktop/dist/installers/latest*.yml
+          compression-level: 0
           if-no-files-found: error
           retention-days: 14

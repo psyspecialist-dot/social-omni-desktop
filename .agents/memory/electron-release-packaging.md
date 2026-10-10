@@ -37,3 +37,17 @@ the tooling is not proof that the populated filesystem is mountable.
 **How to apply:** Prefer native macOS DMG production, or require filesystem and
 native mount validation for cross-generated images. Never distribute a damaged
 image or rename an ISO/ZIP to DMG as a substitute.
+
+An active GitHub source-control connection does not prove that shell GitHub CLI
+authentication is available in this workspace.
+
+**Why:** The connection reported healthy repository and workflow permissions,
+while `gh` lacked authentication and authenticated Git fetches stalled.
+The authorization and connection-refresh tools also reported conflicting
+attachment states.
+
+**How to apply:** Check actual repository access before promising an Actions
+run. Do not extract OAuth tokens or ask for a raw token to work around the
+connection. Refresh authorization once when warranted; if access still fails,
+report the access blocker rather than repeatedly prompting or claiming a build
+was started.

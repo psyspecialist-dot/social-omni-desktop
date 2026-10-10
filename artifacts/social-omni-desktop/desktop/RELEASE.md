@@ -4,8 +4,8 @@
 
 Distribute the built installer, not the development/source ZIP.
 
-- Windows x64: double-click `Social-Najhin-1.0.0-win-x64.exe`, complete Setup,
-  and launch Social Najhin from its desktop or Start menu shortcut.
+- Windows x64: run the matching `.exe`. Setup packages install the application
+  and create shortcuts; portable EXEs launch it without an installation.
 - macOS Intel / Apple Silicon: use the DMG matching the machine, open it, and
   drag Social Najhin to Applications. The ZIP contains the same standalone app.
 - Chromium, Electron, API dependencies and SQLite WASM are inside the package.
@@ -21,16 +21,18 @@ macOS releases before commercial delivery.
 
 ### Current build status
 
-The Linux workspace produced an unsigned macOS Intel app ZIP and a portable
-Windows x64 ZIP. Extract the complete Windows folder and double-click
-`Social Najhin.exe`, keeping `resources` and the bundled DLLs beside it. The
-portable ZIP is not an NSIS installer and does not create installation shortcuts.
-The Windows app archive includes the API dependencies, SQLite WASM and Chromium.
+Version 1.0.2 has unsigned macOS Intel and Apple Silicon app ZIPs and a Windows
+x64 portable EXE. They include the updated media workers, persistent CRM tags,
+QR text menus and optional OpenAI replies. Extract the matching Mac ZIP and
+move Social Najhin.app into Applications. Run the Windows portable EXE directly;
+it is not an NSIS Setup installer and does not create installation shortcuts.
+All three packages include the API dependencies, SQLite WASM and Chromium.
 
-This host could not complete NSIS uninstaller generation under Wine. No usable
-Windows Setup `.exe` or macOS DMG has been produced here. Use the native release
-workflow to produce those artifacts. Actual native installation, macOS startup,
-signing and notarization remain unverified.
+This host could not produce a filesystem-validated macOS DMG or complete NSIS
+uninstaller generation under Wine. Use the native release workflow for DMGs
+and Windows Setup. Its Mac job verifies and mounts both DMGs before upload.
+No successful native workflow run is implied by this documentation. Actual
+native installation, macOS startup, signing and notarization remain unverified.
 
 ## Build publishers
 
