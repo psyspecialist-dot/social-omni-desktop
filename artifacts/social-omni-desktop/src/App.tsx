@@ -10,6 +10,7 @@ import MediaUpload from '@/components/MediaUpload';
 import SimQueue from '@/components/SimQueue';
 import LiveAutomation from '@/components/LiveAutomation';
 import WhatsAppSuite from '@/modules/WhatsAppSuite';
+import { SmartReplySettings } from '@/components/SmartReplySettings';
 import type { WaSuite, AdvancedSuite } from '@workspace/api-client-react';
 import AdvancedModule from '@/modules/advanced/AdvancedModule';
 import NetworkHub, { type HubData } from '@/components/NetworkHub';
@@ -248,7 +249,7 @@ function Workspace() {
                    <Route path="/chatbots"><WhatsAppSuite view="chatbots" suite={waSuite} accounts={store.accounts} contacts={store.contacts} jobs={jobs} perform={perform} /></Route>
                    <Route path="/leads"><Leads leads={leads} jobs={jobs} perform={perform} onCancel={cancelTask} /></Route>
                   <Route path="/contacts"><Contacts store={store} open={item => setDialog({ type: 'contact', item })} create={() => setDialog({ type: 'contact' })} remove={item => remove('contact', item)} /></Route>
-                  <Route path="/settings"><Settings settings={settings} saveSettings={async value => { await perform('PUT', '/settings', value); }} theme={theme} setTheme={value => { void perform('PUT', '/settings', { theme: value }).catch(report); }} store={store} clear={clearWorkspace} onToggleLang={changeLanguage} /></Route>
+                  <Route path="/settings"><Settings smartReplies={<SmartReplySettings ai={waSuite.ai} perform={perform} />} settings={settings} saveSettings={async value => { await perform('PUT', '/settings', value); }} theme={theme} setTheme={value => { void perform('PUT', '/settings', { theme: value }).catch(report); }} store={store} clear={clearWorkspace} onToggleLang={changeLanguage} /></Route>
                   <Route path="/help"><Help /></Route>
                   <Route component={NotFound} />
                 </Switch>
@@ -442,7 +443,7 @@ function Contacts({ store, open, create, remove }: { store: Store; open: (c: Con
   </main>;
 }
 
-function Settings({ settings, saveSettings, theme, setTheme, store, clear, onToggleLang }: { onToggleLang: () => void; settings: SimulationSettings; saveSettings: (v: Partial<SimulationSettings>) => Promise<void>; theme: 'light' | 'dark'; setTheme: (t: 'light' | 'dark') => void; store: Store; clear: () => void }) {
+function Settings({ settings, saveSettings, theme, setTheme, store, clear, onToggleLang, smartReplies }: { smartReplies: ReactNode; onToggleLang: () => void; settings: SimulationSettings; saveSettings: (v: Partial<SimulationSettings>) => Promise<void>; theme: 'light' | 'dark'; setTheme: (t: 'light' | 'dark') => void; store: Store; clear: () => void }) {
   const { t, lang } = useI18n();
   const [min, setMin] = useState(settings.delayMin);
   const [max, setMax] = useState(settings.delayMax);
@@ -484,6 +485,7 @@ function Settings({ settings, saveSettings, theme, setTheme, store, clear, onTog
     <div className="settings-layout">
       <nav className="settings-nav" aria-label={t('Settings sections')}><button onClick={() => go('appearance')} data-testid="settings-nav-appearance">{t('Appearance')}</button><button onClick={() => go('local-data')} data-testid="settings-nav-local-data">{t('Local data')}</button><button onClick={() => go('simulation')} data-testid="settings-nav-simulation">{t('Simulation')}</button><button onClick={() => go('future-license')} data-testid="settings-nav-license">{t('Future license')}</button></nav>
       <div className="settings-content">
+        {smartReplies}
         <section className="setting-card" id="appearance"><div className="setting-head"><div><strong>{t('Appearance')}</strong><p>{t('Choose the reading mode that feels right at your desk.')}</p></div><div className="mode-switch">
           <button className={theme === 'light' ? 'selected' : ''} onClick={() => setTheme('light')} data-testid="button-theme-light"><Sun size={14} /> {t('Light')}</button>
           <button className={theme === 'dark' ? 'selected' : ''} onClick={() => setTheme('dark')} data-testid="button-theme-dark"><Moon size={14} /> {t('Dark')}</button>

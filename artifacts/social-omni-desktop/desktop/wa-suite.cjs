@@ -1,7 +1,7 @@
 const { randomUUID } = require('node:crypto');
 const { bad, text, oneOf } = require('./validation.cjs');
 
-const defaults = () => ({ filter: { source: '', results: [] }, threads: [], rules: [] });
+const defaults = () => ({ filter: { source: '', results: [] }, threads: [], rules: [], ai: require('./smart-replies.cjs').defaults() });
 const phone = value => {
   const clean = String(value).replace(/[\s().'-]/g, '').replace(/^\+/, '');
   return /^[1-9]\d{6,14}$/.test(clean) ? `+${clean}` : '';
@@ -41,7 +41,8 @@ const ruleInput = body => {
   return { name, keyword, template, match: oneOf(body.match, ['contains', 'exact'], 'keyword match'), enabled: body.enabled, delayMin, delayMax, cooldownMinutes };
 };
 const matches = (rule, value) => {
-  const incoming = value.trim().toLocaleLowerCase(), keyword = rule.keyword.toLocaleLowerCase();
+  const normalize = v => v.trim().toLocaleLowerCase().replace(/[٠-٩۰-۹]/g, d => String('٠١٢٣٤٥٦٧٨٩'.includes(d) ? '٠١٢٣٤٥٦٧٨٩'.indexOf(d) : '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))).replace(/^(\d+)[.)]$/, '$1');
+  const incoming = normalize(value), keyword = normalize(rule.keyword);
   return rule.enabled && (rule.match === 'exact' ? incoming === keyword : incoming.includes(keyword));
 };
 const optOut = value => /^(stop|unsubscribe|opt[\s-]?out|do not contact me|don't contact me)[.! ]*$/i.test(value.trim());
@@ -60,6 +61,26 @@ const linkContact = (state, thread) => {
 };
 
 function install({ route, automation, recordActivity }) {
+  route('put', '/suite/menu', (state, req) => {
+    const b = req.body || {};
+    const keyword = text(b.keyword, 'Menu keyword', 200);
+    const menu = text(b.menu, 'Menu text', 2000);
+    const sales = text(b.sales, 'Sales response', 2000);
+    const support = text(b.support, 'Support response', 2000);
+    if (!keyword || !menu || !sales || !support || /^[0-9٠-٩۰-۹]+$/.test(keyword)) throw bad('Enter a nonnumeric menu keyword and all three response texts.');
+    const slots = ['qr-menu-main', 'qr-menu-sales', 'qr-menu-support'];
+    const remaining = state.waSuite.rules.filter(r => !slots.includes(r.id));
+    if (remaining.length + 3 > 100) throw bad('Rule limit reached.');
+    if (remaining.some(r => ['1', '2', keyword.toLowerCase()].includes(r.keyword.trim().toLowerCase()))) throw bad('An existing rule uses this menu keyword or choice. Edit or remove that rule first.');
+    state.waSuite.rules = [
+      ...[[keyword, menu, 'QR text menu'], ['1', sales, 'QR menu: Sales'], ['2', support, 'QR menu: Support']].map(([key, template, name], i) => ({
+        id: slots[i], name, keyword: key, template, match: 'exact', enabled: true, delayMin: 3, delayMax: 8, cooldownMinutes: 1,
+        createdAt: state.waSuite.rules.find(r => r.id === slots[i])?.createdAt || new Date().toISOString(),
+      })), ...remaining,
+    ];
+    recordActivity(state, 'Saved QR text menu and exact-match choices 1 / 2. These are text replies, not native buttons.', 'success');
+    return true;
+  });
   const busy = state => state.jobs.some(j => ['Pending', 'Running'].includes(j.status));
   route('put', '/suite/filter', (state, req) => {
     if (state.jobs.some(j => j.action === 'filter' && ['Pending', 'Running'].includes(j.status))) throw bad('Stop the filter before replacing its list.');

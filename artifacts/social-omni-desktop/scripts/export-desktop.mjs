@@ -22,7 +22,7 @@ const destination = path.join(appDirectory, 'desktop', 'renderer');
 rmSync(destination, { recursive: true, force: true });
 cpSync(output, destination, { recursive: true, filter: (source) => !source.includes(`${path.sep}downloads`) });
 cpSync(path.resolve(appDirectory, '..', '..', 'lib', 'socialomni-api', 'service.cjs'), path.join(appDirectory, 'desktop', 'api-service.cjs'));
-for (const file of ['validation.cjs', 'worker.cjs', 'leads.cjs', 'browser-worker.cjs', 'whatsapp-media.cjs', 'facebook-media.cjs', 'wa-suite.cjs', 'wa-suite-browser.cjs', 'advanced.cjs', 'advanced-worker.cjs', 'advanced-browser.cjs', 'advanced-network.cjs', 'advanced-deps.cjs', 'automation-errors.cjs']) {
+for (const file of ['validation.cjs', 'worker.cjs', 'leads.cjs', 'browser-worker.cjs', 'whatsapp-media.cjs', 'facebook-media.cjs', 'smart-replies.cjs', 'wa-suite.cjs', 'wa-suite-browser.cjs', 'advanced.cjs', 'advanced-worker.cjs', 'advanced-browser.cjs', 'advanced-network.cjs', 'advanced-deps.cjs', 'automation-errors.cjs']) {
   cpSync(path.resolve(appDirectory, '..', '..', 'lib', 'socialomni-api', file), path.join(appDirectory, 'desktop', file));
 }
 process.stdout.write(`Desktop renderer exported to ${destination}\n`);

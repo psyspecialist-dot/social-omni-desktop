@@ -290,6 +290,46 @@ export interface WaFilterResult {
   checkedAt?: string | null;
 }
 
+export interface WaAiSettings {
+  enabled: boolean;
+  hasKey: boolean;
+  model: string;
+  instructions: string;
+  revision: string;
+}
+
+export interface WaAiInput {
+  enabled: boolean;
+  /** @maxLength 2000 */
+  instructions: string;
+  /** @maxLength 503 */
+  key?: string;
+  removeKey?: boolean;
+}
+
+export interface WaMenuInput {
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  keyword: string;
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  menu: string;
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  sales: string;
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  support: string;
+}
+
 export type WaSuiteFilter = {
   source: string;
   results: WaFilterResult[];
@@ -299,6 +339,7 @@ export interface WaSuite {
   filter: WaSuiteFilter;
   threads: CrmThread[];
   rules: ChatbotRule[];
+  ai?: WaAiSettings;
 }
 
 export type BrowserTaskInputAction = typeof BrowserTaskInputAction[keyof typeof BrowserTaskInputAction];

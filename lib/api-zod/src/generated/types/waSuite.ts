@@ -7,10 +7,12 @@
  */
 import type { ChatbotRule } from './chatbotRule';
 import type { CrmThread } from './crmThread';
+import type { WaAiSettings } from './waAiSettings';
 import type { WaSuiteFilter } from './waSuiteFilter';
 
 export interface WaSuite {
   filter: WaSuiteFilter;
   threads: CrmThread[];
   rules: ChatbotRule[];
+  ai?: WaAiSettings;
 }

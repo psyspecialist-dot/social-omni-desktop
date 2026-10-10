@@ -15,6 +15,7 @@ module.exports = async function verify(context) {
   const asar = createRequire(builder.resolve('app-builder-lib'))('@electron/asar');
   const files = new Set(asar.listPackage(path.join(resources, 'app.asar')));
   for (const file of ['main.js', 'preload.js', 'api-service.cjs', 'renderer/index.html',
+    'smart-replies.cjs', 'whatsapp-media.cjs', 'facebook-media.cjs', 'wa-suite-browser.cjs',
     'node_modules/express/package.json', 'node_modules/playwright/package.json',
     'node_modules/sql.js/package.json', 'node_modules/nodemailer/package.json',
     'node_modules/telegram/package.json', 'node_modules/cheerio/package.json']) {

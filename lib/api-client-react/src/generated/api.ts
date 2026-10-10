@@ -31,9 +31,12 @@ import type {
   SimulatorLeadInput,
   SimulatorRecord,
   SimulatorSettings,
+  SimulatorState,
   SimulatorUploadInput,
   TelegramAuthInput,
+  WaAiInput,
   WaFilterInput,
+  WaMenuInput,
   WaSessionInput,
   WorkspaceStateResponse
 } from './api.schemas';
@@ -748,6 +751,170 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getDeleteAdvancedResultMutationOptions(options));
+    }
+
+export const getSaveWaAiUrl = () => {
+
+
+
+
+  return `/api/socialomni/suite/ai`
+}
+
+export const saveWaAi = async (waAiInput: WaAiInput, options?: Parameters<typeof customFetch>[1]): Promise<SimulatorState> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<SimulatorState>(getSaveWaAiUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(waAiInput)
+  }
+);}
+
+
+
+
+
+export const getSaveWaAiMutationKey = () => ['saveWaAi'] as const;
+
+export const getSaveWaAiMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveWaAi>>, TError,SaveWaAiMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof saveWaAi>>, TError,SaveWaAiMutationVariables, TContext> => {
+
+const mutationKey = getSaveWaAiMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof saveWaAi>>, SaveWaAiMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  saveWaAi(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SaveWaAiMutationResult = NonNullable<Awaited<ReturnType<typeof saveWaAi>>>
+    export type SaveWaAiMutationBody = BodyType<WaAiInput>
+    export type SaveWaAiMutationError = ErrorType<unknown>
+    export type SaveWaAiMutationVariables = {data: BodyType<WaAiInput>}
+
+    export const useSaveWaAi = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveWaAi>>, TError,SaveWaAiMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof saveWaAi>>,
+        TError,
+        SaveWaAiMutationVariables,
+        TContext
+      > => {
+      return useMutation(getSaveWaAiMutationOptions(options));
+    }
+
+export const getSaveWaMenuUrl = () => {
+
+
+
+
+  return `/api/socialomni/suite/menu`
+}
+
+export const saveWaMenu = async (waMenuInput: WaMenuInput, options?: Parameters<typeof customFetch>[1]): Promise<SimulatorState> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<SimulatorState>(getSaveWaMenuUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(waMenuInput)
+  }
+);}
+
+
+
+
+
+export const getSaveWaMenuMutationKey = () => ['saveWaMenu'] as const;
+
+export const getSaveWaMenuMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveWaMenu>>, TError,SaveWaMenuMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof saveWaMenu>>, TError,SaveWaMenuMutationVariables, TContext> => {
+
+const mutationKey = getSaveWaMenuMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof saveWaMenu>>, SaveWaMenuMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  saveWaMenu(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SaveWaMenuMutationResult = NonNullable<Awaited<ReturnType<typeof saveWaMenu>>>
+    export type SaveWaMenuMutationBody = BodyType<WaMenuInput>
+    export type SaveWaMenuMutationError = ErrorType<unknown>
+    export type SaveWaMenuMutationVariables = {data: BodyType<WaMenuInput>}
+
+    export const useSaveWaMenu = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveWaMenu>>, TError,SaveWaMenuMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof saveWaMenu>>,
+        TError,
+        SaveWaMenuMutationVariables,
+        TContext
+      > => {
+      return useMutation(getSaveWaMenuMutationOptions(options));
     }
 
 export const getSaveWaFilterUrl = () => {

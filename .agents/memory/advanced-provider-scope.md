@@ -24,3 +24,15 @@ would be costly.
 
 **How to apply:** Disclose unverified native behavior; require manual review of
 ambiguous submissions and missed schedules rather than automatic retries.
+
+For the WhatsApp QR session, do not force Meta Cloud API. Use numbered text
+menus, such as “Reply 1 for Sales, 2 for Support”, instead of native buttons.
+Keep keyword-based auto-reply as the core/default engine. Generative replies
+are optional, using an OpenAI API Key field in Settings.
+
+**Why:** The user wants QR automation to work without requiring a Meta Business
+API account and wants standard rule-based triggers available to everyone.
+
+**How to apply:** Describe these menus honestly as text responses, not native
+interactive buttons. Keep AI opt-in and ensure matching keyword/menu rules
+take priority over generative replies.

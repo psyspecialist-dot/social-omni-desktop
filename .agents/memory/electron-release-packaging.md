@@ -13,7 +13,7 @@ Cross-building Windows NSIS on this Linux host needs Wine's new 64-bit WoW64 mod
 
 **Why:** traditional combined Wine selects a 32-bit Linux executable that this host cannot execute. New WoW64 ran the Windows Electron SQLite probe, but NSIS uninstaller generation still failed even with an X display. A Wine-backed check is not a native Windows installation test.
 
-**How to apply:** Use native Windows/macOS release runners for the final installers rather than repeatedly retrying Wine. Do not present an incomplete NSIS uninstaller stub left by a failed build as the installer. DMG production and macOS signing need native macOS tooling.
+**How to apply:** Use native Windows/macOS release runners for the final installers rather than repeatedly retrying Wine. Do not present an incomplete NSIS uninstaller stub left by a failed build as the installer. Standard electron-builder DMG packaging and macOS signing need native macOS tooling; unsigned cross-generated disk images require separate filesystem and mount validation.
 
 Windows portable EXEs can be cross-built here without the NSIS uninstaller step. Use store compression when maximum compression exceeds available memory, and clear failed archive caches before retrying.
 
@@ -26,3 +26,14 @@ Generated installer downloads can exceed the Library upload limit.
 **Why:** asset registration rejects files over 100 MiB; a self-contained Chromium/Electron app is considerably larger.
 
 **How to apply:** Keep build outputs in ignored generated-artifacts directories and supply verified workspace download links when they cannot be registered. Do not claim those development links are a permanent commercial download host.
+
+Do not treat a Linux-generated HFS+ image as a valid Mac installer merely
+because its disk-image tool completed.
+
+**Why:** Mozilla's cross-platform DMG tooling compiled on this host, but editing
+its reference HFS+ volume produced a B-tree inconsistency. Successfully building
+the tooling is not proof that the populated filesystem is mountable.
+
+**How to apply:** Prefer native macOS DMG production, or require filesystem and
+native mount validation for cross-generated images. Never distribute a damaged
+image or rename an ISO/ZIP to DMG as a substitute.

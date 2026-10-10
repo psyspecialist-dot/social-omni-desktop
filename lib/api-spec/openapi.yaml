@@ -88,6 +88,34 @@ paths:
       parameters: [{$ref: "#/components/parameters/Workspace"}, {$ref: "#/components/parameters/RecordId"}]
       responses:
         "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/suite/ai:
+    put:
+      operationId: saveWaAi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/WaAiInput"}
+      responses:
+        "200":
+          description: Public configuration only; never returns the key
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/SimulatorState"}
+  /socialomni/suite/menu:
+    put:
+      operationId: saveWaMenu
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/WaMenuInput"}
+      responses:
+        "200":
+          description: Saved exact-match menu rules
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/SimulatorState"}
   /socialomni/suite/filter:
     put:
       operationId: saveWaFilter
@@ -532,6 +560,31 @@ components:
         status: {type: string, enum: [Unverified, Active/Valid, Inactive, Unknown]}
         reason: {type: string}
         checkedAt: {type: [string, "null"]}
+    WaAiSettings:
+      type: object
+      required: [enabled, hasKey, model, instructions, revision]
+      properties:
+        enabled: {type: boolean}
+        hasKey: {type: boolean}
+        model: {type: string}
+        instructions: {type: string}
+        revision: {type: string}
+    WaAiInput:
+      type: object
+      required: [enabled, instructions]
+      properties:
+        enabled: {type: boolean}
+        instructions: {type: string, maxLength: 2000}
+        key: {type: string, writeOnly: true, maxLength: 503}
+        removeKey: {type: boolean}
+    WaMenuInput:
+      type: object
+      required: [keyword, menu, sales, support]
+      properties:
+        keyword: {type: string, minLength: 1, maxLength: 200}
+        menu: {type: string, minLength: 1, maxLength: 2000}
+        sales: {type: string, minLength: 1, maxLength: 2000}
+        support: {type: string, minLength: 1, maxLength: 2000}
     WaSuite:
       type: object
       required: [filter, threads, rules]
@@ -544,6 +597,7 @@ components:
             results: {type: array, items: {$ref: "#/components/schemas/WaFilterResult"}}
         threads: {type: array, items: {$ref: "#/components/schemas/CrmThread"}}
         rules: {type: array, items: {$ref: "#/components/schemas/ChatbotRule"}}
+        ai: {$ref: "#/components/schemas/WaAiSettings"}
     BrowserTaskInput:
       type: object
       required: [action, accountId]

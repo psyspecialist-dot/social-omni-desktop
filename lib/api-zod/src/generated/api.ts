@@ -201,7 +201,14 @@ export const CreateAdvancedTaskResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -494,7 +501,14 @@ export const EditAdvancedTaskResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -759,7 +773,14 @@ export const DeleteAdvancedTaskResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -1028,7 +1049,14 @@ export const RunAdvancedTaskResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -1293,7 +1321,14 @@ export const CancelAdvancedTaskResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -1569,7 +1604,14 @@ export const SaveAdvancedConnectionResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -1834,7 +1876,14 @@ export const DeleteAdvancedConnectionResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -2104,7 +2153,14 @@ export const AuthorizeTelegramResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -2369,7 +2425,14 @@ export const DeleteAdvancedResultResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -2461,6 +2524,564 @@ export const DeleteAdvancedResultResponse = zod.object({
   "analytics": zod.object({
   "realMessagesSent": zod.number().int().min(deleteAdvancedResultResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
   "messagesSent": zod.number().int().min(deleteAdvancedResultResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
+export const saveWaAiBodyInstructionsMax = 2000;
+
+export const saveWaAiBodyKeyMax = 503;
+
+
+
+export const SaveWaAiBody = zod.object({
+  "enabled": zod.boolean(),
+  "instructions": zod.string().max(saveWaAiBodyInstructionsMax),
+  "key": zod.string().max(saveWaAiBodyKeyMax).optional(),
+  "removeKey": zod.boolean().optional()
+})
+
+export const saveWaAiResponseAdvancedTasksItemOneNameMax = 150;
+
+export const saveWaAiResponseAdvancedTasksItemOneSourceMax = 15000;
+
+export const saveWaAiResponseAdvancedTasksItemOneMessageMax = 10000;
+
+export const saveWaAiResponseAdvancedTasksItemOneSubjectMax = 200;
+
+export const saveWaAiResponseAdvancedTasksItemOneQueryMax = 300;
+
+export const saveWaAiResponseAdvancedTasksItemOneLimitMax = 200;
+
+export const saveWaAiResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const saveWaAiResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const saveWaAiResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const saveWaAiResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const saveWaAiResponseWaSuiteThreadsItemOneTagsMax = 20;
+
+export const saveWaAiResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const saveWaAiResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const saveWaAiResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const saveWaAiResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const saveWaAiResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const saveWaAiResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const saveWaAiResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const saveWaAiResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const saveWaAiResponseSettingsLanguageDefault = `en`;
+export const saveWaAiResponseSettingsKeywordsMax = 300;
+
+export const saveWaAiResponseSettingsDelayMinMin = 5;
+export const saveWaAiResponseSettingsDelayMinMax = 12;
+
+export const saveWaAiResponseSettingsDelayMaxMin = 5;
+export const saveWaAiResponseSettingsDelayMaxMax = 12;
+
+export const saveWaAiResponseSettingsPhoneNumbersMax = 10000;
+
+export const saveWaAiResponseSettingsMessageContentMax = 10000;
+
+export const saveWaAiResponseSettingsLicenseKeyMax = 200;
+
+export const saveWaAiResponseLeadsOneKeywordMax = 100;
+
+export const saveWaAiResponseLeadsOneCityMax = 150;
+
+export const saveWaAiResponseLeadsOneTargetCountMax = 200;
+
+export const saveWaAiResponseAnalyticsRealMessagesSentMin = 0;
+
+export const saveWaAiResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const SaveWaAiResponse = zod.object({
+  "advanced": zod.object({
+  "tasks": zod.array(zod.object({
+  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "name": zod.string().max(saveWaAiResponseAdvancedTasksItemOneNameMax),
+  "source": zod.string().max(saveWaAiResponseAdvancedTasksItemOneSourceMax).optional(),
+  "message": zod.string().max(saveWaAiResponseAdvancedTasksItemOneMessageMax).optional(),
+  "subject": zod.string().max(saveWaAiResponseAdvancedTasksItemOneSubjectMax).optional(),
+  "query": zod.string().max(saveWaAiResponseAdvancedTasksItemOneQueryMax).optional(),
+  "limit": zod.number().int().min(1).max(saveWaAiResponseAdvancedTasksItemOneLimitMax).optional(),
+  "accountId": zod.string().optional(),
+  "mediaId": zod.string().optional(),
+  "scheduledAt": zod.string().optional(),
+  "approved": zod.boolean().optional()
+}).and(zod.object({
+  "id": zod.string(),
+  "status": zod.enum(['Draft', 'Scheduled', 'Queued', 'Running', 'Completed', 'Cancelled', 'Failed', 'Needs review']),
+  "progress": zod.number().int(),
+  "completedCount": zod.number().int(),
+  "totalCount": zod.number().int(),
+  "phase": zod.string(),
+  "createdAt": zod.string(),
+  "error": zod.string(),
+  "nextActionAt": zod.string().nullish()
+}))),
+  "results": zod.array(zod.object({
+  "userId": zod.string().optional(),
+  "username": zod.string().optional(),
+  "id": zod.string(),
+  "taskId": zod.string(),
+  "kind": zod.string(),
+  "name": zod.string(),
+  "phone": zod.string(),
+  "email": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "status": zod.string(),
+  "reason": zod.string(),
+  "createdAt": zod.string()
+})),
+  "connections": zod.array(zod.object({
+  "id": zod.enum(['smtp', 'telegram']),
+  "configured": zod.boolean(),
+  "connected": zod.boolean(),
+  "label": zod.string(),
+  "stage": zod.string(),
+  "error": zod.string()
+}))
+}).optional(),
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(saveWaAiResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(saveWaAiResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(saveWaAiResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(saveWaAiResponseWaSuiteThreadsItemOneTagsItemMax)).max(saveWaAiResponseWaSuiteThreadsItemOneTagsMax).optional(),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(saveWaAiResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(saveWaAiResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(saveWaAiResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(saveWaAiResponseWaSuiteRulesItemOneDelayMinMin).max(saveWaAiResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(saveWaAiResponseWaSuiteRulesItemOneDelayMaxMin).max(saveWaAiResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(saveWaAiResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(saveWaAiResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
+  "keywords": zod.string().max(saveWaAiResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(saveWaAiResponseSettingsDelayMinMin).max(saveWaAiResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(saveWaAiResponseSettingsDelayMaxMin).max(saveWaAiResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(saveWaAiResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(saveWaAiResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(saveWaAiResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "error": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(saveWaAiResponseLeadsOneKeywordMax),
+  "city": zod.string().max(saveWaAiResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(saveWaAiResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.boolean()
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(saveWaAiResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(saveWaAiResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
+export const saveWaMenuBodyKeywordMax = 200;
+
+export const saveWaMenuBodyMenuMax = 2000;
+
+export const saveWaMenuBodySalesMax = 2000;
+
+export const saveWaMenuBodySupportMax = 2000;
+
+
+
+export const SaveWaMenuBody = zod.object({
+  "keyword": zod.string().min(1).max(saveWaMenuBodyKeywordMax),
+  "menu": zod.string().min(1).max(saveWaMenuBodyMenuMax),
+  "sales": zod.string().min(1).max(saveWaMenuBodySalesMax),
+  "support": zod.string().min(1).max(saveWaMenuBodySupportMax)
+})
+
+export const saveWaMenuResponseAdvancedTasksItemOneNameMax = 150;
+
+export const saveWaMenuResponseAdvancedTasksItemOneSourceMax = 15000;
+
+export const saveWaMenuResponseAdvancedTasksItemOneMessageMax = 10000;
+
+export const saveWaMenuResponseAdvancedTasksItemOneSubjectMax = 200;
+
+export const saveWaMenuResponseAdvancedTasksItemOneQueryMax = 300;
+
+export const saveWaMenuResponseAdvancedTasksItemOneLimitMax = 200;
+
+export const saveWaMenuResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const saveWaMenuResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const saveWaMenuResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const saveWaMenuResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const saveWaMenuResponseWaSuiteThreadsItemOneTagsMax = 20;
+
+export const saveWaMenuResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const saveWaMenuResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const saveWaMenuResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const saveWaMenuResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const saveWaMenuResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const saveWaMenuResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const saveWaMenuResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const saveWaMenuResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const saveWaMenuResponseSettingsLanguageDefault = `en`;
+export const saveWaMenuResponseSettingsKeywordsMax = 300;
+
+export const saveWaMenuResponseSettingsDelayMinMin = 5;
+export const saveWaMenuResponseSettingsDelayMinMax = 12;
+
+export const saveWaMenuResponseSettingsDelayMaxMin = 5;
+export const saveWaMenuResponseSettingsDelayMaxMax = 12;
+
+export const saveWaMenuResponseSettingsPhoneNumbersMax = 10000;
+
+export const saveWaMenuResponseSettingsMessageContentMax = 10000;
+
+export const saveWaMenuResponseSettingsLicenseKeyMax = 200;
+
+export const saveWaMenuResponseLeadsOneKeywordMax = 100;
+
+export const saveWaMenuResponseLeadsOneCityMax = 150;
+
+export const saveWaMenuResponseLeadsOneTargetCountMax = 200;
+
+export const saveWaMenuResponseAnalyticsRealMessagesSentMin = 0;
+
+export const saveWaMenuResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const SaveWaMenuResponse = zod.object({
+  "advanced": zod.object({
+  "tasks": zod.array(zod.object({
+  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "name": zod.string().max(saveWaMenuResponseAdvancedTasksItemOneNameMax),
+  "source": zod.string().max(saveWaMenuResponseAdvancedTasksItemOneSourceMax).optional(),
+  "message": zod.string().max(saveWaMenuResponseAdvancedTasksItemOneMessageMax).optional(),
+  "subject": zod.string().max(saveWaMenuResponseAdvancedTasksItemOneSubjectMax).optional(),
+  "query": zod.string().max(saveWaMenuResponseAdvancedTasksItemOneQueryMax).optional(),
+  "limit": zod.number().int().min(1).max(saveWaMenuResponseAdvancedTasksItemOneLimitMax).optional(),
+  "accountId": zod.string().optional(),
+  "mediaId": zod.string().optional(),
+  "scheduledAt": zod.string().optional(),
+  "approved": zod.boolean().optional()
+}).and(zod.object({
+  "id": zod.string(),
+  "status": zod.enum(['Draft', 'Scheduled', 'Queued', 'Running', 'Completed', 'Cancelled', 'Failed', 'Needs review']),
+  "progress": zod.number().int(),
+  "completedCount": zod.number().int(),
+  "totalCount": zod.number().int(),
+  "phase": zod.string(),
+  "createdAt": zod.string(),
+  "error": zod.string(),
+  "nextActionAt": zod.string().nullish()
+}))),
+  "results": zod.array(zod.object({
+  "userId": zod.string().optional(),
+  "username": zod.string().optional(),
+  "id": zod.string(),
+  "taskId": zod.string(),
+  "kind": zod.string(),
+  "name": zod.string(),
+  "phone": zod.string(),
+  "email": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "status": zod.string(),
+  "reason": zod.string(),
+  "createdAt": zod.string()
+})),
+  "connections": zod.array(zod.object({
+  "id": zod.enum(['smtp', 'telegram']),
+  "configured": zod.boolean(),
+  "connected": zod.boolean(),
+  "label": zod.string(),
+  "stage": zod.string(),
+  "error": zod.string()
+}))
+}).optional(),
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(saveWaMenuResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(saveWaMenuResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(saveWaMenuResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(saveWaMenuResponseWaSuiteThreadsItemOneTagsItemMax)).max(saveWaMenuResponseWaSuiteThreadsItemOneTagsMax).optional(),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(saveWaMenuResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(saveWaMenuResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(saveWaMenuResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(saveWaMenuResponseWaSuiteRulesItemOneDelayMinMin).max(saveWaMenuResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(saveWaMenuResponseWaSuiteRulesItemOneDelayMaxMin).max(saveWaMenuResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(saveWaMenuResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(saveWaMenuResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
+  "keywords": zod.string().max(saveWaMenuResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(saveWaMenuResponseSettingsDelayMinMin).max(saveWaMenuResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(saveWaMenuResponseSettingsDelayMaxMin).max(saveWaMenuResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(saveWaMenuResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(saveWaMenuResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(saveWaMenuResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "error": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(saveWaMenuResponseLeadsOneKeywordMax),
+  "city": zod.string().max(saveWaMenuResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(saveWaMenuResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.boolean()
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(saveWaMenuResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(saveWaMenuResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
 })
 })
 
@@ -2638,7 +3259,14 @@ export const SaveWaFilterResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -2921,7 +3549,14 @@ export const CreateCrmThreadResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -3208,7 +3843,14 @@ export const EditCrmThreadResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -3473,7 +4115,14 @@ export const RemoveCrmThreadResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -3762,7 +4411,14 @@ export const CreateChatbotRuleResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -4055,7 +4711,14 @@ export const EditChatbotRuleResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -4320,7 +4983,14 @@ export const RemoveChatbotRuleResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -4590,7 +5260,14 @@ export const StartWaSuiteSessionResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -4869,7 +5546,14 @@ export const StartLocalBrowserTaskResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -5150,7 +5834,14 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -5414,7 +6105,14 @@ export const ClearSocialOmniLeadsResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -5675,7 +6373,14 @@ export const GetSocialOmniStateResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -5936,7 +6641,14 @@ export const ClearSocialOmniStateResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -6227,7 +6939,14 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -6497,7 +7216,14 @@ export const CreateSocialOmniJobResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -6762,7 +7488,14 @@ export const CancelSocialOmniJobResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -7036,7 +7769,14 @@ export const UploadSocialOmniMediaResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -7301,7 +8041,14 @@ export const ReadSocialOmniMediaResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -7569,7 +8316,14 @@ export const DeleteSocialOmniMediaResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -7860,7 +8614,14 @@ export const CreateSocialOmniRecordResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -8155,7 +8916,14 @@ export const UpdateSocialOmniRecordResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
@@ -8421,7 +9189,14 @@ export const DeleteSocialOmniRecordResponse = zod.object({
 }).and(zod.object({
   "id": zod.string(),
   "createdAt": zod.string()
-})))
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
 }).optional(),
   "store": zod.object({
   "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),

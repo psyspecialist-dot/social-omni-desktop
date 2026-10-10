@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useI18n } from '@/i18n';
+import { TextMenuBuilder } from '@/components/SmartReplySettings';
 import type { WaSuite, CrmThread, ChatbotRule, CrmThreadInput, ChatbotRuleInput, WaFilterResult } from '@workspace/api-client-react';
 import type { Account, Contact } from '@/lib/workspace';
 import type { ApiState, SimulationJob } from '@/lib/api';
@@ -290,7 +291,8 @@ function ChatbotsView({ suite, accounts, jobs, perform }: Props) {
   const sorted = [...rules].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   return <main className="page wa"><Head eyebrow="WhatsApp suite" title="Chatbots" sub="Keyword auto-replies for opted-in, direct conversations only." />
     <InboxControl accounts={accounts} jobs={jobs} perform={perform} />
-    <Banner kind="info">{t('Newest enabled rules are checked first and only one reply goes out per incoming message. Matching ignores case. Opt-out and per-contact cooldown protect your contacts.')} {t('{{name}} is optional in templates.')}</Banner>
+    <TextMenuBuilder perform={perform} />
+    <Banner kind="info">{t('Exact-match rules run first, then other keyword rules. Optional AI handles unmatched messages only. Opt-out, cooldowns and consent still apply.')} {t('{{name}} is optional in templates.')}</Banner>
     <div className="wa-crm">
       <section className="wa-card" aria-label={t('Rules')}>
         <div className="wa-row" style={{ justifyContent: 'space-between', marginBottom: 10 }}><h2 style={{ margin: 0 }}>{t('Rules')} <span className="mono-tag">{rules.length}</span></h2><button className="button button-primary" onClick={() => open('new')} data-testid="button-wa-new-rule"><Plus /> {t('New rule')}</button></div>
