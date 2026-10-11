@@ -45,6 +45,8 @@ authentication is available in this workspace.
 while `gh` lacked authentication and authenticated Git fetches stalled.
 The authorization and connection-refresh tools also reported conflicting
 attachment states.
+The connection advertised a provider API helper that was not available in the
+agent sandbox, so it could not provide an alternative to the failing Git CLI.
 
 **How to apply:** Check actual repository access before promising an Actions
 run. Do not extract OAuth tokens or ask for a raw token to work around the
