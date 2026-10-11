@@ -2,22 +2,26 @@ import { strToU8, zipSync } from 'fflate';
 import type { AdvancedResult } from '@workspace/api-client-react';
 
 const headers = ['Module', 'Name', 'Phone', 'Email', 'Address', 'Website', 'Status', 'Reason', 'Created', 'Telegram User ID', 'Telegram Username'];
-const safe = (value: unknown): string => {
+const clean = (value: unknown): string => {
   // eslint-disable-next-line no-control-regex
-  const text = String(value ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
+  return String(value ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
+};
+const safe = (value: unknown): string => {
+  const text = clean(value);
   return /^[=+\-@\t\r|%]/.test(text.trimStart()) || /^[\t\r]/.test(text) ? `'${text}` : text;
 };
-const row = (r: AdvancedResult) => [r.kind, r.name, r.phone, r.email, r.address, r.website, r.status, r.reason, r.createdAt, r.userId, r.username].map(safe);
+const row = (r: AdvancedResult) => [r.kind, r.name, r.phone, r.email, r.address, r.website, r.status, r.reason, r.createdAt, r.userId, r.username].map(clean);
 const xml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const col = (i: number) => String.fromCharCode(65 + i);
 
-export function downloadAdvancedResults(results: AdvancedResult[], format: 'csv' | 'xlsx', label = 'results'): void {
+export function makeAdvancedCsv(results: AdvancedResult[]): string {
   if (!results.length) throw new Error('There are no results to export.');
   const rows = [headers, ...results.map(row)];
-  let blob: Blob;
-  if (format === 'csv') {
-    blob = new Blob(['\uFEFF' + rows.map(r => r.map(c => `"${c.replace(/"/g, '""')}"`).join(',')).join('\r\n') + '\r\n'], { type: 'text/csv;charset=utf-8' });
-  } else {
+  return '\uFEFF' + rows.map(r => r.map(c => `"${safe(c).replace(/"/g, '""')}"`).join(',')).join('\r\n') + '\r\n';
+}
+export function makeAdvancedXlsx(results: AdvancedResult[]): Uint8Array {
+  if (!results.length) throw new Error('There are no results to export.');
+  const rows = [headers, ...results.map(row)];
     const files: Record<string, Uint8Array> = {};
     const add = (n: string, c: string) => { files[n] = strToU8(c); };
     add('[Content_Types].xml', '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>');
@@ -25,8 +29,12 @@ export function downloadAdvancedResults(results: AdvancedResult[], format: 'csv'
     add('xl/workbook.xml', '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Results" sheetId="1" r:id="rId1"/></sheets></workbook>');
     add('xl/_rels/workbook.xml.rels', '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>');
     add('xl/worksheets/sheet1.xml', `<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${rows.map((r, i) => `<row r="${i + 1}">${r.map((v, c) => `<c r="${col(c)}${i + 1}" t="inlineStr"><is><t xml:space="preserve">${xml(v)}</t></is></c>`).join('')}</row>`).join('')}</sheetData></worksheet>`);
-    blob = new Blob([new Uint8Array(zipSync(files)).buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  }
+    return zipSync(files);
+}
+export function downloadAdvancedResults(results: AdvancedResult[], format: 'csv' | 'xlsx', label = 'results'): void {
+  const blob = format === 'csv'
+    ? new Blob([makeAdvancedCsv(results)], { type: 'text/csv;charset=utf-8' })
+    : new Blob([new Uint8Array(makeAdvancedXlsx(results)).buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   const url = URL.createObjectURL(blob), link = document.createElement('a');
   link.href = url; link.download = `social-najhin-${label}-${new Date().toISOString().slice(0, 10)}.${format}`;
   document.body.appendChild(link); link.click(); link.remove();

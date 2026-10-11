@@ -8,12 +8,18 @@ async function execute({runtime,task,state,readMedia,pace,guard,result,reserve,s
   const context=existingContext || await runtime.chromium.launchPersistentContext(path.join(runtime.profileDir,profile),{headless:false,viewport:null,locale:'en-US',timeout:30000});
   setContext(context);
   try {
-    const page=context.pages()[0] || await context.newPage(); page.setDefaultTimeout(20000);
+    const page=(task.kind === 'whatsapp-members' ? context.pages().find(p => p.url().startsWith('https://web.whatsapp.com/')) : null) || context.pages()[0] || await context.newPage(); page.setDefaultTimeout(20000);
     const restriction=async()=>{
       guard();
       if (/checkpoint|challenge|captcha|\/sorry|\/blocked/.test(page.url()) || await page.getByText(/unusual traffic|temporarily blocked|try again later|verify you are human|account.*restricted/i).first().isVisible().catch(()=>false)) throw new Error('Platform restriction detected. Resolve it manually; no bypass or automatic retry.');
     };
-    if (task.kind==='maps') {
+    if (task.kind==='whatsapp-members') {
+      if (!page.url().startsWith('https://web.whatsapp.com/')) {
+        guard(); await page.goto('https://web.whatsapp.com/', {waitUntil:'domcontentloaded'});
+      }
+      await pace('Sign in to WhatsApp and open the approved group manually');
+      return await require('./whatsapp-members.cjs').extract({page, groupName:task.query, limit:task.limit, guard, restriction, result});
+    } else if (task.kind==='maps') {
       guard();
       await page.goto(`https://www.google.com/maps/search/${encodeURIComponent(task.query)}`,{waitUntil:'domcontentloaded',timeout:45000});
       const consent=page.getByRole('button',{name:/^(reject all|accept all)$/i}).first();

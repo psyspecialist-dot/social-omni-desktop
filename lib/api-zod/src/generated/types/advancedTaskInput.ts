@@ -20,8 +20,9 @@ export interface AdvancedTaskInput {
   /** @maxLength 300 */
   query?: string;
   /**
+     * WhatsApp member extraction allows 2000; other task kinds allow 200.
      * @minimum 1
-     * @maximum 200
+     * @maximum 2000
      */
   limit?: number;
   accountId?: string;

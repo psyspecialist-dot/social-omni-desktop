@@ -37,7 +37,9 @@ const SECTIONS: Section[] = [
     title: { en: 'Extractors versus legacy Leads', ar: 'المستخرِجات مقابل صفحة العملاء المحتملين القديمة' },
     compare: {
       a: { title: { en: 'B2B & Data Extractors (/extractors)', ar: 'مستخرِجات B2B والبيانات (/extractors)' }, items: [
-        { en: 'Runs REAL Google Maps and B2B extraction tasks in a local browser.', ar: 'تشغّل مهام استخراج حقيقية من خرائط Google ومن مصادر B2B في متصفح محلي.' },
+        { en: 'Runs REAL Google Maps, B2B and WhatsApp group member extraction tasks in a local browser.', ar: 'تشغّل مهام استخراج حقيقية من خرائط Google ومصادر B2B وأعضاء مجموعات واتساب في متصفح محلي.' },
+        { en: 'For WhatsApp, choose an active account and enter the exact group name. Start the task in the desktop app, sign in and open that group manually within five minutes. Authorize collection first; membership is not consent to messages.', ar: 'لواتساب، اختر حساباً نشطاً وأدخل اسم المجموعة بالضبط. ابدأ المهمة في تطبيق سطح المكتب، وسجّل الدخول وافتح المجموعة يدوياً خلال خمس دقائق. يجب التصريح بجمع البيانات أولاً؛ العضوية ليست موافقة على المراسلة.' },
+        { en: 'Only displayed names and international phone numbers are collected. Hidden phones stay blank, duplicate phone numbers are removed, and coverage may be partial. Export the filtered results with CSV or Excel; reaching your member limit is flagged for review.', ar: 'تُجمع الأسماء والأرقام الدولية الظاهرة فقط. تبقى الأرقام المخفية فارغة وتُزال الأرقام المكررة، وقد تكون النتائج جزئية. صدّر النتائج المصفّاة بصيغة CSV أو Excel؛ وعند بلوغ حد الأعضاء تُعلَّم المهمة للمراجعة.' },
         { en: 'Results are real records found at run time and can be reviewed and exported.', ar: 'النتائج سجلات حقيقية عُثر عليها أثناء التشغيل ويمكن مراجعتها وتصديرها.' },
         { en: 'Use this module for real work.', ar: 'استخدم هذه الوحدة للعمل الفعلي.' },
       ] },

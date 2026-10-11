@@ -22,18 +22,18 @@ export const createAdvancedTaskBodySubjectMax = 200;
 
 export const createAdvancedTaskBodyQueryMax = 300;
 
-export const createAdvancedTaskBodyLimitMax = 200;
+export const createAdvancedTaskBodyLimitMax = 2000;
 
 
 
 export const CreateAdvancedTaskBody = zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(createAdvancedTaskBodyNameMax),
   "source": zod.string().max(createAdvancedTaskBodySourceMax).optional(),
   "message": zod.string().max(createAdvancedTaskBodyMessageMax).optional(),
   "subject": zod.string().max(createAdvancedTaskBodySubjectMax).optional(),
   "query": zod.string().max(createAdvancedTaskBodyQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(createAdvancedTaskBodyLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(createAdvancedTaskBodyLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -50,7 +50,7 @@ export const createAdvancedTaskResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const createAdvancedTaskResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const createAdvancedTaskResponseAdvancedTasksItemOneLimitMax = 200;
+export const createAdvancedTaskResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const createAdvancedTaskResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -106,13 +106,13 @@ export const createAdvancedTaskResponseAnalyticsMessagesSentMin = 0;
 export const CreateAdvancedTaskResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(createAdvancedTaskResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(createAdvancedTaskResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(createAdvancedTaskResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(createAdvancedTaskResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(createAdvancedTaskResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(createAdvancedTaskResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(createAdvancedTaskResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -322,18 +322,18 @@ export const editAdvancedTaskBodySubjectMax = 200;
 
 export const editAdvancedTaskBodyQueryMax = 300;
 
-export const editAdvancedTaskBodyLimitMax = 200;
+export const editAdvancedTaskBodyLimitMax = 2000;
 
 
 
 export const EditAdvancedTaskBody = zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(editAdvancedTaskBodyNameMax),
   "source": zod.string().max(editAdvancedTaskBodySourceMax).optional(),
   "message": zod.string().max(editAdvancedTaskBodyMessageMax).optional(),
   "subject": zod.string().max(editAdvancedTaskBodySubjectMax).optional(),
   "query": zod.string().max(editAdvancedTaskBodyQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(editAdvancedTaskBodyLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(editAdvancedTaskBodyLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -350,7 +350,7 @@ export const editAdvancedTaskResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const editAdvancedTaskResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const editAdvancedTaskResponseAdvancedTasksItemOneLimitMax = 200;
+export const editAdvancedTaskResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const editAdvancedTaskResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -406,13 +406,13 @@ export const editAdvancedTaskResponseAnalyticsMessagesSentMin = 0;
 export const EditAdvancedTaskResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(editAdvancedTaskResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(editAdvancedTaskResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(editAdvancedTaskResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(editAdvancedTaskResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(editAdvancedTaskResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(editAdvancedTaskResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(editAdvancedTaskResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -622,7 +622,7 @@ export const deleteAdvancedTaskResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const deleteAdvancedTaskResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const deleteAdvancedTaskResponseAdvancedTasksItemOneLimitMax = 200;
+export const deleteAdvancedTaskResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const deleteAdvancedTaskResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -678,13 +678,13 @@ export const deleteAdvancedTaskResponseAnalyticsMessagesSentMin = 0;
 export const DeleteAdvancedTaskResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(deleteAdvancedTaskResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(deleteAdvancedTaskResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(deleteAdvancedTaskResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(deleteAdvancedTaskResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(deleteAdvancedTaskResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(deleteAdvancedTaskResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(deleteAdvancedTaskResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -898,7 +898,7 @@ export const runAdvancedTaskResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const runAdvancedTaskResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const runAdvancedTaskResponseAdvancedTasksItemOneLimitMax = 200;
+export const runAdvancedTaskResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const runAdvancedTaskResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -954,13 +954,13 @@ export const runAdvancedTaskResponseAnalyticsMessagesSentMin = 0;
 export const RunAdvancedTaskResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(runAdvancedTaskResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(runAdvancedTaskResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(runAdvancedTaskResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(runAdvancedTaskResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(runAdvancedTaskResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(runAdvancedTaskResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(runAdvancedTaskResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -1170,7 +1170,7 @@ export const cancelAdvancedTaskResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const cancelAdvancedTaskResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const cancelAdvancedTaskResponseAdvancedTasksItemOneLimitMax = 200;
+export const cancelAdvancedTaskResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const cancelAdvancedTaskResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -1226,13 +1226,13 @@ export const cancelAdvancedTaskResponseAnalyticsMessagesSentMin = 0;
 export const CancelAdvancedTaskResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(cancelAdvancedTaskResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(cancelAdvancedTaskResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(cancelAdvancedTaskResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(cancelAdvancedTaskResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(cancelAdvancedTaskResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(cancelAdvancedTaskResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(cancelAdvancedTaskResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -1453,7 +1453,7 @@ export const saveAdvancedConnectionResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const saveAdvancedConnectionResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const saveAdvancedConnectionResponseAdvancedTasksItemOneLimitMax = 200;
+export const saveAdvancedConnectionResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const saveAdvancedConnectionResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -1509,13 +1509,13 @@ export const saveAdvancedConnectionResponseAnalyticsMessagesSentMin = 0;
 export const SaveAdvancedConnectionResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(saveAdvancedConnectionResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(saveAdvancedConnectionResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(saveAdvancedConnectionResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(saveAdvancedConnectionResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(saveAdvancedConnectionResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(saveAdvancedConnectionResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(saveAdvancedConnectionResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -1725,7 +1725,7 @@ export const deleteAdvancedConnectionResponseAdvancedTasksItemOneSubjectMax = 20
 
 export const deleteAdvancedConnectionResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const deleteAdvancedConnectionResponseAdvancedTasksItemOneLimitMax = 200;
+export const deleteAdvancedConnectionResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const deleteAdvancedConnectionResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -1781,13 +1781,13 @@ export const deleteAdvancedConnectionResponseAnalyticsMessagesSentMin = 0;
 export const DeleteAdvancedConnectionResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(deleteAdvancedConnectionResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(deleteAdvancedConnectionResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(deleteAdvancedConnectionResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(deleteAdvancedConnectionResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(deleteAdvancedConnectionResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(deleteAdvancedConnectionResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(deleteAdvancedConnectionResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -2002,7 +2002,7 @@ export const authorizeTelegramResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const authorizeTelegramResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const authorizeTelegramResponseAdvancedTasksItemOneLimitMax = 200;
+export const authorizeTelegramResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const authorizeTelegramResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -2058,13 +2058,13 @@ export const authorizeTelegramResponseAnalyticsMessagesSentMin = 0;
 export const AuthorizeTelegramResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(authorizeTelegramResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(authorizeTelegramResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(authorizeTelegramResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(authorizeTelegramResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(authorizeTelegramResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(authorizeTelegramResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(authorizeTelegramResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -2274,7 +2274,7 @@ export const deleteAdvancedResultResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const deleteAdvancedResultResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const deleteAdvancedResultResponseAdvancedTasksItemOneLimitMax = 200;
+export const deleteAdvancedResultResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const deleteAdvancedResultResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -2330,13 +2330,13 @@ export const deleteAdvancedResultResponseAnalyticsMessagesSentMin = 0;
 export const DeleteAdvancedResultResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(deleteAdvancedResultResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(deleteAdvancedResultResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(deleteAdvancedResultResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(deleteAdvancedResultResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(deleteAdvancedResultResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(deleteAdvancedResultResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(deleteAdvancedResultResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -2551,7 +2551,7 @@ export const saveWaAiResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const saveWaAiResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const saveWaAiResponseAdvancedTasksItemOneLimitMax = 200;
+export const saveWaAiResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const saveWaAiResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -2607,13 +2607,13 @@ export const saveWaAiResponseAnalyticsMessagesSentMin = 0;
 export const SaveWaAiResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(saveWaAiResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(saveWaAiResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(saveWaAiResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(saveWaAiResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(saveWaAiResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(saveWaAiResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(saveWaAiResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -2832,7 +2832,7 @@ export const saveWaMenuResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const saveWaMenuResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const saveWaMenuResponseAdvancedTasksItemOneLimitMax = 200;
+export const saveWaMenuResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const saveWaMenuResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -2888,13 +2888,13 @@ export const saveWaMenuResponseAnalyticsMessagesSentMin = 0;
 export const SaveWaMenuResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(saveWaMenuResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(saveWaMenuResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(saveWaMenuResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(saveWaMenuResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(saveWaMenuResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(saveWaMenuResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(saveWaMenuResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -3108,7 +3108,7 @@ export const saveWaFilterResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const saveWaFilterResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const saveWaFilterResponseAdvancedTasksItemOneLimitMax = 200;
+export const saveWaFilterResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const saveWaFilterResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -3164,13 +3164,13 @@ export const saveWaFilterResponseAnalyticsMessagesSentMin = 0;
 export const SaveWaFilterResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(saveWaFilterResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(saveWaFilterResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(saveWaFilterResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(saveWaFilterResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(saveWaFilterResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(saveWaFilterResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(saveWaFilterResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -3398,7 +3398,7 @@ export const createCrmThreadResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const createCrmThreadResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const createCrmThreadResponseAdvancedTasksItemOneLimitMax = 200;
+export const createCrmThreadResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const createCrmThreadResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -3454,13 +3454,13 @@ export const createCrmThreadResponseAnalyticsMessagesSentMin = 0;
 export const CreateCrmThreadResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(createCrmThreadResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(createCrmThreadResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(createCrmThreadResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(createCrmThreadResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(createCrmThreadResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(createCrmThreadResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(createCrmThreadResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -3692,7 +3692,7 @@ export const editCrmThreadResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const editCrmThreadResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const editCrmThreadResponseAdvancedTasksItemOneLimitMax = 200;
+export const editCrmThreadResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const editCrmThreadResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -3748,13 +3748,13 @@ export const editCrmThreadResponseAnalyticsMessagesSentMin = 0;
 export const EditCrmThreadResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(editCrmThreadResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(editCrmThreadResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(editCrmThreadResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(editCrmThreadResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(editCrmThreadResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(editCrmThreadResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(editCrmThreadResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -3964,7 +3964,7 @@ export const removeCrmThreadResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const removeCrmThreadResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const removeCrmThreadResponseAdvancedTasksItemOneLimitMax = 200;
+export const removeCrmThreadResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const removeCrmThreadResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -4020,13 +4020,13 @@ export const removeCrmThreadResponseAnalyticsMessagesSentMin = 0;
 export const RemoveCrmThreadResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(removeCrmThreadResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(removeCrmThreadResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(removeCrmThreadResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(removeCrmThreadResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(removeCrmThreadResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(removeCrmThreadResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(removeCrmThreadResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -4260,7 +4260,7 @@ export const createChatbotRuleResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const createChatbotRuleResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const createChatbotRuleResponseAdvancedTasksItemOneLimitMax = 200;
+export const createChatbotRuleResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const createChatbotRuleResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -4316,13 +4316,13 @@ export const createChatbotRuleResponseAnalyticsMessagesSentMin = 0;
 export const CreateChatbotRuleResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(createChatbotRuleResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(createChatbotRuleResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(createChatbotRuleResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(createChatbotRuleResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(createChatbotRuleResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(createChatbotRuleResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(createChatbotRuleResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -4560,7 +4560,7 @@ export const editChatbotRuleResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const editChatbotRuleResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const editChatbotRuleResponseAdvancedTasksItemOneLimitMax = 200;
+export const editChatbotRuleResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const editChatbotRuleResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -4616,13 +4616,13 @@ export const editChatbotRuleResponseAnalyticsMessagesSentMin = 0;
 export const EditChatbotRuleResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(editChatbotRuleResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(editChatbotRuleResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(editChatbotRuleResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(editChatbotRuleResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(editChatbotRuleResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(editChatbotRuleResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(editChatbotRuleResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -4832,7 +4832,7 @@ export const removeChatbotRuleResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const removeChatbotRuleResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const removeChatbotRuleResponseAdvancedTasksItemOneLimitMax = 200;
+export const removeChatbotRuleResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const removeChatbotRuleResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -4888,13 +4888,13 @@ export const removeChatbotRuleResponseAnalyticsMessagesSentMin = 0;
 export const RemoveChatbotRuleResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(removeChatbotRuleResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(removeChatbotRuleResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(removeChatbotRuleResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(removeChatbotRuleResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(removeChatbotRuleResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(removeChatbotRuleResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(removeChatbotRuleResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -5109,7 +5109,7 @@ export const startWaSuiteSessionResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const startWaSuiteSessionResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const startWaSuiteSessionResponseAdvancedTasksItemOneLimitMax = 200;
+export const startWaSuiteSessionResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const startWaSuiteSessionResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -5165,13 +5165,13 @@ export const startWaSuiteSessionResponseAnalyticsMessagesSentMin = 0;
 export const StartWaSuiteSessionResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(startWaSuiteSessionResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(startWaSuiteSessionResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(startWaSuiteSessionResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(startWaSuiteSessionResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(startWaSuiteSessionResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(startWaSuiteSessionResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(startWaSuiteSessionResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -5395,7 +5395,7 @@ export const startLocalBrowserTaskResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const startLocalBrowserTaskResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const startLocalBrowserTaskResponseAdvancedTasksItemOneLimitMax = 200;
+export const startLocalBrowserTaskResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const startLocalBrowserTaskResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -5451,13 +5451,13 @@ export const startLocalBrowserTaskResponseAnalyticsMessagesSentMin = 0;
 export const StartLocalBrowserTaskResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(startLocalBrowserTaskResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(startLocalBrowserTaskResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(startLocalBrowserTaskResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(startLocalBrowserTaskResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(startLocalBrowserTaskResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(startLocalBrowserTaskResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(startLocalBrowserTaskResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -5683,7 +5683,7 @@ export const saveSocialOmniLeadDraftResponseAdvancedTasksItemOneSubjectMax = 200
 
 export const saveSocialOmniLeadDraftResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const saveSocialOmniLeadDraftResponseAdvancedTasksItemOneLimitMax = 200;
+export const saveSocialOmniLeadDraftResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const saveSocialOmniLeadDraftResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -5739,13 +5739,13 @@ export const saveSocialOmniLeadDraftResponseAnalyticsMessagesSentMin = 0;
 export const SaveSocialOmniLeadDraftResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(saveSocialOmniLeadDraftResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(saveSocialOmniLeadDraftResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(saveSocialOmniLeadDraftResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(saveSocialOmniLeadDraftResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(saveSocialOmniLeadDraftResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(saveSocialOmniLeadDraftResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(saveSocialOmniLeadDraftResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -5954,7 +5954,7 @@ export const clearSocialOmniLeadsResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const clearSocialOmniLeadsResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const clearSocialOmniLeadsResponseAdvancedTasksItemOneLimitMax = 200;
+export const clearSocialOmniLeadsResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const clearSocialOmniLeadsResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -6010,13 +6010,13 @@ export const clearSocialOmniLeadsResponseAnalyticsMessagesSentMin = 0;
 export const ClearSocialOmniLeadsResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(clearSocialOmniLeadsResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(clearSocialOmniLeadsResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(clearSocialOmniLeadsResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(clearSocialOmniLeadsResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(clearSocialOmniLeadsResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(clearSocialOmniLeadsResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(clearSocialOmniLeadsResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -6222,7 +6222,7 @@ export const getSocialOmniStateResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const getSocialOmniStateResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const getSocialOmniStateResponseAdvancedTasksItemOneLimitMax = 200;
+export const getSocialOmniStateResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const getSocialOmniStateResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -6278,13 +6278,13 @@ export const getSocialOmniStateResponseAnalyticsMessagesSentMin = 0;
 export const GetSocialOmniStateResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(getSocialOmniStateResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(getSocialOmniStateResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(getSocialOmniStateResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(getSocialOmniStateResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(getSocialOmniStateResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(getSocialOmniStateResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(getSocialOmniStateResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -6490,7 +6490,7 @@ export const clearSocialOmniStateResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const clearSocialOmniStateResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const clearSocialOmniStateResponseAdvancedTasksItemOneLimitMax = 200;
+export const clearSocialOmniStateResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const clearSocialOmniStateResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -6546,13 +6546,13 @@ export const clearSocialOmniStateResponseAnalyticsMessagesSentMin = 0;
 export const ClearSocialOmniStateResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(clearSocialOmniStateResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(clearSocialOmniStateResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(clearSocialOmniStateResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(clearSocialOmniStateResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(clearSocialOmniStateResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(clearSocialOmniStateResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(clearSocialOmniStateResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -6788,7 +6788,7 @@ export const updateSocialOmniSettingsResponseAdvancedTasksItemOneSubjectMax = 20
 
 export const updateSocialOmniSettingsResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const updateSocialOmniSettingsResponseAdvancedTasksItemOneLimitMax = 200;
+export const updateSocialOmniSettingsResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const updateSocialOmniSettingsResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -6844,13 +6844,13 @@ export const updateSocialOmniSettingsResponseAnalyticsMessagesSentMin = 0;
 export const UpdateSocialOmniSettingsResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(updateSocialOmniSettingsResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(updateSocialOmniSettingsResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(updateSocialOmniSettingsResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(updateSocialOmniSettingsResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(updateSocialOmniSettingsResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(updateSocialOmniSettingsResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(updateSocialOmniSettingsResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -7065,7 +7065,7 @@ export const createSocialOmniJobResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const createSocialOmniJobResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const createSocialOmniJobResponseAdvancedTasksItemOneLimitMax = 200;
+export const createSocialOmniJobResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const createSocialOmniJobResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -7121,13 +7121,13 @@ export const createSocialOmniJobResponseAnalyticsMessagesSentMin = 0;
 export const CreateSocialOmniJobResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(createSocialOmniJobResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(createSocialOmniJobResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(createSocialOmniJobResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(createSocialOmniJobResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(createSocialOmniJobResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(createSocialOmniJobResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(createSocialOmniJobResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -7337,7 +7337,7 @@ export const cancelSocialOmniJobResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const cancelSocialOmniJobResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const cancelSocialOmniJobResponseAdvancedTasksItemOneLimitMax = 200;
+export const cancelSocialOmniJobResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const cancelSocialOmniJobResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -7393,13 +7393,13 @@ export const cancelSocialOmniJobResponseAnalyticsMessagesSentMin = 0;
 export const CancelSocialOmniJobResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(cancelSocialOmniJobResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(cancelSocialOmniJobResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(cancelSocialOmniJobResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(cancelSocialOmniJobResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(cancelSocialOmniJobResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(cancelSocialOmniJobResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(cancelSocialOmniJobResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -7618,7 +7618,7 @@ export const uploadSocialOmniMediaResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const uploadSocialOmniMediaResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const uploadSocialOmniMediaResponseAdvancedTasksItemOneLimitMax = 200;
+export const uploadSocialOmniMediaResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const uploadSocialOmniMediaResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -7674,13 +7674,13 @@ export const uploadSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
 export const UploadSocialOmniMediaResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(uploadSocialOmniMediaResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(uploadSocialOmniMediaResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(uploadSocialOmniMediaResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(uploadSocialOmniMediaResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(uploadSocialOmniMediaResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(uploadSocialOmniMediaResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(uploadSocialOmniMediaResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -7890,7 +7890,7 @@ export const readSocialOmniMediaResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const readSocialOmniMediaResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const readSocialOmniMediaResponseAdvancedTasksItemOneLimitMax = 200;
+export const readSocialOmniMediaResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const readSocialOmniMediaResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -7946,13 +7946,13 @@ export const readSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
 export const ReadSocialOmniMediaResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(readSocialOmniMediaResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(readSocialOmniMediaResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(readSocialOmniMediaResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(readSocialOmniMediaResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(readSocialOmniMediaResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(readSocialOmniMediaResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(readSocialOmniMediaResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -8165,7 +8165,7 @@ export const deleteSocialOmniMediaResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const deleteSocialOmniMediaResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const deleteSocialOmniMediaResponseAdvancedTasksItemOneLimitMax = 200;
+export const deleteSocialOmniMediaResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const deleteSocialOmniMediaResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -8221,13 +8221,13 @@ export const deleteSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
 export const DeleteSocialOmniMediaResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(deleteSocialOmniMediaResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(deleteSocialOmniMediaResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(deleteSocialOmniMediaResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(deleteSocialOmniMediaResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(deleteSocialOmniMediaResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(deleteSocialOmniMediaResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(deleteSocialOmniMediaResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -8463,7 +8463,7 @@ export const createSocialOmniRecordResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const createSocialOmniRecordResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const createSocialOmniRecordResponseAdvancedTasksItemOneLimitMax = 200;
+export const createSocialOmniRecordResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const createSocialOmniRecordResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -8519,13 +8519,13 @@ export const createSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
 export const CreateSocialOmniRecordResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(createSocialOmniRecordResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(createSocialOmniRecordResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(createSocialOmniRecordResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(createSocialOmniRecordResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(createSocialOmniRecordResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(createSocialOmniRecordResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(createSocialOmniRecordResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -8765,7 +8765,7 @@ export const updateSocialOmniRecordResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const updateSocialOmniRecordResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const updateSocialOmniRecordResponseAdvancedTasksItemOneLimitMax = 200;
+export const updateSocialOmniRecordResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const updateSocialOmniRecordResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -8821,13 +8821,13 @@ export const updateSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
 export const UpdateSocialOmniRecordResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(updateSocialOmniRecordResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(updateSocialOmniRecordResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(updateSocialOmniRecordResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(updateSocialOmniRecordResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(updateSocialOmniRecordResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(updateSocialOmniRecordResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(updateSocialOmniRecordResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),
@@ -9038,7 +9038,7 @@ export const deleteSocialOmniRecordResponseAdvancedTasksItemOneSubjectMax = 200;
 
 export const deleteSocialOmniRecordResponseAdvancedTasksItemOneQueryMax = 300;
 
-export const deleteSocialOmniRecordResponseAdvancedTasksItemOneLimitMax = 200;
+export const deleteSocialOmniRecordResponseAdvancedTasksItemOneLimitMax = 2000;
 
 export const deleteSocialOmniRecordResponseWaSuiteThreadsItemOneNameMax = 150;
 
@@ -9094,13 +9094,13 @@ export const deleteSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
 export const DeleteSocialOmniRecordResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(deleteSocialOmniRecordResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(deleteSocialOmniRecordResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(deleteSocialOmniRecordResponseAdvancedTasksItemOneMessageMax).optional(),
   "subject": zod.string().max(deleteSocialOmniRecordResponseAdvancedTasksItemOneSubjectMax).optional(),
   "query": zod.string().max(deleteSocialOmniRecordResponseAdvancedTasksItemOneQueryMax).optional(),
-  "limit": zod.number().int().min(1).max(deleteSocialOmniRecordResponseAdvancedTasksItemOneLimitMax).optional(),
+  "limit": zod.number().int().min(1).max(deleteSocialOmniRecordResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
   "accountId": zod.string().optional(),
   "mediaId": zod.string().optional(),
   "scheduledAt": zod.string().optional(),

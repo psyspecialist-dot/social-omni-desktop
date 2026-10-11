@@ -1,6 +1,6 @@
 const { randomUUID } = require('node:crypto');
 const { bad, text, oneOf } = require('./validation.cjs');
-const kinds = ['maps','b2b','verify-email','email-send','telegram-send','telegram-members','telegram-channel','facebook-search','facebook-join','facebook-post','instagram-post'];
+const kinds = ['whatsapp-members','maps','b2b','verify-email','email-send','telegram-send','telegram-members','telegram-channel','facebook-search','facebook-join','facebook-post','instagram-post'];
 const active = t => ['Queued','Running'].includes(t.status);
 const defaults = () => ({ tasks: [], results: [], connections: [] });
 const lines = value => [...new Set(String(value || '').split(/[\r\n]+/).map(v => v.trim()).filter(Boolean))];
@@ -19,8 +19,10 @@ function taskInput(body) {
   const task = { kind, name, source: text(body.source || '', 'Source', 15000), message: text(body.message || '', 'Message', 10000),
     subject: text(body.subject || '', 'Subject', 200), query: text(body.query || '', 'Query', 300),
     accountId: text(body.accountId || '', 'Account', 100), mediaId: text(body.mediaId || '', 'Media', 100),
-    limit: body.limit ?? (['maps','telegram-members','facebook-search'].includes(kind)?20:200), scheduledAt: text(body.scheduledAt || '', 'Scheduled time', 100), approved: body.approved === true };
-  if (!Number.isInteger(task.limit) || task.limit < 1 || task.limit > 200) throw bad('Limit must be 1–200.');
+    limit: body.limit ?? (kind === 'whatsapp-members' ? 2000 : ['maps','telegram-members','facebook-search'].includes(kind)?20:200), scheduledAt: text(body.scheduledAt || '', 'Scheduled time', 100), approved: body.approved === true };
+  const maxLimit = kind === 'whatsapp-members' ? 2000 : 200;
+  if (!Number.isInteger(task.limit) || task.limit < 1 || task.limit > maxLimit) throw bad(`Limit must be 1–${maxLimit}.`);
+  if (kind === 'whatsapp-members' && task.scheduledAt) throw bad('WhatsApp member extraction must run manually with the intended group open.');
   if (lines(task.source).length > 200) throw bad('Use at most 200 unique targets.');
   if (task.scheduledAt && (!Number.isFinite(Date.parse(task.scheduledAt)) || Date.parse(task.scheduledAt) < Date.now())) throw bad('Choose a future scheduled time.');
   return task;
@@ -29,7 +31,12 @@ function validateRun(state, task, runtime) {
   if (!runtime) throw Object.assign(new Error('Live tasks run only in the downloaded desktop app.'), { status: 422 });
   if (!task.approved) throw bad('Confirm permission and recipient consent before running.');
   if (['maps','facebook-search'].includes(task.kind) && !task.query) throw bad('Enter a search query.');
-  if (!['maps','facebook-search','instagram-post'].includes(task.kind) && !lines(task.source).length) throw bad('Enter targets first.');
+  if (!['maps','facebook-search','instagram-post','whatsapp-members'].includes(task.kind) && !lines(task.source).length) throw bad('Enter targets first.');
+  if (task.kind === 'whatsapp-members') {
+    if (!task.query.trim()) throw bad('Enter the exact WhatsApp group name.');
+    const account = state.store.accounts.find(a => a.id === task.accountId && a.platform === 'WhatsApp' && !a.status.startsWith('Paused'));
+    if (!account || !/^[a-f0-9-]{36}$/i.test(account.id)) throw bad('Choose an active WhatsApp account.');
+  }
   if (['email-send','telegram-send','telegram-channel','facebook-post','instagram-post'].includes(task.kind) && !task.message) throw bad('Message or caption is required.');
   if (task.kind === 'email-send') {
     if (!task.subject || /[\r\n]/.test(task.subject)) throw bad('Enter a single-line email subject.');

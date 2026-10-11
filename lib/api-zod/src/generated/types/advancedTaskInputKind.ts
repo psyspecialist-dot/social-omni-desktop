@@ -10,6 +10,7 @@ export type AdvancedTaskInputKind = typeof AdvancedTaskInputKind[keyof typeof Ad
 
 
 export const AdvancedTaskInputKind = {
+  'whatsapp-members': 'whatsapp-members',
   maps: 'maps',
   b2b: 'b2b',
   'verify-email': 'verify-email',

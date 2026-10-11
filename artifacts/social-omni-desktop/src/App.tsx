@@ -203,7 +203,7 @@ function Workspace() {
     const count = (kinds: string[]) => advanced.tasks.filter(t => kinds.includes(t.kind));
     const tone = (kinds: string[]): HubData['tones'][string] => { const t = count(kinds); return t.some(x => x.status === 'Failed') ? 'fail' : t.some(x => x.status === 'Needs review') ? 'review' : t.some(x => ['Running', 'Queued'].includes(x.status)) ? 'live' : undefined; };
     const res = (kinds: string[]) => advanced.results.filter(r => kinds.includes(r.kind)).length;
-    const ex = ['maps', 'b2b', 'verify-email'], mp = ['telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post'], em = ['email-send', 'verify-email'];
+    const ex = ['whatsapp-members', 'maps', 'b2b', 'verify-email'], mp = ['telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post'], em = ['email-send', 'verify-email'];
     const live = (p: string, a?: string) => jobs.some(j => j.platform === p && (!a || j.action === a) && ['Pending', 'Running'].includes(j.status)) ? 'live' as const : undefined;
     return {
       counts: {

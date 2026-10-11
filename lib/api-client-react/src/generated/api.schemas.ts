@@ -39,6 +39,7 @@ export type AdvancedTaskInputKind = typeof AdvancedTaskInputKind[keyof typeof Ad
 
 
 export const AdvancedTaskInputKind = {
+  'whatsapp-members': 'whatsapp-members',
   maps: 'maps',
   b2b: 'b2b',
   'verify-email': 'verify-email',
@@ -65,8 +66,9 @@ export interface AdvancedTaskInput {
   /** @maxLength 300 */
   query?: string;
   /**
+     * WhatsApp member extraction allows 2000; other task kinds allow 200.
      * @minimum 1
-     * @maximum 200
+     * @maximum 2000
      */
   limit?: number;
   accountId?: string;

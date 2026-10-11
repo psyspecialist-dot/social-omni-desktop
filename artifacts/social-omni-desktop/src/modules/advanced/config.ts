@@ -2,8 +2,9 @@ import type { AdvancedTaskInput } from '@workspace/api-client-react';
 
 export type Kind = AdvancedTaskInput['kind'];
 export type ModuleId = 'extractors' | 'multi-platform' | 'email';
-export interface KindSpec { kind: Kind; label: string; hint: string; source?: string; sourcePlaceholder?: string; query?: string; limit?: boolean; message?: string; subject?: boolean; account?: 'Facebook' | 'Instagram'; media?: boolean; consent: string }
+export interface KindSpec { kind: Kind; label: string; hint: string; source?: string; sourcePlaceholder?: string; query?: string; limit?: boolean; message?: string; subject?: boolean; account?: 'Facebook' | 'Instagram' | 'WhatsApp'; media?: boolean; consent: string }
 export const KINDS: Record<Kind, KindSpec> = {
+  'whatsapp-members': { kind: 'whatsapp-members', label: 'WhatsApp group member extraction', hint: 'Reads participant names and phone numbers shown in ONE WhatsApp group you are authorized to collect from. Nothing is sent.', query: 'Exact group name', limit: true, account: 'WhatsApp', consent: 'I am authorized to collect the visible member names and phone numbers of this group. This is not consent to message them.' },
   maps: { kind: 'maps', label: 'Google Maps search', hint: 'Business listings matching a search.', query: 'dentists in Boston', limit: true, consent: 'I am allowed to collect this business information for B2B outreach.' },
   b2b: { kind: 'b2b', label: 'B2B site extractor', hint: 'Reads public facts from business websites. Missing fields stay blank, never guessed.', source: 'Business website URLs, one per line', sourcePlaceholder: 'https://example-dental.com', consent: 'I am allowed to read these public business websites.' },
   'verify-email': { kind: 'verify-email', label: 'Email format and domain check', hint: 'Checks syntax and MX records only. A ready domain does not mean the mailbox exists. Mailbox status stays Unknown.', source: 'Email addresses, one per line', sourcePlaceholder: 'name@company.com', consent: 'I am authorized to check these addresses.' },
@@ -17,7 +18,7 @@ export const KINDS: Record<Kind, KindSpec> = {
   'instagram-post': { kind: 'instagram-post', label: 'Instagram feed image', hint: 'Your own feed, one JPEG or PNG from saved media. No group search on Instagram.', message: 'Caption', account: 'Instagram', media: true, consent: 'I own this account and this image.' },
 };
 export const MODULES: Record<ModuleId, { eyebrow: string; title: string; sub: string; kinds: Kind[]; results: Kind[] }> = {
-  extractors: { eyebrow: 'Data tools', title: 'B2B & Data Extractors', sub: 'Collect business facts and check email syntax from sources you may use.', kinds: ['maps', 'b2b', 'verify-email'], results: ['maps', 'b2b', 'verify-email'] },
+  extractors: { eyebrow: 'Data tools', title: 'B2B & Data Extractors', sub: 'Collect business facts and check email syntax from sources you may use.', kinds: ['whatsapp-members', 'maps', 'b2b', 'verify-email'], results: ['whatsapp-members', 'maps', 'b2b', 'verify-email'] },
   'multi-platform': { eyebrow: 'Multi-platform', title: 'Telegram & Facebook Automation', sub: 'Approved, paced actions through your own accounts. Nothing sends without your explicit approval.', kinds: ['telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post'], results: ['telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post'] },
   email: { eyebrow: 'Email', title: 'Email Marketing', sub: 'Plain-text campaigns to people who agreed to hear from you, through your own SMTP server.', kinds: ['email-send', 'verify-email'], results: ['email-send', 'verify-email'] },
 };
