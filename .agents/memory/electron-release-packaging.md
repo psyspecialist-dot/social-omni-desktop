@@ -51,3 +51,16 @@ run. Do not extract OAuth tokens or ask for a raw token to work around the
 connection. Refresh authorization once when warranted; if access still fails,
 report the access blocker rather than repeatedly prompting or claiming a build
 was started.
+
+Keep the CI build-host Node version separate from Electron's embedded runtime.
+
+**Why:** The user requires Node.js 20 for installer CI, but Electron's npm
+download tooling can require Node.js 22. The app itself needs Electron's newer
+embedded Node for built-in SQLite, so downgrading the app runtime is not an
+appropriate fix.
+
+**How to apply:** Use compatible build tooling and skip the Electron npm
+download lifecycle in CI, letting electron-builder download the target runtime.
+Check the builder's automatically installed Windows peer too: an incompatible
+peer can reintroduce the newer builder and its Node requirements even when the
+main builder is pinned.

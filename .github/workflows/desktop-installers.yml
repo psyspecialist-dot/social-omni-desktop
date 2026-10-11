@@ -13,8 +13,9 @@ jobs:
           version: 10.26.1
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
-      - run: pnpm install --frozen-lockfile
+          node-version: '20'
+      # CI only needs the renderer here, not Electron's Node-22-only npm installer.
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm --filter @workspace/social-omni-desktop run desktop:export
       - uses: actions/upload-artifact@v4
         with:
@@ -40,7 +41,7 @@ jobs:
           version: 10.26.1
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '20'
       - uses: actions/download-artifact@v4
         with:
           name: standalone-source
@@ -52,7 +53,11 @@ jobs:
       - shell: pwsh
         working-directory: ${{ runner.temp }}/najhin-release/social-najhin-desktop
         run: |
-          pnpm install --frozen-lockfile --ignore-workspace
+          # electron-builder downloads the target Electron runtime during packaging.
+          # Do not execute Electron's npm installer, which requires Node >=22.12.
+          pnpm install --frozen-lockfile --ignore-workspace --ignore-scripts
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          pnpm exec electron-builder install-app-deps
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           pnpm run check
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

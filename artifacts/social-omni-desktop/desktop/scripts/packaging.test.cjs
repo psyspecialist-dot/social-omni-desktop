@@ -6,6 +6,16 @@ const path = require('node:path');
 const prepare = require('./prepare-browsers.cjs');
 const config = require('../package.json');
 
+test('release builder and Windows peer stay on the Node-20-compatible version', () => {
+  assert.equal(config.devDependencies['electron-builder'], '26.0.12');
+  assert.equal(config.devDependencies['electron-builder-squirrel-windows'], '26.0.12');
+  assert.equal(config.devDependencies.electron, '^40.0.0', 'preserve the app runtime');
+  assert.ok(config.build.win.target.some(target => target.target === 'nsis' && target.arch.includes('x64')));
+  for (const target of ['dmg', 'zip']) {
+    assert.deepEqual(config.build.mac.target.find(entry => entry.target === target).arch, ['x64', 'arm64']);
+  }
+});
+
 test('release targets map to matching Chromium platforms', () => {
   assert.deepEqual(prepare.target('win32', 1), { directory: 'win-x64', host: 'win64' });
   assert.equal(prepare.target('darwin', 3).host, 'mac15-arm64');
