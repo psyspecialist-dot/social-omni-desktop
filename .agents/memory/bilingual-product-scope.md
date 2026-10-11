@@ -33,3 +33,13 @@ while requiring continued full Arabic/English functionality.
 
 **How to apply:** Preserve that artwork during future bilingual UI or branding
 changes; language switching changes the interface, not the official logo.
+
+Check decoded DOM text before changing selectors when an Arabic-only browser
+fixture fails.
+
+**Why:** A controlled page served as plain `text/html` without an explicit
+charset produced mangled Arabic labels and looked like a Send-selector failure
+even though the selector was correct.
+
+**How to apply:** Ensure routed multilingual fixtures declare UTF-8, and
+distinguish transport-encoding failures from real platform-layout changes.
