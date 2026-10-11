@@ -25,6 +25,7 @@ export interface TelegramAuthInput {
 }
 
 export interface AdvancedConnectionInput {
+  sessionOnly?: boolean;
   host?: string;
   port?: number;
   secure?: boolean;
@@ -120,6 +121,22 @@ export interface AdvancedResult {
   createdAt: string;
 }
 
+export interface SmtpTestMessageInput {
+  /** @maxLength 254 */
+  recipient: string;
+  /** @maxLength 150 */
+  recipientName?: string;
+  approved: boolean;
+}
+
+export type AdvancedConnectionSettings = {
+  host?: string;
+  port?: number;
+  secure?: boolean;
+  username?: string;
+  from?: string;
+};
+
 export type AdvancedConnectionId = typeof AdvancedConnectionId[keyof typeof AdvancedConnectionId];
 
 
@@ -129,6 +146,8 @@ export const AdvancedConnectionId = {
 } as const;
 
 export interface AdvancedConnection {
+  sessionOnly?: boolean;
+  settings?: AdvancedConnectionSettings;
   id: AdvancedConnectionId;
   configured: boolean;
   connected: boolean;

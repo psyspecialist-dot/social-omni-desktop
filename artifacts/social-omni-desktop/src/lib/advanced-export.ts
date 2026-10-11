@@ -70,7 +70,15 @@ export async function readListFile(file: File, kind = ''): Promise<string> {
     : kind.startsWith('telegram') ? ['telegramusername', 'username', 'telegramuserid', 'userid', 'id']
     : ['website', 'url', 'groupurl', 'target'];
   const column = header.findIndex(value => names.includes(value));
-  if (column >= 0) return [...new Set(rows.slice(1).map(row => row[column] || '').filter(Boolean))].join('\n');
+  if (column >= 0) {
+    const nameColumn = header.findIndex(value => ['name','fullname','recipientname'].includes(value));
+    return [...new Set(rows.slice(1).map(row => {
+      const address=row[column] || '', name=nameColumn >= 0 ? row[nameColumn] || '' : '';
+      if(kind !== 'email-send' || !name || !address) return address;
+      if(/[<>\r\n]/.test(name) || name.length>150) throw new Error('Recipient name must not contain angle brackets or newlines.');
+      return `${name} <${address}>`;
+    }).filter(Boolean))].join('\n');
+  }
   if (rows.some(row => row.length > 1)) throw new Error(`Use a single-column CSV or add a ${names[0]} column header.`);
   return [...new Set(rows.map(row => row[0]).filter(Boolean))].join('\n');
 }

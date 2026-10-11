@@ -6,8 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { AdvancedConnectionId } from './advancedConnectionId';
+import type { AdvancedConnectionSettings } from './advancedConnectionSettings';
 
 export interface AdvancedConnection {
+  sessionOnly?: boolean;
+  settings?: AdvancedConnectionSettings;
   id: AdvancedConnectionId;
   configured: boolean;
   connected: boolean;

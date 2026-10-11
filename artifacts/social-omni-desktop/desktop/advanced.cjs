@@ -40,7 +40,7 @@ function validateRun(state, task, runtime) {
   if (['email-send','telegram-send','telegram-channel','facebook-post','instagram-post'].includes(task.kind) && !task.message) throw bad('Message or caption is required.');
   if (task.kind === 'email-send') {
     if (!task.subject || /[\r\n]/.test(task.subject)) throw bad('Enter a single-line email subject.');
-    if (lines(task.source).some(v => !email(v))) throw bad('Clean invalid email addresses before sending.');
+    require('./email-marketing.cjs').recipients(task.source);
   }
   if (task.kind.startsWith('facebook-') || task.kind === 'instagram-post') {
     const platform = task.kind.startsWith('facebook-') ? 'Facebook' : 'Instagram';
@@ -117,14 +117,15 @@ function install({ route, runtime, vault, engine, recordActivity }) {
     state.advanced.results = state.advanced.results.filter(r => r.id !== req.params.id); return true;
   });
   route('put','/advanced/connections/:id', (state, req) => {
-    if (!runtime || !vault.available()) throw Object.assign(new Error('Credentials can only be saved with native OS encryption in the desktop app.'), { status: 422 });
+    if (!runtime || (!vault.available() && !(req.params.id === 'smtp' && req.body?.sessionOnly === true))) throw Object.assign(new Error('Credentials can only be saved with native OS encryption in the desktop app.'), { status: 422 });
     if (!idle(state) || engine.authBusy(req.workspaceId)) throw bad('Stop active tasks or finish Telegram sign-in before editing connections.');
     const id = oneOf(req.params.id, ['smtp','telegram'], 'connection'), b = req.body || {}, old = vault.read(req.workspaceId,id) || {};
     let config;
     if (id === 'smtp') {
       const host = text(b.host, 'SMTP host', 250), from = text(b.from, 'Sender email', 254), username = text(b.username || '', 'SMTP username', 300);
       if (!/^[a-z0-9.-]+$/i.test(host) || !email(from) || !Number.isInteger(b.port) || ![465,587].includes(b.port) || typeof b.secure !== 'boolean' || b.secure !== (b.port === 465)) throw bad('Use a valid sender and SMTP host, port 465/TLS or 587/STARTTLS.');
-      const password = secretText(b.password || '', 'SMTP password', 1000) || old.password;
+      const password = secretText(b.password || '', 'SMTP password', 1000) ||
+        (old.host === host && old.username === username ? old.password : '');
       if (!username || !password) throw bad('SMTP username and password are required.');
       config = {host,from,username,password,port:b.port,secure:b.secure};
     } else {
@@ -132,12 +133,15 @@ function install({ route, runtime, vault, engine, recordActivity }) {
       if (!Number.isInteger(b.apiId) || b.apiId < 1 || !/^[a-f0-9]{32}$/i.test(apiHash || '')) throw bad('Enter your Telegram API ID and 32-character API hash.');
       config = { apiId: b.apiId, apiHash, session: old.apiId === b.apiId && old.apiHash === apiHash ? old.session || '' : '' };
     }
-    vault.write(req.workspaceId,id,config);
+    if (b.sessionOnly !== undefined && typeof b.sessionOnly !== 'boolean') throw bad('Session-only must be a boolean.');
+    vault.write(req.workspaceId,id,config,id === 'smtp' && b.sessionOnly === true);
     const connection = { id, configured: true, connected: Boolean(config.session), label: id === 'smtp' ? `${config.from} via ${config.host}` : 'Local Telegram API account',
-      stage: config.session ? 'connected' : id==='smtp'?'testing':'ready', error: '' };
+      stage: config.session ? 'connected' : id==='smtp'?'testing':'ready', error: '', ...(id === 'smtp' ? {sessionOnly:b.sessionOnly === true} : {}) };
     state.advanced.connections = [...state.advanced.connections.filter(c => c.id !== id),connection];
     if (id==='smtp') engine.testSmtp(req.workspaceId);
-    recordActivity(state, `${id} connection saved with OS encryption. Credentials are never included in workspace responses.`, 'success');
+    recordActivity(state, id==='smtp' && b.sessionOnly === true
+      ? 'SMTP connection saved for this session only. The password is never included in workspace responses.'
+      : `${id} connection saved with OS encryption. Passwords and private session tokens are never included in workspace responses.`, 'success');
     return true;
   });
   route('delete','/advanced/connections/:id', (state, req) => {
@@ -146,6 +150,21 @@ function install({ route, runtime, vault, engine, recordActivity }) {
     vault.remove(req.workspaceId,id);
     state.advanced.connections = state.advanced.connections.filter(c => c.id !== id);
     recordActivity(state, `${id} credentials and session removed.`, 'warning'); return true;
+  });
+  route('post','/advanced/smtp/test-message', (state, req) => {
+    const b=req.body || {};
+    if (b.approved !== true) throw bad('Explicit approval is required.');
+    if (!email(b.recipient)) throw bad('Enter a valid test recipient email.');
+    const name=text(b.recipientName || '', 'Recipient name', 150);
+    if (/[<>\r\n]/.test(name)) throw bad('Recipient name must not contain angle brackets or newlines.');
+    if (state.advanced.tasks.length >= 200) throw bad('Remove old tasks before creating more (limit 200).');
+    const task={...taskInput({kind:'email-send',name:'SMTP test message',source:name?`${name} <${b.recipient}>`:b.recipient,
+      subject:'Social Najhin SMTP test',message:'Hello {{name}},\n\nThis is your approved Social Najhin SMTP test for {{email}}.',approved:true}),
+      id:randomUUID(),status:'Draft',phase:'Draft',progress:0,completedCount:0,totalCount:0,error:'',createdAt:new Date().toISOString(),nextActionAt:null};
+    queue(state,task,req.workspaceId);
+    state.advanced.tasks.unshift(task);
+    recordActivity(state,'Approved SMTP test message queued. SMTP acceptance is not inbox delivery.');
+    return true;
   });
   route('post','/advanced/telegram/auth', (state, req) => {
     if (!runtime || !vault.available()) throw Object.assign(new Error('Telegram sign-in is native desktop only.'), {status:422});

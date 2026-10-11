@@ -144,6 +144,14 @@ export const CreateAdvancedTaskResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -444,6 +452,14 @@ export const EditAdvancedTaskResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -716,6 +732,14 @@ export const DeleteAdvancedTaskResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -992,6 +1016,14 @@ export const RunAdvancedTaskResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -1264,6 +1296,14 @@ export const CancelAdvancedTaskResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -1433,6 +1473,7 @@ export const SaveAdvancedConnectionHeader = zod.object({
 })
 
 export const SaveAdvancedConnectionBody = zod.object({
+  "sessionOnly": zod.boolean().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
@@ -1547,6 +1588,14 @@ export const SaveAdvancedConnectionResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -1819,6 +1868,14 @@ export const DeleteAdvancedConnectionResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -1979,6 +2036,294 @@ export const DeleteAdvancedConnectionResponse = zod.object({
 })
 
 
+export const SendSmtpTestMessageHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const sendSmtpTestMessageBodyRecipientMax = 254;
+
+export const sendSmtpTestMessageBodyRecipientNameMax = 150;
+
+
+
+export const SendSmtpTestMessageBody = zod.object({
+  "recipient": zod.string().max(sendSmtpTestMessageBodyRecipientMax),
+  "recipientName": zod.string().max(sendSmtpTestMessageBodyRecipientNameMax).optional(),
+  "approved": zod.boolean()
+})
+
+export const sendSmtpTestMessageResponseAdvancedTasksItemOneNameMax = 150;
+
+export const sendSmtpTestMessageResponseAdvancedTasksItemOneSourceMax = 15000;
+
+export const sendSmtpTestMessageResponseAdvancedTasksItemOneMessageMax = 10000;
+
+export const sendSmtpTestMessageResponseAdvancedTasksItemOneSubjectMax = 200;
+
+export const sendSmtpTestMessageResponseAdvancedTasksItemOneQueryMax = 300;
+
+export const sendSmtpTestMessageResponseAdvancedTasksItemOneLimitMax = 2000;
+
+export const sendSmtpTestMessageResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const sendSmtpTestMessageResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const sendSmtpTestMessageResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const sendSmtpTestMessageResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const sendSmtpTestMessageResponseWaSuiteThreadsItemOneTagsMax = 20;
+
+export const sendSmtpTestMessageResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const sendSmtpTestMessageResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const sendSmtpTestMessageResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const sendSmtpTestMessageResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const sendSmtpTestMessageResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const sendSmtpTestMessageResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const sendSmtpTestMessageResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const sendSmtpTestMessageResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const sendSmtpTestMessageResponseSettingsLanguageDefault = `en`;
+export const sendSmtpTestMessageResponseSettingsKeywordsMax = 300;
+
+export const sendSmtpTestMessageResponseSettingsDelayMinMin = 5;
+export const sendSmtpTestMessageResponseSettingsDelayMinMax = 12;
+
+export const sendSmtpTestMessageResponseSettingsDelayMaxMin = 5;
+export const sendSmtpTestMessageResponseSettingsDelayMaxMax = 12;
+
+export const sendSmtpTestMessageResponseSettingsPhoneNumbersMax = 10000;
+
+export const sendSmtpTestMessageResponseSettingsMessageContentMax = 10000;
+
+export const sendSmtpTestMessageResponseSettingsLicenseKeyMax = 200;
+
+export const sendSmtpTestMessageResponseLeadsOneKeywordMax = 100;
+
+export const sendSmtpTestMessageResponseLeadsOneCityMax = 150;
+
+export const sendSmtpTestMessageResponseLeadsOneTargetCountMax = 200;
+
+export const sendSmtpTestMessageResponseAnalyticsRealMessagesSentMin = 0;
+
+export const sendSmtpTestMessageResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const SendSmtpTestMessageResponse = zod.object({
+  "advanced": zod.object({
+  "tasks": zod.array(zod.object({
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "name": zod.string().max(sendSmtpTestMessageResponseAdvancedTasksItemOneNameMax),
+  "source": zod.string().max(sendSmtpTestMessageResponseAdvancedTasksItemOneSourceMax).optional(),
+  "message": zod.string().max(sendSmtpTestMessageResponseAdvancedTasksItemOneMessageMax).optional(),
+  "subject": zod.string().max(sendSmtpTestMessageResponseAdvancedTasksItemOneSubjectMax).optional(),
+  "query": zod.string().max(sendSmtpTestMessageResponseAdvancedTasksItemOneQueryMax).optional(),
+  "limit": zod.number().int().min(1).max(sendSmtpTestMessageResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
+  "accountId": zod.string().optional(),
+  "mediaId": zod.string().optional(),
+  "scheduledAt": zod.string().optional(),
+  "approved": zod.boolean().optional()
+}).and(zod.object({
+  "id": zod.string(),
+  "status": zod.enum(['Draft', 'Scheduled', 'Queued', 'Running', 'Completed', 'Cancelled', 'Failed', 'Needs review']),
+  "progress": zod.number().int(),
+  "completedCount": zod.number().int(),
+  "totalCount": zod.number().int(),
+  "phase": zod.string(),
+  "createdAt": zod.string(),
+  "error": zod.string(),
+  "nextActionAt": zod.string().nullish()
+}))),
+  "results": zod.array(zod.object({
+  "userId": zod.string().optional(),
+  "username": zod.string().optional(),
+  "id": zod.string(),
+  "taskId": zod.string(),
+  "kind": zod.string(),
+  "name": zod.string(),
+  "phone": zod.string(),
+  "email": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "status": zod.string(),
+  "reason": zod.string(),
+  "createdAt": zod.string()
+})),
+  "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
+  "id": zod.enum(['smtp', 'telegram']),
+  "configured": zod.boolean(),
+  "connected": zod.boolean(),
+  "label": zod.string(),
+  "stage": zod.string(),
+  "error": zod.string()
+}))
+}).optional(),
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(sendSmtpTestMessageResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(sendSmtpTestMessageResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(sendSmtpTestMessageResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(sendSmtpTestMessageResponseWaSuiteThreadsItemOneTagsItemMax)).max(sendSmtpTestMessageResponseWaSuiteThreadsItemOneTagsMax).optional(),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(sendSmtpTestMessageResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(sendSmtpTestMessageResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(sendSmtpTestMessageResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(sendSmtpTestMessageResponseWaSuiteRulesItemOneDelayMinMin).max(sendSmtpTestMessageResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(sendSmtpTestMessageResponseWaSuiteRulesItemOneDelayMaxMin).max(sendSmtpTestMessageResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(sendSmtpTestMessageResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(sendSmtpTestMessageResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
+  "keywords": zod.string().max(sendSmtpTestMessageResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(sendSmtpTestMessageResponseSettingsDelayMinMin).max(sendSmtpTestMessageResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(sendSmtpTestMessageResponseSettingsDelayMaxMin).max(sendSmtpTestMessageResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(sendSmtpTestMessageResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(sendSmtpTestMessageResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(sendSmtpTestMessageResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "error": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(sendSmtpTestMessageResponseLeadsOneKeywordMax),
+  "city": zod.string().max(sendSmtpTestMessageResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(sendSmtpTestMessageResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.boolean()
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(sendSmtpTestMessageResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(sendSmtpTestMessageResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
 export const AuthorizeTelegramHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
 })
@@ -2096,6 +2441,14 @@ export const AuthorizeTelegramResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -2368,6 +2721,14 @@ export const DeleteAdvancedResultResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -2645,6 +3006,14 @@ export const SaveWaAiResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -2926,6 +3295,14 @@ export const SaveWaMenuResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -3202,6 +3579,14 @@ export const SaveWaFilterResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -3492,6 +3877,14 @@ export const CreateCrmThreadResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -3786,6 +4179,14 @@ export const EditCrmThreadResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -4058,6 +4459,14 @@ export const RemoveCrmThreadResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -4354,6 +4763,14 @@ export const CreateChatbotRuleResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -4654,6 +5071,14 @@ export const EditChatbotRuleResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -4926,6 +5351,14 @@ export const RemoveChatbotRuleResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -5203,6 +5636,14 @@ export const StartWaSuiteSessionResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -5489,6 +5930,14 @@ export const StartLocalBrowserTaskResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -5777,6 +6226,14 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -6048,6 +6505,14 @@ export const ClearSocialOmniLeadsResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -6316,6 +6781,14 @@ export const GetSocialOmniStateResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -6584,6 +7057,14 @@ export const ClearSocialOmniStateResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -6882,6 +7363,14 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -7159,6 +7648,14 @@ export const CreateSocialOmniJobResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -7431,6 +7928,14 @@ export const CancelSocialOmniJobResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -7712,6 +8217,14 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -7984,6 +8497,14 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -8259,6 +8780,14 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -8557,6 +9086,14 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -8859,6 +9396,14 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
@@ -9132,6 +9677,14 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "createdAt": zod.string()
 })),
   "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
   "id": zod.enum(['smtp', 'telegram']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),

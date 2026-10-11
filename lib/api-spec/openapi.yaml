@@ -71,6 +71,17 @@ paths:
       parameters: [{$ref: "#/components/parameters/Workspace"}, {$ref: "#/components/parameters/RecordId"}]
       responses:
         "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/advanced/smtp/test-message:
+    post:
+      operationId: sendSmtpTestMessage
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/SmtpTestMessageInput"}
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
   /socialomni/advanced/telegram/auth:
     post:
       operationId: authorizeTelegram
@@ -411,6 +422,7 @@ components:
     AdvancedConnectionInput:
       type: object
       properties:
+        sessionOnly: {type: boolean}
         host: {type: string}
         port: {type: integer}
         secure: {type: boolean}
@@ -466,10 +478,26 @@ components:
         status: {type: string}
         reason: {type: string}
         createdAt: {type: string}
+    SmtpTestMessageInput:
+      type: object
+      required: [recipient, approved]
+      properties:
+        recipient: {type: string, maxLength: 254}
+        recipientName: {type: string, maxLength: 150}
+        approved: {type: boolean}
     AdvancedConnection:
       type: object
       required: [id, configured, connected, label, stage, error]
       properties:
+        sessionOnly: {type: boolean}
+        settings:
+          type: object
+          properties:
+            host: {type: string}
+            port: {type: integer}
+            secure: {type: boolean}
+            username: {type: string}
+            from: {type: string}
         id: {type: string, enum: [smtp, telegram]}
         configured: {type: boolean}
         connected: {type: boolean}

@@ -7,6 +7,7 @@
  */
 
 export interface AdvancedConnectionInput {
+  sessionOnly?: boolean;
   host?: string;
   port?: number;
   secure?: boolean;
