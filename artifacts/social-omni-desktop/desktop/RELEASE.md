@@ -39,9 +39,10 @@ native installation, macOS startup, signing and notarization remain unverified.
 Use the standalone source folder (outside the development pnpm monorepo).
 Developers, not customers, need Node.js 24 and build dependencies.
 
-The GitHub Actions packaging jobs use Node.js 20 (latest 20.x). They skip npm
-install scripts and run `electron-builder install-app-deps` explicitly, using the
-locked Node-20-compatible builder. This avoids executing Electron's npm download
+The GitHub Actions packaging jobs use Node.js 20 (latest 20.x). They skip all npm
+install scripts, including `install-app-deps`, and assert the host Node and both
+locked Node-20-compatible builder versions. The app has `npmRebuild: false` and
+uses built-in/WASM SQLite rather than native addons. This avoids Electron's npm download
 script, which requires Node.js 22.12 or later. electron-builder downloads the
 target Electron runtime itself; the application's embedded Node/SQLite runtime
 is not downgraded to Node.js 20.

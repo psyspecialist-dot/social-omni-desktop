@@ -57,7 +57,9 @@ jobs:
           # Do not execute Electron's npm installer, which requires Node >=22.12.
           pnpm install --frozen-lockfile --ignore-workspace --ignore-scripts
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          pnpm exec electron-builder install-app-deps
+          # The app uses built-in/WASM SQLite and npmRebuild:false, not native addons.
+          # Skip install-app-deps too; no dependency lifecycle scripts are needed.
+          node -e "if (process.versions.node.split('.')[0] !== '20') throw new Error('Installer CI requires Node 20'); for (const name of ['electron-builder','electron-builder-squirrel-windows']) { if (require(name + '/package.json').version !== '26.0.12') throw new Error('Incompatible packaging tool: ' + name); }"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           pnpm run check
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

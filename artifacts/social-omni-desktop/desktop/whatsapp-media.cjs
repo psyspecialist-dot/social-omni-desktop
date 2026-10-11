@@ -39,22 +39,33 @@ async function attach(page, media, caption, { guard = () => {}, restriction = as
     name: media.name.replace(/[\\/]/g, '_'), mimeType: media.mime, buffer: Buffer.from(media.content),
   }));
   const sendIcons = '[data-icon="send"], [data-icon="send-light"], [data-icon="wds-ic-send"], [data-icon="wds-ic-send-filled"]';
-  const preview = page.locator('[role="dialog"], [data-animate-modal-popup], [data-testid="media-editor"], [data-testid="media-preview"]');
-  const previewSend = await readable(page, [
-    preview.getByRole('button', { name: /^(send|send media|إرسال|ارسال)$/i }).filter({ visible: true }),
+  const previewSelector = '[role="dialog"], [data-animate-modal-popup], [data-testid="media-editor"], [data-testid="media-preview"]';
+  const preview = page.locator(previewSelector);
+  const sendNames = /^(?:send(?:\b|$)|envoyer(?:\b|$)|إرسال|ارسال)/i;
+  const sendLabels = '[aria-label*="send" i], [aria-label*="إرسال"], [aria-label*="ارسال"], [aria-label*="envoyer" i]';
+  const labeledControls = `button:is(${sendLabels}), [role="button"]:is(${sendLabels})`;
+  const outsideComposer = 'xpath=self::*[not(ancestor::footer) and not(ancestor::*[@id="pane-side"])]';
+  const sendCandidates = [
+    preview.getByRole('button', { name: sendNames }).filter({ visible: true }),
+    preview.locator(labeledControls).filter({ visible: true }),
     preview.locator('button, [role="button"]').filter({ has: page.locator(sendIcons), visible: true }),
+    page.getByRole('button', { name: sendNames }).filter({ visible: true }).locator(outsideComposer),
+    page.locator(labeledControls).filter({ visible: true }).locator(outsideComposer),
     // Some previews have no dialog role. Never select the ordinary chat composer.
     page.locator('button, [role="button"]')
       .filter({ has: page.locator(sendIcons), visible: true })
-      .locator('xpath=self::*[not(ancestor::footer) and not(ancestor::*[@id="pane-side"])]'),
-  ], 'WhatsApp attachment preview Send button', 30000);
-  if (caption.trim()) {
-    const editor = await readable(page, [
+      .locator(outsideComposer),
+  ];
+  const captionCandidates = [
+      preview.locator('[contenteditable="true"][role="textbox"], textarea').filter({ visible: true }),
       page.locator('[role="dialog"] [contenteditable="true"][role="textbox"]'),
       page.locator('[data-animate-modal-popup] [contenteditable="true"][role="textbox"]'),
       page.locator('[contenteditable="true"][role="textbox"][aria-label*="caption" i], [contenteditable="true"][role="textbox"][aria-label*="تعليق"]'),
       page.locator('[contenteditable="true"][role="textbox"]:not(footer [contenteditable]):not(#pane-side [contenteditable])').filter({ visible: true }),
-    ], 'WhatsApp attachment caption');
+  ];
+  let editor;
+  if (caption.trim()) {
+    editor = await readable(page, captionCandidates, 'WhatsApp attachment caption');
     // Never silently put a caption into the ordinary text-message composer.
     if (await editor.evaluate(el => Boolean(el.closest('footer, #pane-side')))) {
       throw new AutomationError('WhatsApp attachment caption is unavailable. Nothing sent; inspect the attachment preview.');
@@ -62,7 +73,42 @@ async function attach(page, media, caption, { guard = () => {}, restriction = as
     await act('Typing WhatsApp attachment caption…', () => editor.fill(caption));
   }
   guard(); await restriction();
-  return previewSend;
+  try {
+    return await readable(page, sendCandidates, 'WhatsApp attachment preview Send button', 5000);
+  } catch (error) {
+    if (!(error instanceof AutomationError) || !error.message.startsWith('Required platform control unavailable:')) throw error;
+  }
+  // Only a missing selector permits Enter; never retry a failed/ambiguous click.
+  if (!editor) {
+    for (const candidate of captionCandidates) {
+      if (await candidate.first().isVisible().catch(() => false)) { editor = candidate.first(); break; }
+    }
+  }
+  let keyboardTarget = editor && await editor.evaluate((el, selector) =>
+    Boolean(el.closest(selector)) && !el.closest('footer, #pane-side'), previewSelector) ? editor : null;
+  if (!keyboardTarget) {
+    const focusedPreview = preview.filter({ visible: true });
+    for (let i = 0; i < await focusedPreview.count(); i++) {
+      const candidate = focusedPreview.nth(i);
+      if (await candidate.evaluate(el => document.activeElement === el && !el.closest('footer, #pane-side'))) {
+        keyboardTarget = candidate; break;
+      }
+    }
+  }
+  if (!keyboardTarget) throw new AutomationError('WhatsApp media preview Send button unavailable and no verified preview keyboard target. Nothing sent.');
+  // Preserve the worker's Unconfirmed reservation and acknowledgement checks.
+  return { async click() {
+    guard(); await restriction();
+    if (!await keyboardTarget.isVisible() || !await keyboardTarget.evaluate((el, selector) =>
+      Boolean(el.closest(selector)) && !el.closest('footer, #pane-side'), previewSelector)) {
+      throw new AutomationError('WhatsApp media preview closed or changed. Keyboard submission stopped.');
+    }
+    await keyboardTarget.focus();
+    if (!await keyboardTarget.evaluate(el => document.activeElement === el)) {
+      throw new AutomationError('WhatsApp media preview could not be focused. Nothing sent.');
+    }
+    await keyboardTarget.press('Enter');
+  } };
 }
 
 module.exports = { attach };

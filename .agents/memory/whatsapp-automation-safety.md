@@ -19,7 +19,7 @@ Reply cooldowns and ambiguous-send reservations must survive message-history pru
 
 **Why:** The visible CRM history is bounded. Deriving cooldowns from it alone eventually forgets earlier attempts and can produce extra replies. A successful click also does not establish server acceptance.
 
-**How to apply:** Persist attempt timing independently of retained messages, reserve before Send, distinguish Unconfirmed from Accepted, and never retry an ambiguous submission automatically.
+**How to apply:** Persist attempt timing independently of retained messages, reserve before Send, distinguish Unconfirmed from Accepted, and never retry an ambiguous submission automatically. A media-preview Enter shortcut is an alternative chosen before the first submission, never a recovery action after a failed or unconfirmed Send click; verify that focus remains inside the attachment preview.
 
 Keep chatbot pacing separate from bulk browser pacing.
 
