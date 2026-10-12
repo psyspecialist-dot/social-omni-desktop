@@ -26,3 +26,14 @@ connection; a healthy connection record did not prove CLI authentication.
 **How to apply:** Confirm an actual remote operation succeeds before claiming
 a push. Keep probes bounded and never substitute local development signing
 keys for GitHub credentials.
+
+For native GitHub source-control authentication failures, use Replit Account
+Settings → Git Providers to disconnect and reconnect GitHub.
+
+**Why:** Official Replit documentation distinguishes Git-provider authorization
+from Account → Connected Services. Connector reconnect cards rejected the native
+Git connection even when its metadata reported healthy OAuth.
+
+**How to apply:** When GitHub explicitly rejects the username/token and the
+native provider reconnect card is unsupported, direct the user to Git Providers.
+Do not ask for tokens, extract credentials, or repeat the same failed push.
