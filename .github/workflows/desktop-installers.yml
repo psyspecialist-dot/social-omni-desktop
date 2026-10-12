@@ -109,6 +109,7 @@ jobs:
           pnpm run build:mac --publish never
       - name: Verify Windows NSIS installer and silent installation
         if: runner.os == 'Windows'
+        timeout-minutes: 5
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -120,8 +121,10 @@ jobs:
           try {
             if ($stream.ReadByte() -ne 77 -or $stream.ReadByte() -ne 90) { throw "Installer is not a Windows executable." }
           } finally { $stream.Dispose() }
-          $installDir = "$env:RUNNER_TEMP/najhin-install-check"
-          $process = Start-Process -FilePath $installer.FullName -ArgumentList "/S", "/D=$installDir" -Wait -PassThru
+          # NSIS /D must receive a native Windows path, not mixed slash separators.
+          # Keep /D last and select per-user mode explicitly on the admin CI runner.
+          $installDir = Join-Path $env:RUNNER_TEMP 'najhin-install-check'
+          $process = Start-Process -FilePath $installer.FullName -ArgumentList "/S", "/currentuser", "/D=$installDir" -Wait -PassThru
           if ($process.ExitCode -ne 0) { throw "NSIS installation failed with $($process.ExitCode)." }
           foreach ($file in @("Social Najhin.exe", "resources/app.asar", "resources/app.asar.unpacked/node_modules/sql.js/dist/sql-wasm.wasm")) {
             if (-not (Test-Path "$installDir/$file")) { throw "Installed runtime missing: $file" }
@@ -129,7 +132,7 @@ jobs:
           if (-not (Test-Path "$installDir/resources/browser-runtime")) { throw "Installed Chromium is missing." }
           $uninstaller = "$installDir/Uninstall Social Najhin.exe"
           if (-not (Test-Path $uninstaller)) { throw "NSIS uninstaller is missing." }
-          $process = Start-Process -FilePath $uninstaller -ArgumentList "/S" -Wait -PassThru
+          $process = Start-Process -FilePath $uninstaller -ArgumentList "/S", "/currentuser" -Wait -PassThru
           if ($process.ExitCode -ne 0) { throw "NSIS uninstall failed with $($process.ExitCode)." }
       - name: Verify and mount both macOS DMGs
         if: startsWith(matrix.os, 'macos')

@@ -64,6 +64,8 @@ test('CI builds native Windows NSIS and macOS DMG/ZIP, without packaging the dev
   assert.match(workflow, /os: macos-14/);
   assert.match(workflow, /Install and build Windows x64 NSIS/);
   assert.match(workflow, /Verify Windows NSIS installer and silent installation/);
+  assert.match(workflow, /\$installDir = Join-Path \$env:RUNNER_TEMP 'najhin-install-check'/);
+  assert.match(workflow, /ArgumentList "\/S", "\/currentuser", "\/D=\$installDir"/);
   assert.match(workflow, /hdiutil verify/);
   assert.equal(config.scripts['build:win'], 'electron-builder --win nsis');
   assert.equal((workflow.match(/uses: actions\/setup-node@v4/g) || []).length, 2);

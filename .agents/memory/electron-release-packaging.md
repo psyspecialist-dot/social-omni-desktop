@@ -13,6 +13,17 @@ the same package passed macOS verification.
 leading separator before both required-file and forbidden-dev-signer checks.
 Keep genuine missing-file, WASM, and Chromium checks enabled.
 
+Pass native Windows paths to NSIS /D and choose the installation mode explicitly
+when testing silently on an administrator CI runner.
+
+**Why:** A mixed-separator temporary path let the installer exit successfully
+while the verification could not find the installed executable at that path.
+NSIS's install-mode initialization reparses the /D command-line parameter.
+
+**How to apply:** Construct /D with PowerShell Join-Path, keep it last, and use
+/currentuser for both install and uninstall. Do not weaken installed-file checks
+or silently accept a different installation directory.
+
 Build the standalone package outside the parent pnpm workspace, such as in an isolated temporary directory.
 
 **Why:** electron-builder's pnpm dependency collector runs pnpm list without the standalone ignore-workspace flag. Inside this repository it can return no production dependencies and fall back to the wrong workspace root, creating an archive without runtime modules. A missing SQLite WASM check caught this before an installer was delivered.
