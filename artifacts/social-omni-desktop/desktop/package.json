@@ -9,12 +9,13 @@
   "author": "Social Najhin",
   "scripts": {
     "start": "electron .",
+    "start:dev": "electron . --dev-license",
     "postinstall": "electron-builder install-app-deps",
     "browser:install": "playwright install chromium --no-shell",
     "build:mac": "electron-builder --mac",
-    "build:win": "electron-builder --win",
+    "build:win": "electron-builder --win nsis --x64",
     "build:mac:zip": "electron-builder --mac zip",
-    "check": "node --check main.js && node --check preload.js && node --test scripts/packaging.test.cjs"
+    "check": "node --check main.js && node --check preload.js && node --test scripts/packaging.test.cjs scripts/dev-license.test.cjs"
   },
   "build": {
     "appId": "com.socialnajhin.desktop",

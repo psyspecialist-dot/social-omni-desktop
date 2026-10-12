@@ -12,8 +12,10 @@ const { createLicenseClient } = require('./license-client.cjs');
 const registerBrowserIpc = require('./browser-ipc.cjs');
 // Visible macOS app name changes independently of the existing storage location.
 const existingUserDataPath = app.getPath('userData');
+const developmentLicense = process.argv.includes('--dev-license');
+if (developmentLicense && app.isPackaged) throw new Error('Development licensing is unavailable in installed builds.');
 app.setName('Social Najhin');
-app.setPath('userData', existingUserDataPath);
+app.setPath('userData', developmentLicense ? path.join(existingUserDataPath, 'local-dev') : existingUserDataPath);
 
 const platformUrls = Object.freeze({
   facebook: 'https://www.facebook.com/',
@@ -111,17 +113,21 @@ async function startApi() {
   if (app.isPackaged && !fs.existsSync(chromium.executablePath())) {
     throw new Error('The installed browser runtime is missing. Reinstall Social Najhin using the complete installer; no separate Node.js installation is required.');
   }
+  const licenseOptions = {
+    file: path.join(app.getPath('userData'), 'license-certificate.bin'),
+    config: require('./licensing-config.json'),
+    secureStore: {
+      available: () => safeStorage.isEncryptionAvailable() && (process.platform !== 'linux' || safeStorage.getSelectedStorageBackend() !== 'basic_text'),
+      encrypt: value => safeStorage.encryptString(value),
+      decrypt: value => safeStorage.decryptString(value),
+    },
+  };
+  const licenseClient = developmentLicense
+    ? await require('./scripts/dev-license.cjs').createDevelopmentLicense({ ...licenseOptions, isPackaged: app.isPackaged })
+    : createLicenseClient(licenseOptions);
   apiService = createService({
     express, dbPath: path.join(app.getPath('userData'), 'socialomni-workspace.sqlite'), secret: apiSecret,
-    licenseClient: createLicenseClient({
-      file: path.join(app.getPath('userData'), 'license-certificate.bin'),
-      config: require('./licensing-config.json'),
-      secureStore: {
-        available: () => safeStorage.isEncryptionAvailable() && (process.platform !== 'linux' || safeStorage.getSelectedStorageBackend() !== 'basic_text'),
-        encrypt: value => safeStorage.encryptString(value),
-        decrypt: value => safeStorage.decryptString(value),
-      },
-    }),
+    licenseClient,
     automation: {
       chromium,
       profileDir: path.join(app.getPath('userData'), 'browser-profiles'),

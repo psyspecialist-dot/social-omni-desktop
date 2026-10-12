@@ -14,3 +14,13 @@ the actual authentication requirement immediately.
 before diagnosing a push failure. An anonymous probe is diagnostic only, not
 an authentication workaround for pushing. Use the authorized GitHub connection;
 never read or print stored credentials.
+
+A bound connection can report healthy OAuth authorization while workspace
+Git still stalls and `gh` has no authenticated session.
+
+**Why:** This happened after explicitly binding the existing authorized
+connection; a healthy connection record did not prove CLI authentication.
+
+**How to apply:** Confirm an actual remote operation succeeds before claiming
+a push. Keep probes bounded and never substitute local development signing
+keys for GitHub credentials.

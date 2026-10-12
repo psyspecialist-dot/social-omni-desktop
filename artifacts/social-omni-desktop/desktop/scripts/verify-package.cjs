@@ -14,7 +14,9 @@ module.exports = async function verify(context) {
   const builder = createRequire(require.resolve('electron-builder'));
   const asar = createRequire(builder.resolve('app-builder-lib'))('@electron/asar');
   const files = new Set(asar.listPackage(path.join(resources, 'app.asar')));
+  if (files.has('/scripts/dev-license.cjs')) throw new Error('Development signer must not ship in an installer.');
   for (const file of ['main.js', 'preload.js', 'api-service.cjs', 'renderer/index.html',
+    'license-client.cjs', 'license-crypto.cjs', 'license-machine.cjs', 'licensing-config.json',
     'smart-replies.cjs', 'whatsapp-media.cjs', 'facebook-media.cjs', 'wa-suite-browser.cjs',
     'node_modules/express/package.json', 'node_modules/playwright/package.json',
     'node_modules/sql.js/package.json', 'node_modules/nodemailer/package.json',

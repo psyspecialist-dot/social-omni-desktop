@@ -30,6 +30,21 @@ already-issued offline certificate. Renew support online with the same key.
 
 ## Owner setup / إعداد المالك
 
+### Local development without Secrets / اختبار محلي دون Secrets
+
+Run `pnpm run start:dev` (or `npm run start:dev`) from the exported desktop
+source folder. It generates an ephemeral test signing pair and activates a
+visibly marked local test license without contacting a server. Real Machine ID
+and OS encryption are still required. Local development data lives in a
+separate `local-dev` folder; normal app data and production trust settings are
+unchanged. This is not a reseller ledger or evidence of production activation.
+Installed builds reject `--dev-license`, and the signer is excluded from ASAR.
+Production still requires the owner's private key and pinned public key.
+
+شغّل `npm run start:dev` من مجلد مصدر التطبيق لاختبار محلي دون إدخال Secrets.
+يُنشأ مفتاح توقيع مؤقت وترخيص اختبار واضح مع فصل بيانات التطوير. لا يتصل
+بخادم، ولا يعمل هذا الوضع في ملفات التثبيت، ولا يغيّر إعدادات ترخيص الإنتاج.
+
 1. On your own computer, generate the signing pair using
    `node artifacts/api-server/scripts/license-admin.mjs keygen`.
    Keys go outside Git into `~/.social-najhin-licensing/`. Never share the

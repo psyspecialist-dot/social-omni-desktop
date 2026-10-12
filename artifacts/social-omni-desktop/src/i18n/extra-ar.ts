@@ -1,5 +1,6 @@
 /** Display-only translations for shared controls and locally recorded service events. */
 export const extraAr: Record<string,string> = {
+  "Development test license — not valid for distribution.": "ترخيص اختبار تطوير محلي — غير صالح للتوزيع.",
   "This deletes only the certificate stored on this device. It does NOT free the device slot on the license server. You will need your key and internet to activate again; the same registered machine does not consume another slot.": "تُحذف الشهادة المحفوظة على هذا الجهاز فقط، ولا يُحرَّر المقعد على خادم التراخيص. لإعادة التفعيل تحتاج المفتاح والاتصال بالإنترنت؛ الجهاز المسجّل نفسه لا يستهلك مقعداً إضافياً.",
   "This release is newer than your updates entitlement. Install a covered release or renew updates and support.": "هذا الإصدار أحدث من الفترة المشمولة بحق التحديثات. ثبّت إصداراً مشمولاً أو جدّد التحديثات والدعم.",
   'Your own mail server settings. The password is never returned after saving.':'إعدادات خادم البريد الخاص بك. لا تُعاد كلمة المرور بعد الحفظ.',

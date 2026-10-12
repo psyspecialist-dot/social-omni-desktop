@@ -16,6 +16,9 @@ on:
       - '.github/workflows/desktop-installers.yml'
 permissions:
   contents: read
+concurrency:
+  group: desktop-installers-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   source:
     runs-on: ubuntu-latest
@@ -41,7 +44,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-latest
+          - os: windows-2022
             command: build:win
           - os: macos-14
             command: build:mac
@@ -60,10 +63,20 @@ jobs:
           name: standalone-source
           path: ${{ runner.temp }}/najhin-source
       - shell: pwsh
+        if: runner.os == 'Windows'
         run: |
           Expand-Archive -Path "$env:RUNNER_TEMP/najhin-source/social-najhin-desktop.zip" -DestinationPath "$env:RUNNER_TEMP/najhin-release"
+      - name: Extract standalone source on macOS
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/najhin-release"
+          unzip -q "$RUNNER_TEMP/najhin-source/social-najhin-desktop.zip" -d "$RUNNER_TEMP/najhin-release"
       # Deliberately outside the pnpm monorepo: collect standalone production dependencies.
       - shell: pwsh
+        name: Install and build Windows x64 NSIS
+        if: runner.os == 'Windows'
         working-directory: ${{ runner.temp }}/najhin-release/social-najhin-desktop
         run: |
           # electron-builder downloads the target Electron runtime during packaging.
@@ -78,6 +91,40 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           pnpm run ${{ matrix.command }} --publish never
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Install and build macOS DMG and ZIP
+        if: runner.os == 'macOS'
+        shell: bash
+        working-directory: ${{ runner.temp }}/najhin-release/social-najhin-desktop
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile --ignore-workspace --ignore-scripts
+          node -e "if (process.versions.node.split('.')[0] !== '20') throw new Error('Installer CI requires Node 20'); for (const name of ['electron-builder','electron-builder-squirrel-windows']) { if (require(name + '/package.json').version !== '26.0.12') throw new Error('Incompatible packaging tool: ' + name); }"
+          pnpm run check
+          pnpm run build:mac --publish never
+      - name: Verify Windows NSIS installer and silent installation
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $output = "$env:RUNNER_TEMP/najhin-release/social-najhin-desktop/dist/installers"
+          $installers = @(Get-ChildItem "$output/Social-Najhin-*-win-x64.exe")
+          if ($installers.Count -ne 1) { throw "Expected one Windows x64 NSIS installer." }
+          $installer = $installers[0]
+          $stream = [IO.File]::OpenRead($installer.FullName)
+          try {
+            if ($stream.ReadByte() -ne 77 -or $stream.ReadByte() -ne 90) { throw "Installer is not a Windows executable." }
+          } finally { $stream.Dispose() }
+          $installDir = "$env:RUNNER_TEMP/najhin-install-check"
+          $process = Start-Process -FilePath $installer.FullName -ArgumentList "/S", "/D=$installDir" -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "NSIS installation failed with $($process.ExitCode)." }
+          foreach ($file in @("Social Najhin.exe", "resources/app.asar", "resources/app.asar.unpacked/node_modules/sql.js/dist/sql-wasm.wasm")) {
+            if (-not (Test-Path "$installDir/$file")) { throw "Installed runtime missing: $file" }
+          }
+          if (-not (Test-Path "$installDir/resources/browser-runtime")) { throw "Installed Chromium is missing." }
+          $uninstaller = "$installDir/Uninstall Social Najhin.exe"
+          if (-not (Test-Path $uninstaller)) { throw "NSIS uninstaller is missing." }
+          $process = Start-Process -FilePath $uninstaller -ArgumentList "/S" -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "NSIS uninstall failed with $($process.ExitCode)." }
       - name: Verify and mount both macOS DMGs
         if: startsWith(matrix.os, 'macos')
         shell: bash

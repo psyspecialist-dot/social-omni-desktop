@@ -22,6 +22,22 @@ test('release targets map to matching Chromium platforms', () => {
   assert.equal(prepare.target('darwin', 1).directory, 'mac-x64');
   assert.throws(() => prepare.target('win32', 3), /Unsupported/);
 });
+test('CI builds native Windows NSIS and macOS DMG/ZIP, without packaging the dev signer', () => {
+  const workflowFile = [
+    path.resolve(__dirname, '../source/.github/workflows/desktop-installers.yml'),
+    path.resolve(__dirname, '../../../../.github/workflows/desktop-installers.yml'),
+  ].find(file => fs.existsSync(file));
+  assert.ok(workflowFile, 'Workflow contract is included with standalone source');
+  const workflow = fs.readFileSync(workflowFile, 'utf8');
+  assert.match(workflow, /os: windows-2022/);
+  assert.match(workflow, /os: macos-14/);
+  assert.match(workflow, /Install and build Windows x64 NSIS/);
+  assert.match(workflow, /Verify Windows NSIS installer and silent installation/);
+  assert.match(workflow, /hdiutil verify/);
+  assert.equal(config.scripts['build:win'], 'electron-builder --win nsis --x64');
+  assert.ok(!config.build.files.includes('scripts/**/*'));
+  assert.match(fs.readFileSync(path.resolve(__dirname, '../main.js'), 'utf8'), /developmentLicense && app\.isPackaged/);
+});
 test('incomplete browser downloads cannot pass package verification', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'najhin-package-'));
   try {
