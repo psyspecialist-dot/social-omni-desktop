@@ -17,8 +17,8 @@ never read or print stored credentials.
 
 A bound connection can report healthy OAuth authorization while workspace
 Git still stalls and `gh` has no authenticated session.
-The reconnect card can also report that no project connection exists despite
-that healthy/bound metadata; in that case use the normal connect card.
+Both reconnect and normal connect cards can reject a Git provider connection
+despite healthy/bound metadata; do not repeatedly offer unsupported cards.
 
 **Why:** This happened after explicitly binding the existing authorized
 connection; a healthy connection record did not prove CLI authentication.

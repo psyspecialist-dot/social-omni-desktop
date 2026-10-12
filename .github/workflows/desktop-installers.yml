@@ -27,9 +27,13 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 10.26.1
-      - uses: actions/setup-node@v4
+      # This selects Node for build commands, independently of GitHub's action runtime.
+      - name: Set up Node.js 20 for source export
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
+      - name: Verify source build uses Node.js 20
+        run: node -e "if (process.versions.node.split('.')[0] !== '20') throw new Error('Source build requires Node.js 20'); console.log(process.version)"
       # CI only needs the renderer here, not Electron's Node-22-only npm installer.
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm --filter @workspace/social-omni-desktop run desktop:export
@@ -55,7 +59,9 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 10.26.1
-      - uses: actions/setup-node@v4
+      # Applies to every installer job: Windows and macOS both use Node.js 20.
+      - name: Set up Node.js 20 for Windows and macOS builds
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
       - uses: actions/download-artifact@v4

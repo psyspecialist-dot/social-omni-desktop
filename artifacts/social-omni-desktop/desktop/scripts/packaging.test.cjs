@@ -34,7 +34,11 @@ test('CI builds native Windows NSIS and macOS DMG/ZIP, without packaging the dev
   assert.match(workflow, /Install and build Windows x64 NSIS/);
   assert.match(workflow, /Verify Windows NSIS installer and silent installation/);
   assert.match(workflow, /hdiutil verify/);
-  assert.equal(config.scripts['build:win'], 'electron-builder --win nsis --x64');
+  assert.equal(config.scripts['build:win'], 'electron-builder --win nsis');
+  assert.equal((workflow.match(/uses: actions\/setup-node@v4/g) || []).length, 2);
+  assert.equal((workflow.match(/node-version: '20'/g) || []).length, 2);
+  assert.doesNotMatch(workflow, /FORCE_JAVASCRIPT_ACTIONS_TO_NODE24\s*:/);
+  assert.match(workflow, /Verify source build uses Node\.js 20/);
   assert.ok(!config.build.files.includes('scripts/**/*'));
   assert.match(fs.readFileSync(path.resolve(__dirname, '../main.js'), 'utf8'), /developmentLicense && app\.isPackaged/);
 });
