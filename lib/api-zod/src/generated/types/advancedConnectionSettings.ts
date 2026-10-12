@@ -7,6 +7,8 @@
  */
 
 export type AdvancedConnectionSettings = {
+  accountSid?: string;
+  apiKeySid?: string;
   host?: string;
   port?: number;
   secure?: boolean;

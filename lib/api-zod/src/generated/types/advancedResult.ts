@@ -5,8 +5,18 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { AdvancedResultEncoding } from './advancedResultEncoding';
 
 export interface AdvancedResult {
+  providerId?: string;
+  providerStatus?: string;
+  providerAccountSid?: string;
+  providerErrorCode?: number;
+  estimatedSegments?: number;
+  encoding?: AdvancedResultEncoding;
+  segments?: number;
+  statusCheckedAt?: string;
+  statusRefreshError?: string;
   userId?: string;
   username?: string;
   id: string;

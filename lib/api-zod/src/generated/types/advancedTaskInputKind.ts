@@ -15,6 +15,7 @@ export const AdvancedTaskInputKind = {
   b2b: 'b2b',
   'verify-email': 'verify-email',
   'email-send': 'email-send',
+  'sms-send': 'sms-send',
   'telegram-send': 'telegram-send',
   'telegram-members': 'telegram-members',
   'telegram-channel': 'telegram-channel',

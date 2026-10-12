@@ -1,6 +1,6 @@
 import { useMemo, useState, type ComponentType } from 'react';
 import { Link } from 'wouter';
-import { Activity, AtSign, ClipboardList, Database, Mail, MapPin, MessageCircle, Send, Settings2, Users, Bot, ListFilter, MessagesSquare, BookOpen } from 'lucide-react';
+import { Activity, AtSign, ClipboardList, Database, Mail, MapPin, MessageCircle, Send, Settings2, Users, Bot, ListFilter, MessagesSquare, BookOpen, Smartphone } from 'lucide-react';
 import { useI18n } from '@/i18n';
 import './network.css';
 
@@ -16,6 +16,7 @@ const BASE: Omit<HubNode, 'meta' | 'tone'>[] = [
   { href: '/automation', label: 'Facebook & Instagram', icon: Activity },
   { href: '/multi-platform', label: 'Telegram & Facebook', icon: Send },
   { href: '/email', label: 'Email Marketing', icon: Mail },
+  { href: '/sms', label: 'SMS Marketing', icon: Smartphone },
   { href: '/extractors', label: 'B2B & Data Extractors', icon: Database },
   { href: '/leads', label: 'Google Maps Leads', icon: MapPin },
   { href: '/contacts', label: 'Contacts', icon: Users },

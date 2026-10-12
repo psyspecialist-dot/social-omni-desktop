@@ -8,6 +8,9 @@
 
 export interface AdvancedConnectionInput {
   sessionOnly?: boolean;
+  accountSid?: string;
+  apiKeySid?: string;
+  apiKeySecret?: string;
   host?: string;
   port?: number;
   secure?: boolean;

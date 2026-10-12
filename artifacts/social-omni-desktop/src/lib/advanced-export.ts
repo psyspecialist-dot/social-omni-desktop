@@ -1,7 +1,7 @@
 import { strToU8, zipSync } from 'fflate';
 import type { AdvancedResult } from '@workspace/api-client-react';
 
-const headers = ['Module', 'Name', 'Phone', 'Email', 'Address', 'Website', 'Status', 'Reason', 'Created', 'Telegram User ID', 'Telegram Username'];
+const headers = ['Module', 'Name', 'Phone', 'Email', 'Address', 'Website', 'Status', 'Reason', 'Created', 'Telegram User ID', 'Telegram Username', 'Provider Message ID', 'Provider Status', 'Estimated SMS Segments', 'SMS Encoding', 'Confirmed SMS Segments', 'Provider Error Code', 'Status Checked At', 'Status Refresh Error'];
 const clean = (value: unknown): string => {
   // eslint-disable-next-line no-control-regex
   return String(value ?? '').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
@@ -10,7 +10,7 @@ const safe = (value: unknown): string => {
   const text = clean(value);
   return /^[=+\-@\t\r|%]/.test(text.trimStart()) || /^[\t\r]/.test(text) ? `'${text}` : text;
 };
-const row = (r: AdvancedResult) => [r.kind, r.name, r.phone, r.email, r.address, r.website, r.status, r.reason, r.createdAt, r.userId, r.username].map(clean);
+const row = (r: AdvancedResult) => [r.kind, r.name, r.phone, r.email, r.address, r.website, r.status, r.reason, r.createdAt, r.userId, r.username, r.providerId, r.providerStatus, r.estimatedSegments, r.encoding, r.segments, r.providerErrorCode, r.statusCheckedAt, r.statusRefreshError].map(clean);
 const xml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const col = (i: number) => String.fromCharCode(65 + i);
 
@@ -66,7 +66,7 @@ export async function readListFile(file: File, kind = ''): Promise<string> {
   cells.push(cell.trim()); if (cells.some(Boolean)) rows.push(cells);
   if (!rows.length) return '';
   const header = rows[0].map(value => value.toLowerCase().replace(/[\s_-]/g, ''));
-  const names = ['email-send', 'verify-email'].includes(kind) ? ['email', 'emails', 'emailaddress']
+  const names = kind==='sms-send'?['phone','phonenumber','mobile','mobilenumber']:['email-send', 'verify-email'].includes(kind) ? ['email', 'emails', 'emailaddress']
     : kind.startsWith('telegram') ? ['telegramusername', 'username', 'telegramuserid', 'userid', 'id']
     : ['website', 'url', 'groupurl', 'target'];
   const column = header.findIndex(value => names.includes(value));
@@ -74,7 +74,7 @@ export async function readListFile(file: File, kind = ''): Promise<string> {
     const nameColumn = header.findIndex(value => ['name','fullname','recipientname'].includes(value));
     return [...new Set(rows.slice(1).map(row => {
       const address=row[column] || '', name=nameColumn >= 0 ? row[nameColumn] || '' : '';
-      if(kind !== 'email-send' || !name || !address) return address;
+      if(!['email-send','sms-send'].includes(kind) || !name || !address) return address;
       if(/[<>\r\n]/.test(name) || name.length>150) throw new Error('Recipient name must not contain angle brackets or newlines.');
       return `${name} <${address}>`;
     }).filter(Boolean))].join('\n');

@@ -7,6 +7,7 @@ import { isDesktop } from '@/lib/persistence';
 import { AlertTriangle, Ban, Info, Pencil, Play, Plus, Trash2 } from 'lucide-react';
 import TaskEditor from './TaskEditor';
 import ResultsTable from './ResultsTable';
+import SmsPanel from './SmsPanel';
 import { SmtpPanel, TelegramPanel } from './ConnectionPanel';
 import { ACTIVE, KINDS, MODULES, NATIVE_NOTE, msg, when, type ModuleId } from './config';
 import '../wa-suite.css';
@@ -49,6 +50,7 @@ export default function AdvancedModule({ module, advanced, accounts, media, perf
     {!isDesktop && <div className="wa-banner warn" role="note"><AlertTriangle /><div>{t(NATIVE_NOTE)}</div></div>}
     <div className="wa-banner info" role="note"><Info /><div>{t('Every run asks for your explicit consent and authorization. Uncertain sends are never retried automatically; check the destination before running again.')}</div></div>
     {module === 'email' && <div className="wa-banner warn" role="note"><AlertTriangle /><div>{t('Configure and test SMTP before sending. “Accepted by the server” is not “delivered”. The address checker verifies format and domain MX only: a ready domain still leaves the mailbox Unknown, and nothing here guarantees deliverability or prevents bounces. Messages are plain text; HTML and rich text are not supported.')}</div></div>}
+    {module === 'sms' && <div className="wa-banner warn" role="note"><AlertTriangle /><div>{t('SMS is paid. “Accepted/queued” is not delivered; “Sent” means submitted to the carrier; “Delivered” is carrier-reported, not read. Unknown or unconfirmed outcomes are never retried automatically; review the task and results first.')}</div></div>}
     {module === 'extractors' && <div className="wa-banner info" role="note"><Info /><div>{t('Invalid addresses are excluded from clean exports. Valid domains show “Domain ready” and the mailbox status is Unknown. B2B fields are read from real sites; anything not found stays blank.')}</div></div>}
     {module === 'multi-platform' && <div className="wa-banner info" role="note"><Info /><div>{t('Telegram member export lists IDs, usernames and names from one group you administer. No emails or phones are returned, and members are not added to any outreach list. Instagram supports only your own feed image post.')}</div></div>}
     {err && <p className="wa-err" role="alert" data-testid="error-adv">{err}</p>}
@@ -71,7 +73,9 @@ export default function AdvancedModule({ module, advanced, accounts, media, perf
               {tk.status !== 'Running' && <button className="button button-quiet" disabled={busy === tk.id} onClick={() => setDelFor(tk)} data-testid={`button-adv-delete-${tk.id}`}><Trash2 /> {t('Delete')}</button>}
             </div></article>; })}</div>}
     </section>
-    <ResultsTable results={suite.results} tasks={suite.tasks} kinds={def.results} selectedTask={selected} onSelectTask={setSelected} onDelete={async id => { await perform('DELETE', `/advanced/results/${id}`); }} />
+    <ResultsTable results={suite.results} tasks={suite.tasks} kinds={def.results} selectedTask={selected} onSelectTask={setSelected} onDelete={async id => { await perform('DELETE', `/advanced/results/${id}`); }}
+      onRefresh={module === 'sms' ? async id => { await perform('POST', `/advanced/sms/results/${id}/refresh`); } : undefined} refreshDisabled={!isDesktop || running} />
+    {module === 'sms' && <SmsPanel connections={suite.connections} perform={perform} />}
     {needsConn && <SmtpPanel connections={suite.connections} perform={perform} />}
     {module === 'multi-platform' && <TelegramPanel connections={suite.connections} perform={perform} />}
     {editor && <TaskEditor kinds={def.kinds} task={editor.task} accounts={accounts} media={media} onSave={save} onClose={() => setEditor(null)} />}

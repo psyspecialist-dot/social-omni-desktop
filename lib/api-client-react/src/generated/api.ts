@@ -33,6 +33,7 @@ import type {
   SimulatorSettings,
   SimulatorState,
   SimulatorUploadInput,
+  SmsTestMessageInput,
   SmtpTestMessageInput,
   TelegramAuthInput,
   WaAiInput,
@@ -684,6 +685,156 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
         TContext
       > => {
       return useMutation(getSendSmtpTestMessageMutationOptions(options));
+    }
+
+export const getSendSmsTestMessageUrl = () => {
+
+
+
+
+  return `/api/socialomni/advanced/sms/test-message`
+}
+
+export const sendSmsTestMessage = async (smsTestMessageInput: SmsTestMessageInput, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<WorkspaceStateResponse>(getSendSmsTestMessageUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(smsTestMessageInput)
+  }
+);}
+
+
+
+
+
+export const getSendSmsTestMessageMutationKey = () => ['sendSmsTestMessage'] as const;
+
+export const getSendSmsTestMessageMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendSmsTestMessage>>, TError,SendSmsTestMessageMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof sendSmsTestMessage>>, TError,SendSmsTestMessageMutationVariables, TContext> => {
+
+const mutationKey = getSendSmsTestMessageMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof sendSmsTestMessage>>, SendSmsTestMessageMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  sendSmsTestMessage(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SendSmsTestMessageMutationResult = NonNullable<Awaited<ReturnType<typeof sendSmsTestMessage>>>
+    export type SendSmsTestMessageMutationBody = BodyType<SmsTestMessageInput>
+    export type SendSmsTestMessageMutationError = ErrorType<unknown>
+    export type SendSmsTestMessageMutationVariables = {data: BodyType<SmsTestMessageInput>}
+
+    export const useSendSmsTestMessage = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendSmsTestMessage>>, TError,SendSmsTestMessageMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof sendSmsTestMessage>>,
+        TError,
+        SendSmsTestMessageMutationVariables,
+        TContext
+      > => {
+      return useMutation(getSendSmsTestMessageMutationOptions(options));
+    }
+
+export const getRefreshSmsResultUrl = (id: string,) => {
+
+
+
+
+  return `/api/socialomni/advanced/sms/results/${id}/refresh`
+}
+
+export const refreshSmsResult = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+  return customFetch<WorkspaceStateResponse>(getRefreshSmsResultUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getRefreshSmsResultMutationKey = () => ['refreshSmsResult'] as const;
+
+export const getRefreshSmsResultMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof refreshSmsResult>>, TError,RefreshSmsResultMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof refreshSmsResult>>, TError,RefreshSmsResultMutationVariables, TContext> => {
+
+const mutationKey = getRefreshSmsResultMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof refreshSmsResult>>, RefreshSmsResultMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  refreshSmsResult(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RefreshSmsResultMutationResult = NonNullable<Awaited<ReturnType<typeof refreshSmsResult>>>
+
+    export type RefreshSmsResultMutationError = ErrorType<unknown>
+    export type RefreshSmsResultMutationVariables = {id: string}
+
+    export const useRefreshSmsResult = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof refreshSmsResult>>, TError,RefreshSmsResultMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof refreshSmsResult>>,
+        TError,
+        RefreshSmsResultMutationVariables,
+        TContext
+      > => {
+      return useMutation(getRefreshSmsResultMutationOptions(options));
     }
 
 export const getAuthorizeTelegramUrl = () => {

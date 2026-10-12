@@ -28,7 +28,7 @@ import {
   Activity, AlertCircle, ArrowUpRight, AtSign, CalendarClock, Check,
   CheckCircle2, CircleHelp, ClipboardList, ExternalLink, FileText,
    LayoutDashboard, ListFilter, Menu, Moon, MapPin,
-   Database, Download, Languages, BookOpen, Mail, MessageCircle, Send, Pause, Play, Pencil, Plus, Search, Settings2, ShieldCheck, Sun, Trash2, Users, X,
+   Database, Download, Languages, BookOpen, Mail, Smartphone, MessageCircle, Send, Pause, Play, Pencil, Plus, Search, Settings2, ShieldCheck, Sun, Trash2, Users, X,
 } from 'lucide-react';
 
 const queryClient = new QueryClient();
@@ -41,7 +41,7 @@ const formatTime = (value: string) => {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat(localeFor(uiLang), { hour: 'numeric', minute: '2-digit' }).format(date);
 };
-const titleForPath: Record<string, string> = { '/': 'Overview & Analytics', '/campaigns': 'Campaigns', '/automation': 'Facebook & Instagram Automation', '/accounts': 'Accounts Manager', '/whatsapp': 'WhatsApp Marketing', '/leads': 'Google Maps Lead Extractor', '/contacts': 'Contacts', '/settings': 'Settings & Future License', '/wafilter': 'WaFilter', '/wa-crm': 'WA-CRM', '/chatbots': 'Auto-Reply / Chatbot', '/extractors': 'B2B & Data Extractors', '/multi-platform': 'Telegram & Facebook Automation', '/email': 'Email Marketing', '/help': 'Help & Guidelines' };
+const titleForPath: Record<string, string> = { '/': 'Overview & Analytics', '/campaigns': 'Campaigns', '/automation': 'Facebook & Instagram Automation', '/accounts': 'Accounts Manager', '/whatsapp': 'WhatsApp Marketing', '/leads': 'Google Maps Lead Extractor', '/contacts': 'Contacts', '/settings': 'Settings & Future License', '/wafilter': 'WaFilter', '/wa-crm': 'WA-CRM', '/chatbots': 'Auto-Reply / Chatbot', '/extractors': 'B2B & Data Extractors', '/multi-platform': 'Telegram & Facebook Automation', '/email': 'Email Marketing', '/sms': 'SMS Marketing', '/help': 'Help & Guidelines' };
 
 function Workspace() {
   const [store, setStore] = useState<Store>(seedStore);
@@ -204,15 +204,16 @@ function Workspace() {
     const tone = (kinds: string[]): HubData['tones'][string] => { const t = count(kinds); return t.some(x => x.status === 'Failed') ? 'fail' : t.some(x => x.status === 'Needs review') ? 'review' : t.some(x => ['Running', 'Queued'].includes(x.status)) ? 'live' : undefined; };
     const res = (kinds: string[]) => advanced.results.filter(r => kinds.includes(r.kind)).length;
     const ex = ['whatsapp-members', 'maps', 'b2b', 'verify-email'], mp = ['telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post'], em = ['email-send', 'verify-email'];
+    const smsT = advanced.tasks.filter(x => x.kind === 'sms-send'), smsR = advanced.results.filter(r => r.kind === 'sms-send'), smsD = smsR.filter(r => (r.providerStatus || '').toLowerCase() === 'delivered').length;
     const live = (p: string, a?: string) => jobs.some(j => j.platform === p && (!a || j.action === a) && ['Pending', 'Running'].includes(j.status)) ? 'live' as const : undefined;
     return {
       counts: {
         '/whatsapp': t('{n} live sends', { n: analytics.realMessagesSent || 0 }), '/wafilter': t('{n} numbers', { n: waSuite.filter.results.length }), '/wa-crm': t('{n} chats', { n: waSuite.threads.length }), '/chatbots': t('{n} rules', { n: waSuite.rules.length }),
         '/campaigns': t('{n} plans', { n: store.campaigns.length }), '/automation': t('{n} plans', { n: store.campaigns.filter(c => ['Facebook', 'Instagram'].includes(c.platform)).length }),
-        '/multi-platform': t('{n} tasks · {r} results', { n: count(mp).length, r: res(mp) }), '/email': t('{n} campaigns', { n: count(['email-send']).length }), '/extractors': t('{n} tasks · {r} results', { n: count(ex).length, r: res(ex) }),
+        '/multi-platform': t('{n} tasks · {r} results', { n: count(mp).length, r: res(mp) }), '/email': t('{n} campaigns', { n: count(['email-send']).length }), '/sms': t('{n} campaigns · {r} results · {d} delivered', { n: smsT.length, r: smsR.length, d: smsD }), '/extractors': t('{n} tasks · {r} results', { n: count(ex).length, r: res(ex) }),
         '/leads': t('{n} saved', { n: leads.results.length }), '/contacts': t('{n} contacts', { n: store.contacts.length }), '/accounts': t('{n} accounts', { n: store.accounts.length }), '/settings': t('Theme · license'), '/help': t('Open the guide'),
       },
-      tones: { '/extractors': tone(ex), '/multi-platform': tone(mp), '/email': tone(em), '/whatsapp': live('WhatsApp'), '/wa-crm': live('WhatsApp', 'inbox'), '/wafilter': live('WhatsApp', 'filter'), '/automation': live('Facebook') },
+      tones: { '/extractors': tone(ex), '/multi-platform': tone(mp), '/email': tone(em), '/sms': tone(['sms-send']), '/whatsapp': live('WhatsApp'), '/wa-crm': live('WhatsApp', 'inbox'), '/wafilter': live('WhatsApp', 'filter'), '/automation': live('Facebook') },
     };
   })();
   if (!ready) return <I18nProvider lang={lang}><main className="page" data-testid="status-storage-loading"><h1>Social Najhin</h1><p role={storageError ? 'alert' : 'status'}>{storageError || t('Loading local workspace…')}</p>{storageError && <button className="button button-secondary" onClick={() => window.location.reload()} data-testid="button-retry-load">{t('Retry without changing saved records')}</button>}</main></I18nProvider>;
@@ -239,6 +240,7 @@ function Workspace() {
                   <Route path="/"><NetworkHub data={hub} /><Dashboard jobs={jobs} store={store} leads={leads} analytics={analytics} onStatus={saveStatus} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
                    <Route path="/extractors"><AdvancedModule module="extractors" advanced={advanced} accounts={store.accounts} media={media} perform={perform} /></Route>
                    <Route path="/multi-platform"><AdvancedModule module="multi-platform" advanced={advanced} accounts={store.accounts} media={media} perform={perform} /></Route>
+                   <Route path="/sms"><AdvancedModule module="sms" advanced={advanced} accounts={store.accounts} media={media} perform={perform} /></Route>
                    <Route path="/email"><AdvancedModule module="email" advanced={advanced} accounts={store.accounts} media={media} perform={perform} /></Route>
                    <Route path="/campaigns"><Campaigns jobs={jobs} store={store} perform={perform} open={item => setDialog({ type: 'campaign', item })} create={() => setDialog({ type: 'campaign' })} remove={item => remove('campaign', item)} status={saveStatus} handoff={handoff} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
                     <Route path="/automation"><Campaigns automation jobs={jobs} store={store} perform={perform} open={item => setDialog({ type: 'campaign', item })} create={() => setDialog({ type: 'campaign' })} remove={item => remove('campaign', item)} status={saveStatus} handoff={handoff} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
@@ -294,7 +296,7 @@ function Sidebar({ active, open, close }: { active: string; open: boolean; close
     <div className="nav-label">{t('Your workspace')}</div>
     {nav.map(({ href, title, icon: Icon }) => <Link key={href} href={href} onClick={close} className={`nav-link ${active === href ? 'active' : ''}`} data-testid={`link-nav-${title.toLowerCase()}`}><Icon /><span>{t(title)}</span></Link>)}
     <div className="nav-label" style={{ marginTop: 10 }}>{t('Growth tools')}</div>
-    {[{ href: '/extractors', title: 'B2B & Data Extractors', icon: Database }, { href: '/multi-platform', title: 'Telegram & Facebook', icon: Send }, { href: '/email', title: 'Email Marketing', icon: Mail }].map(({ href, title, icon: Icon }) => <Link key={href} href={href} onClick={close} className={`nav-link ${active === href ? 'active' : ''}`} data-testid={`link-nav-${href.slice(1)}`}><Icon /><span>{t(title)}</span></Link>)}
+    {[{ href: '/extractors', title: 'B2B & Data Extractors', icon: Database }, { href: '/multi-platform', title: 'Telegram & Facebook', icon: Send }, { href: '/email', title: 'Email Marketing', icon: Mail }, { href: '/sms', title: 'SMS Marketing', icon: Smartphone }].map(({ href, title, icon: Icon }) => <Link key={href} href={href} onClick={close} className={`nav-link ${active === href ? 'active' : ''}`} data-testid={`link-nav-${href.slice(1)}`}><Icon /><span>{t(title)}</span></Link>)}
     <Link href="/whatsapp" onClick={close} className={`nav-link ${active === '/whatsapp' ? 'active' : ''}`} data-testid="link-nav-whatsapp"><MessageCircle /><span>{t('WhatsApp Marketing')}</span></Link>
     <div className="nav-label" style={{ marginTop: 18 }}>{t('Preferences')}</div>
     <Link href="/settings" onClick={close} className={`nav-link ${active === '/settings' ? 'active' : ''}`} data-testid="link-nav-settings"><Settings2 /><span>{t('Settings & License')}</span></Link>

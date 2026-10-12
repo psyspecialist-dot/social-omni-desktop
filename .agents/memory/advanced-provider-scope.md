@@ -14,6 +14,22 @@ without asking. Member-directory access is not recipient consent; do not turn
 member exports into outreach lists automatically. Instagram has no Facebook-style
 groups: its supported path is posting an image to the user's own feed.
 
+Use Twilio for SMS, with paid sending confined to the standalone desktop app.
+Do not treat a Replit connection as credentials available on a customer's Mac
+or Windows installation.
+
+**Why:** The user explicitly chose Twilio. The current hosted workspace has no
+account-authentication boundary suitable for paid messaging, and the Replit
+connector identity does not transfer to Electron. Its JSON-only agent handle
+also cannot submit Twilio's form-encoded create-message requests.
+
+**How to apply:** Keep hosted live-SMS actions disabled; native users configure
+their own Account SID, API Key SID/secret and Twilio-owned sender inside the
+app. Authenticate read access without sending; it does not prove write access
+or sender eligibility. A live paid test needs an explicitly approved recipient.
+Report local HTTPS fixtures as protocol checks, not real Twilio/carrier delivery.
+Never enable a hosted paid gateway without an authenticated ownership boundary.
+
 Native account actions must be described separately from hosted-preview and
 controlled-provider checks. Domain readiness is not mailbox deliverability, and
 SMTP acceptance is not delivery.

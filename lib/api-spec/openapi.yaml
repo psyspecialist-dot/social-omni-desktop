@@ -82,6 +82,23 @@ paths:
             schema: {$ref: "#/components/schemas/SmtpTestMessageInput"}
       responses:
         "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/advanced/sms/test-message:
+    post:
+      operationId: sendSmsTestMessage
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/SmsTestMessageInput"}
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/advanced/sms/results/{id}/refresh:
+    post:
+      operationId: refreshSmsResult
+      parameters: [{$ref: "#/components/parameters/Workspace"}, {$ref: "#/components/parameters/RecordId"}]
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
   /socialomni/advanced/telegram/auth:
     post:
       operationId: authorizeTelegram
@@ -423,6 +440,9 @@ components:
       type: object
       properties:
         sessionOnly: {type: boolean}
+        accountSid: {type: string}
+        apiKeySid: {type: string}
+        apiKeySecret: {type: string}
         host: {type: string}
         port: {type: integer}
         secure: {type: boolean}
@@ -435,7 +455,7 @@ components:
       type: object
       required: [kind, name]
       properties:
-        kind: {type: string, enum: [whatsapp-members, maps, b2b, verify-email, email-send, telegram-send, telegram-members, telegram-channel, facebook-search, facebook-join, facebook-post, instagram-post]}
+        kind: {type: string, enum: [whatsapp-members, maps, b2b, verify-email, email-send, sms-send, telegram-send, telegram-members, telegram-channel, facebook-search, facebook-join, facebook-post, instagram-post]}
         name: {type: string, maxLength: 150}
         source: {type: string, maxLength: 15000}
         message: {type: string, maxLength: 10000}
@@ -465,6 +485,15 @@ components:
       type: object
       required: [id, taskId, kind, name, phone, email, address, website, status, reason, createdAt]
       properties:
+        providerId: {type: string}
+        providerStatus: {type: string}
+        providerAccountSid: {type: string}
+        providerErrorCode: {type: integer}
+        estimatedSegments: {type: integer}
+        encoding: {type: string, enum: [GSM-7, UCS-2]}
+        segments: {type: integer}
+        statusCheckedAt: {type: string}
+        statusRefreshError: {type: string}
         userId: {type: string}
         username: {type: string}
         id: {type: string}
@@ -485,6 +514,13 @@ components:
         recipient: {type: string, maxLength: 254}
         recipientName: {type: string, maxLength: 150}
         approved: {type: boolean}
+    SmsTestMessageInput:
+      type: object
+      required: [recipient, approved]
+      properties:
+        recipient: {type: string, maxLength: 40}
+        recipientName: {type: string, maxLength: 150}
+        approved: {type: boolean}
     AdvancedConnection:
       type: object
       required: [id, configured, connected, label, stage, error]
@@ -493,12 +529,14 @@ components:
         settings:
           type: object
           properties:
+            accountSid: {type: string}
+            apiKeySid: {type: string}
             host: {type: string}
             port: {type: integer}
             secure: {type: boolean}
             username: {type: string}
             from: {type: string}
-        id: {type: string, enum: [smtp, telegram]}
+        id: {type: string, enum: [smtp, telegram, twilio]}
         configured: {type: boolean}
         connected: {type: boolean}
         label: {type: string}

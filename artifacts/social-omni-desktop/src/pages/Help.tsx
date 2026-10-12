@@ -61,6 +61,19 @@ const SECTIONS: Section[] = [
     ],
   },
   {
+    id: 'sms', icon: <MessageCircle size={18} />,
+    title: { en: 'SMS Marketing (Twilio)', ar: 'التسويق عبر الرسائل النصية (Twilio)' },
+    items: [
+      { en: 'SMS works only in the desktop app, through your own Twilio account. The hosted preview shows the forms disabled, and a Replit connection does not transfer into the standalone app.', ar: 'تعمل الرسائل النصية في تطبيق سطح المكتب فقط، عبر حساب Twilio الخاص بك. تعرض المعاينة المستضافة النماذج معطلة، ولا ينتقل اتصال Replit إلى التطبيق المستقل.' },
+      { en: 'Create an API key at console.twilio.com with Messaging read and send permissions. Enter Account SID (AC…), API Key SID (SK…) and the secret inside the app only; never paste secrets into chat. By default the secret stays in memory and expires when the app closes; you can store it encrypted instead.', ar: 'أنشئ مفتاح API من console.twilio.com بصلاحيات قراءة وإرسال الرسائل. أدخل Account SID (AC…) وAPI Key SID (SK…) والسر داخل التطبيق فقط ولا تلصقه في أي محادثة. افتراضيًا يبقى السر في الذاكرة وينتهي عند إغلاق التطبيق، ويمكنك حفظه مشفّرًا بدلًا من ذلك.' },
+      { en: 'The From number must be a Twilio-owned, SMS-capable number in +country format. Trial accounts can reach only verified recipients, and regional registration rules may apply.', ar: 'يجب أن يكون رقم المرسل رقمًا تملكه في Twilio ويدعم الرسائل النصية بصيغة +رمز الدولة. الحسابات التجريبية تصل إلى المستلمين الموثّقين فقط وقد تنطبق قواعد التسجيل الإقليمية.' },
+      { en: '“Connected” means only that authentication and read access worked. No message was sent and write permission is not claimed. One approved test message needs its own checkbox and an explicit click.', ar: '«متصل» يعني فقط نجاح المصادقة وصلاحية القراءة. لم تُرسل أي رسالة ولا يُدّعى وجود صلاحية الكتابة. رسالة الاختبار الواحدة تحتاج مربع موافقة خاصًا ونقرة صريحة.' },
+      { en: 'Recipients: +number or Name <+number>, one per line, duplicates removed by full number, no country guessing. {{name}} and {{phone}} are personalized. Contacts marked opted out are blocked at preflight and before each send.', ar: 'المستلمون: +الرقم أو الاسم <+الرقم>، واحد في كل سطر، وتُزال التكرارات حسب الرقم الكامل دون تخمين الدولة. يعمل {{name}} و{{phone}}. تُحظر جهات الاتصال التي ألغت اشتراكها قبل التشغيل وقبل كل رسالة.' },
+      { en: 'Segments: GSM-7 text fits 160 characters (153 per part); Arabic and other non-GSM text uses UCS-2 at 70 (67 per part). Each rendered message may be up to 1600 characters. Charges are per segment; the estimate is not an exact price.', ar: 'الأجزاء: نص GSM-7 يتسع 160 حرفًا (153 لكل جزء)، والعربية وغيرها تستخدم UCS-2 بواقع 70 (67 لكل جزء). يصل طول كل رسالة إلى 1600 حرف. التكلفة لكل جزء والتقدير ليس سعرًا دقيقًا.' },
+      { en: 'Statuses: Accepted/queued is not delivered. Sent means submitted to the carrier. Delivered is carrier-reported, not read. Failed, Undelivered and Cancelled are final problems. Unknown or Unconfirmed outcomes are never retried automatically. “Refresh” only looks up status; it never resends.', ar: 'الحالات: «مقبولة/في الطابور» لا تعني التسليم. «مُرسلة» تعني التقديم إلى شركة الاتصالات. «تم التسليم» بحسب إبلاغ الشركة وليس القراءة. «فشلت» و«لم تُسلَّم» و«أُلغيت» مشكلات نهائية. النتائج المجهولة أو غير المؤكدة لا يُعاد إرسالها تلقائيًا. «تحديث» يستعلم عن الحالة فقط ولا يعيد الإرسال.' },
+    ],
+  },
+  {
     id: 'wafilter', icon: <ListFilter size={18} />,
     title: { en: 'WaFilter, WA-CRM and opt-outs', ar: 'WaFilter وWA-CRM وإلغاء الاشتراك' },
     items: [

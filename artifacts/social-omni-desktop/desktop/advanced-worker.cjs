@@ -5,8 +5,9 @@ const deps = require('./advanced-deps.cjs');
 const browser = require('./advanced-browser.cjs');
 const {publicError} = require('./automation-errors.cjs');
 const emailMarketing = require('./email-marketing.cjs');
+const smsMarketing = require('./sms-marketing.cjs');
 
-module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runtime,vault,kickLegacy,cancelLegacy,readMedia}) {
+module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runtime,vault,kickLegacy,cancelLegacy,readMedia,smsRequest}) {
   const running=new Map(),auth=new Map();
   let closed=false;
   const touch=(id,fn)=>{
@@ -86,6 +87,7 @@ module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runt
         if(s.advanced.results.length>=2000) throw new Error('Result limit reached.');
         const r={id:randomUUID(),taskId,kind:t.kind,name:target,phone:'',email:t.kind==='email-send'?target:'',address:'',website:'',
           status:'Unconfirmed',reason:'Submission reserved. Verify the platform/server before attempting again; never automatically retried.',createdAt:new Date().toISOString()};
+        if(t.kind==='sms-send') r.phone=target;
         s.advanced.results.unshift(r);receipt=r.id;
       });
       return receipt;
@@ -93,8 +95,8 @@ module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runt
     try {
       const state=get(id),task=state.advanced.tasks.find(t=>t.id===taskId);
       validateRun(state,task,runtime);
-      const recipients=task.kind==='email-send'?emailMarketing.recipients(task.source).slice(0,task.limit):null;
-      const targets=recipients?recipients.map(r=>r.email):lines(task.source).slice(0,task.limit);
+      const recipients=task.kind==='email-send'?emailMarketing.recipients(task.source).slice(0,task.limit):task.kind==='sms-send'?smsMarketing.prepared(task.source,task.message,state.store.contacts,task.limit):null;
+      const targets=recipients?recipients.map(r=>r.email || r.phone):lines(task.source).slice(0,task.limit);
       update(t=>{t.status='Running';t.phase='Starting';t.totalCount=['maps','telegram-members','whatsapp-members'].includes(t.kind)?t.limit:t.kind==='instagram-post'?1:targets.length;},`${task.kind}: started “${task.name}”.`);
       if(task.kind==='verify-email') {
         for(const value of targets) {await pace('Checking email syntax and mail domain');add(await network.verifyEmail(value));}
@@ -147,6 +149,22 @@ module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runt
             throw new Error('SMTP did not confirm the recipient. Review the reserved attempt before retrying.');
           }
           add({name:recipient.name || contact?.name || target,email:target,status:'Accepted',reason:'SMTP server accepted the message. Recipient delivery, inbox placement and bounce outcome are not guaranteed.'},receipt);
+        }
+      } else if(task.kind==='sms-send') {
+        const config=vault.read(id,'twilio');if(!config) throw new Error('Twilio credentials unavailable.');
+        const transport=smsMarketing.createTransport(config,smsRequest);
+        await pace('Checking the Twilio connection');await transport.verify(signal);guard();
+        touch(id,s=>{const c=s.advanced.connections.find(c=>c.id==='twilio');if(c){c.connected=true;c.stage='connected';c.error='';}});
+        for(const recipient of recipients) {
+          await pace('Sending an approved SMS');
+          const source=recipient.inlineName?`${recipient.inlineName} <${recipient.phone}>`:recipient.phone;
+          const current=smsMarketing.prepared(source,task.message,get(id).store.contacts,1)[0];
+          const body=current.body;
+          const receipt=reserve(recipient.phone),estimate=smsMarketing.segments(body);
+          const outcome=await transport.send(recipient.phone,body,signal);guard();
+          const {rejected,...confirmed}=outcome;
+          add({...confirmed,name:current.name,phone:recipient.phone,providerAccountSid:config.accountSid,estimatedSegments:estimate.count,encoding:estimate.encoding},receipt);
+          if(rejected) throw new Error('Twilio rejected the SMS request. Sending stopped; no automatic retry.');
         }
       } else if(task.kind.startsWith('telegram-')) {
         const config=vault.read(id,'telegram'); if(!config?.session) throw new Error('Telegram is not authorized.');
@@ -238,6 +256,34 @@ module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runt
   timer.unref();
   return {
     authBusy:id=>auth.has(id),
+    testSms(id) {
+      const controller=new AbortController();auth.set(id,{kind:'sms-test',controller});
+      setImmediate(async()=>{
+        try {
+          if(closed) return;
+          await smsMarketing.createTransport(vault.read(id,'twilio'),smsRequest).verify(controller.signal);
+          if(!closed) touch(id,s=>{const c=s.advanced.connections.find(c=>c.id==='twilio');if(c){c.connected=true;c.stage='connected';c.error='';}
+            recordActivity(s,'Twilio authentication and message-read access verified. No SMS was sent; sender eligibility and send permissions still require an approved test.','success');});
+        } catch(error) {
+          if(!closed) touch(id,s=>{const c=s.advanced.connections.find(c=>c.id==='twilio');if(c){c.connected=false;c.stage='error';c.error=publicError(error,'Twilio connection');}});
+        } finally {auth.delete(id);}
+      });
+    },
+    refreshSms(id,resultId) {
+      const controller=new AbortController();auth.set(id,{kind:'sms-refresh',controller});
+      setImmediate(async()=>{
+        try {
+          if(closed) return;
+          const row=get(id).advanced.results.find(r=>r.id===resultId);
+          const outcome=await smsMarketing.createTransport(vault.read(id,'twilio'),smsRequest).lookup(row.providerId,row.phone,controller.signal);
+          if(!closed) touch(id,s=>{const current=s.advanced.results.find(r=>r.id===resultId);if(current) Object.assign(current,outcome,{statusCheckedAt:new Date().toISOString(),statusRefreshError:''});
+            recordActivity(s,'SMS status read from Twilio. No SMS was resent.');});
+        } catch(error) {
+          if(!closed) touch(id,s=>{const row=s.advanced.results.find(r=>r.id===resultId);if(row) row.statusRefreshError=publicError(error,'Twilio status lookup');
+            recordActivity(s,'SMS status could not be refreshed. The previous outcome was preserved; no SMS was resent.','warning');});
+        } finally {auth.delete(id);}
+      });
+    },
     testSmtp(id){
       auth.set(id,{kind:'smtp-test'});
       setImmediate(async()=>{
@@ -261,7 +307,7 @@ module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runt
     close(){closed=true;clearInterval(timer);
       const sessions=[...running.values()];
       for(const session of sessions){session.controller.abort();session.transport?.close();}
-      for(const session of auth.values()){clearTimeout(session.timer);session.reject?.(new Error('Closing'));void session.client?.disconnect().catch(()=>{});}
+      for(const session of auth.values()){clearTimeout(session.timer);session.controller?.abort();session.reject?.(new Error('Closing'));void session.client?.disconnect().catch(()=>{});}
       return Promise.allSettled(sessions.map(async session=>{
         await session.context?.close().catch(()=>{});
         await session.client?.disconnect().catch(()=>{});

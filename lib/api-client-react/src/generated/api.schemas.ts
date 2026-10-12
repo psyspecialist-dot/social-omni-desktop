@@ -26,6 +26,9 @@ export interface TelegramAuthInput {
 
 export interface AdvancedConnectionInput {
   sessionOnly?: boolean;
+  accountSid?: string;
+  apiKeySid?: string;
+  apiKeySecret?: string;
   host?: string;
   port?: number;
   secure?: boolean;
@@ -45,6 +48,7 @@ export const AdvancedTaskInputKind = {
   b2b: 'b2b',
   'verify-email': 'verify-email',
   'email-send': 'email-send',
+  'sms-send': 'sms-send',
   'telegram-send': 'telegram-send',
   'telegram-members': 'telegram-members',
   'telegram-channel': 'telegram-channel',
@@ -105,7 +109,24 @@ export type AdvancedTask = AdvancedTaskInput & ({
   nextActionAt?: string | null;
 });
 
+export type AdvancedResultEncoding = typeof AdvancedResultEncoding[keyof typeof AdvancedResultEncoding];
+
+
+export const AdvancedResultEncoding = {
+  'GSM-7': 'GSM-7',
+  'UCS-2': 'UCS-2',
+} as const;
+
 export interface AdvancedResult {
+  providerId?: string;
+  providerStatus?: string;
+  providerAccountSid?: string;
+  providerErrorCode?: number;
+  estimatedSegments?: number;
+  encoding?: AdvancedResultEncoding;
+  segments?: number;
+  statusCheckedAt?: string;
+  statusRefreshError?: string;
   userId?: string;
   username?: string;
   id: string;
@@ -129,7 +150,17 @@ export interface SmtpTestMessageInput {
   approved: boolean;
 }
 
+export interface SmsTestMessageInput {
+  /** @maxLength 40 */
+  recipient: string;
+  /** @maxLength 150 */
+  recipientName?: string;
+  approved: boolean;
+}
+
 export type AdvancedConnectionSettings = {
+  accountSid?: string;
+  apiKeySid?: string;
   host?: string;
   port?: number;
   secure?: boolean;
@@ -143,6 +174,7 @@ export type AdvancedConnectionId = typeof AdvancedConnectionId[keyof typeof Adva
 export const AdvancedConnectionId = {
   smtp: 'smtp',
   telegram: 'telegram',
+  twilio: 'twilio',
 } as const;
 
 export interface AdvancedConnection {

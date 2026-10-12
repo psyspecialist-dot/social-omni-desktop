@@ -31,3 +31,7 @@ test('email CSV import preserves names for personalization without changing veri
   assert.equal(await readListFile(file,'verify-email'),'a@example.com\nb@example.com');
   await assert.rejects(readListFile(new File(['name,email\n"Bad <Name>",a@example.com'],'invalid.csv'),'email-send'),/angle brackets/);
 });
+test('SMS CSV import preserves international numbers and names',async()=>{
+  const file=new File(['name,phone\nأحمد,+15550001001\nZoë,+15550001002'],'sms.csv');
+  assert.equal(await readListFile(file,'sms-send'),'أحمد <+15550001001>\nZoë <+15550001002>');
+});

@@ -27,7 +27,7 @@ export const createAdvancedTaskBodyLimitMax = 2000;
 
 
 export const CreateAdvancedTaskBody = zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(createAdvancedTaskBodyNameMax),
   "source": zod.string().max(createAdvancedTaskBodySourceMax).optional(),
   "message": zod.string().max(createAdvancedTaskBodyMessageMax).optional(),
@@ -106,7 +106,7 @@ export const createAdvancedTaskResponseAnalyticsMessagesSentMin = 0;
 export const CreateAdvancedTaskResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(createAdvancedTaskResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(createAdvancedTaskResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(createAdvancedTaskResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -129,6 +129,15 @@ export const CreateAdvancedTaskResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -146,13 +155,15 @@ export const CreateAdvancedTaskResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -335,7 +346,7 @@ export const editAdvancedTaskBodyLimitMax = 2000;
 
 
 export const EditAdvancedTaskBody = zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(editAdvancedTaskBodyNameMax),
   "source": zod.string().max(editAdvancedTaskBodySourceMax).optional(),
   "message": zod.string().max(editAdvancedTaskBodyMessageMax).optional(),
@@ -414,7 +425,7 @@ export const editAdvancedTaskResponseAnalyticsMessagesSentMin = 0;
 export const EditAdvancedTaskResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(editAdvancedTaskResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(editAdvancedTaskResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(editAdvancedTaskResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -437,6 +448,15 @@ export const EditAdvancedTaskResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -454,13 +474,15 @@ export const EditAdvancedTaskResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -694,7 +716,7 @@ export const deleteAdvancedTaskResponseAnalyticsMessagesSentMin = 0;
 export const DeleteAdvancedTaskResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(deleteAdvancedTaskResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(deleteAdvancedTaskResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(deleteAdvancedTaskResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -717,6 +739,15 @@ export const DeleteAdvancedTaskResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -734,13 +765,15 @@ export const DeleteAdvancedTaskResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -978,7 +1011,7 @@ export const runAdvancedTaskResponseAnalyticsMessagesSentMin = 0;
 export const RunAdvancedTaskResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(runAdvancedTaskResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(runAdvancedTaskResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(runAdvancedTaskResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -1001,6 +1034,15 @@ export const RunAdvancedTaskResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -1018,13 +1060,15 @@ export const RunAdvancedTaskResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -1258,7 +1302,7 @@ export const cancelAdvancedTaskResponseAnalyticsMessagesSentMin = 0;
 export const CancelAdvancedTaskResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(cancelAdvancedTaskResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(cancelAdvancedTaskResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(cancelAdvancedTaskResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -1281,6 +1325,15 @@ export const CancelAdvancedTaskResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -1298,13 +1351,15 @@ export const CancelAdvancedTaskResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -1474,6 +1529,9 @@ export const SaveAdvancedConnectionHeader = zod.object({
 
 export const SaveAdvancedConnectionBody = zod.object({
   "sessionOnly": zod.boolean().optional(),
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
+  "apiKeySecret": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
@@ -1550,7 +1608,7 @@ export const saveAdvancedConnectionResponseAnalyticsMessagesSentMin = 0;
 export const SaveAdvancedConnectionResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(saveAdvancedConnectionResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(saveAdvancedConnectionResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(saveAdvancedConnectionResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -1573,6 +1631,15 @@ export const SaveAdvancedConnectionResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -1590,13 +1657,15 @@ export const SaveAdvancedConnectionResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -1830,7 +1899,7 @@ export const deleteAdvancedConnectionResponseAnalyticsMessagesSentMin = 0;
 export const DeleteAdvancedConnectionResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(deleteAdvancedConnectionResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(deleteAdvancedConnectionResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(deleteAdvancedConnectionResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -1853,6 +1922,15 @@ export const DeleteAdvancedConnectionResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -1870,13 +1948,15 @@ export const DeleteAdvancedConnectionResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -2118,7 +2198,7 @@ export const sendSmtpTestMessageResponseAnalyticsMessagesSentMin = 0;
 export const SendSmtpTestMessageResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(sendSmtpTestMessageResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(sendSmtpTestMessageResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(sendSmtpTestMessageResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -2141,6 +2221,15 @@ export const SendSmtpTestMessageResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -2158,13 +2247,15 @@ export const SendSmtpTestMessageResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -2324,6 +2415,596 @@ export const SendSmtpTestMessageResponse = zod.object({
 })
 
 
+export const SendSmsTestMessageHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const sendSmsTestMessageBodyRecipientMax = 40;
+
+export const sendSmsTestMessageBodyRecipientNameMax = 150;
+
+
+
+export const SendSmsTestMessageBody = zod.object({
+  "recipient": zod.string().max(sendSmsTestMessageBodyRecipientMax),
+  "recipientName": zod.string().max(sendSmsTestMessageBodyRecipientNameMax).optional(),
+  "approved": zod.boolean()
+})
+
+export const sendSmsTestMessageResponseAdvancedTasksItemOneNameMax = 150;
+
+export const sendSmsTestMessageResponseAdvancedTasksItemOneSourceMax = 15000;
+
+export const sendSmsTestMessageResponseAdvancedTasksItemOneMessageMax = 10000;
+
+export const sendSmsTestMessageResponseAdvancedTasksItemOneSubjectMax = 200;
+
+export const sendSmsTestMessageResponseAdvancedTasksItemOneQueryMax = 300;
+
+export const sendSmsTestMessageResponseAdvancedTasksItemOneLimitMax = 2000;
+
+export const sendSmsTestMessageResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const sendSmsTestMessageResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const sendSmsTestMessageResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const sendSmsTestMessageResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const sendSmsTestMessageResponseWaSuiteThreadsItemOneTagsMax = 20;
+
+export const sendSmsTestMessageResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const sendSmsTestMessageResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const sendSmsTestMessageResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const sendSmsTestMessageResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const sendSmsTestMessageResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const sendSmsTestMessageResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const sendSmsTestMessageResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const sendSmsTestMessageResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const sendSmsTestMessageResponseSettingsLanguageDefault = `en`;
+export const sendSmsTestMessageResponseSettingsKeywordsMax = 300;
+
+export const sendSmsTestMessageResponseSettingsDelayMinMin = 5;
+export const sendSmsTestMessageResponseSettingsDelayMinMax = 12;
+
+export const sendSmsTestMessageResponseSettingsDelayMaxMin = 5;
+export const sendSmsTestMessageResponseSettingsDelayMaxMax = 12;
+
+export const sendSmsTestMessageResponseSettingsPhoneNumbersMax = 10000;
+
+export const sendSmsTestMessageResponseSettingsMessageContentMax = 10000;
+
+export const sendSmsTestMessageResponseSettingsLicenseKeyMax = 200;
+
+export const sendSmsTestMessageResponseLeadsOneKeywordMax = 100;
+
+export const sendSmsTestMessageResponseLeadsOneCityMax = 150;
+
+export const sendSmsTestMessageResponseLeadsOneTargetCountMax = 200;
+
+export const sendSmsTestMessageResponseAnalyticsRealMessagesSentMin = 0;
+
+export const sendSmsTestMessageResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const SendSmsTestMessageResponse = zod.object({
+  "advanced": zod.object({
+  "tasks": zod.array(zod.object({
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "name": zod.string().max(sendSmsTestMessageResponseAdvancedTasksItemOneNameMax),
+  "source": zod.string().max(sendSmsTestMessageResponseAdvancedTasksItemOneSourceMax).optional(),
+  "message": zod.string().max(sendSmsTestMessageResponseAdvancedTasksItemOneMessageMax).optional(),
+  "subject": zod.string().max(sendSmsTestMessageResponseAdvancedTasksItemOneSubjectMax).optional(),
+  "query": zod.string().max(sendSmsTestMessageResponseAdvancedTasksItemOneQueryMax).optional(),
+  "limit": zod.number().int().min(1).max(sendSmsTestMessageResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
+  "accountId": zod.string().optional(),
+  "mediaId": zod.string().optional(),
+  "scheduledAt": zod.string().optional(),
+  "approved": zod.boolean().optional()
+}).and(zod.object({
+  "id": zod.string(),
+  "status": zod.enum(['Draft', 'Scheduled', 'Queued', 'Running', 'Completed', 'Cancelled', 'Failed', 'Needs review']),
+  "progress": zod.number().int(),
+  "completedCount": zod.number().int(),
+  "totalCount": zod.number().int(),
+  "phase": zod.string(),
+  "createdAt": zod.string(),
+  "error": zod.string(),
+  "nextActionAt": zod.string().nullish()
+}))),
+  "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
+  "userId": zod.string().optional(),
+  "username": zod.string().optional(),
+  "id": zod.string(),
+  "taskId": zod.string(),
+  "kind": zod.string(),
+  "name": zod.string(),
+  "phone": zod.string(),
+  "email": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "status": zod.string(),
+  "reason": zod.string(),
+  "createdAt": zod.string()
+})),
+  "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
+  "configured": zod.boolean(),
+  "connected": zod.boolean(),
+  "label": zod.string(),
+  "stage": zod.string(),
+  "error": zod.string()
+}))
+}).optional(),
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(sendSmsTestMessageResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(sendSmsTestMessageResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(sendSmsTestMessageResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(sendSmsTestMessageResponseWaSuiteThreadsItemOneTagsItemMax)).max(sendSmsTestMessageResponseWaSuiteThreadsItemOneTagsMax).optional(),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(sendSmsTestMessageResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(sendSmsTestMessageResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(sendSmsTestMessageResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(sendSmsTestMessageResponseWaSuiteRulesItemOneDelayMinMin).max(sendSmsTestMessageResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(sendSmsTestMessageResponseWaSuiteRulesItemOneDelayMaxMin).max(sendSmsTestMessageResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(sendSmsTestMessageResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(sendSmsTestMessageResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
+  "keywords": zod.string().max(sendSmsTestMessageResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(sendSmsTestMessageResponseSettingsDelayMinMin).max(sendSmsTestMessageResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(sendSmsTestMessageResponseSettingsDelayMaxMin).max(sendSmsTestMessageResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(sendSmsTestMessageResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(sendSmsTestMessageResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(sendSmsTestMessageResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "error": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(sendSmsTestMessageResponseLeadsOneKeywordMax),
+  "city": zod.string().max(sendSmsTestMessageResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(sendSmsTestMessageResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.boolean()
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(sendSmsTestMessageResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(sendSmsTestMessageResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
+export const RefreshSmsResultParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const RefreshSmsResultHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const refreshSmsResultResponseAdvancedTasksItemOneNameMax = 150;
+
+export const refreshSmsResultResponseAdvancedTasksItemOneSourceMax = 15000;
+
+export const refreshSmsResultResponseAdvancedTasksItemOneMessageMax = 10000;
+
+export const refreshSmsResultResponseAdvancedTasksItemOneSubjectMax = 200;
+
+export const refreshSmsResultResponseAdvancedTasksItemOneQueryMax = 300;
+
+export const refreshSmsResultResponseAdvancedTasksItemOneLimitMax = 2000;
+
+export const refreshSmsResultResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const refreshSmsResultResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const refreshSmsResultResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const refreshSmsResultResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const refreshSmsResultResponseWaSuiteThreadsItemOneTagsMax = 20;
+
+export const refreshSmsResultResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const refreshSmsResultResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const refreshSmsResultResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const refreshSmsResultResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const refreshSmsResultResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const refreshSmsResultResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const refreshSmsResultResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const refreshSmsResultResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const refreshSmsResultResponseSettingsLanguageDefault = `en`;
+export const refreshSmsResultResponseSettingsKeywordsMax = 300;
+
+export const refreshSmsResultResponseSettingsDelayMinMin = 5;
+export const refreshSmsResultResponseSettingsDelayMinMax = 12;
+
+export const refreshSmsResultResponseSettingsDelayMaxMin = 5;
+export const refreshSmsResultResponseSettingsDelayMaxMax = 12;
+
+export const refreshSmsResultResponseSettingsPhoneNumbersMax = 10000;
+
+export const refreshSmsResultResponseSettingsMessageContentMax = 10000;
+
+export const refreshSmsResultResponseSettingsLicenseKeyMax = 200;
+
+export const refreshSmsResultResponseLeadsOneKeywordMax = 100;
+
+export const refreshSmsResultResponseLeadsOneCityMax = 150;
+
+export const refreshSmsResultResponseLeadsOneTargetCountMax = 200;
+
+export const refreshSmsResultResponseAnalyticsRealMessagesSentMin = 0;
+
+export const refreshSmsResultResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const RefreshSmsResultResponse = zod.object({
+  "advanced": zod.object({
+  "tasks": zod.array(zod.object({
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "name": zod.string().max(refreshSmsResultResponseAdvancedTasksItemOneNameMax),
+  "source": zod.string().max(refreshSmsResultResponseAdvancedTasksItemOneSourceMax).optional(),
+  "message": zod.string().max(refreshSmsResultResponseAdvancedTasksItemOneMessageMax).optional(),
+  "subject": zod.string().max(refreshSmsResultResponseAdvancedTasksItemOneSubjectMax).optional(),
+  "query": zod.string().max(refreshSmsResultResponseAdvancedTasksItemOneQueryMax).optional(),
+  "limit": zod.number().int().min(1).max(refreshSmsResultResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
+  "accountId": zod.string().optional(),
+  "mediaId": zod.string().optional(),
+  "scheduledAt": zod.string().optional(),
+  "approved": zod.boolean().optional()
+}).and(zod.object({
+  "id": zod.string(),
+  "status": zod.enum(['Draft', 'Scheduled', 'Queued', 'Running', 'Completed', 'Cancelled', 'Failed', 'Needs review']),
+  "progress": zod.number().int(),
+  "completedCount": zod.number().int(),
+  "totalCount": zod.number().int(),
+  "phase": zod.string(),
+  "createdAt": zod.string(),
+  "error": zod.string(),
+  "nextActionAt": zod.string().nullish()
+}))),
+  "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
+  "userId": zod.string().optional(),
+  "username": zod.string().optional(),
+  "id": zod.string(),
+  "taskId": zod.string(),
+  "kind": zod.string(),
+  "name": zod.string(),
+  "phone": zod.string(),
+  "email": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "status": zod.string(),
+  "reason": zod.string(),
+  "createdAt": zod.string()
+})),
+  "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
+  "configured": zod.boolean(),
+  "connected": zod.boolean(),
+  "label": zod.string(),
+  "stage": zod.string(),
+  "error": zod.string()
+}))
+}).optional(),
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(refreshSmsResultResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(refreshSmsResultResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(refreshSmsResultResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(refreshSmsResultResponseWaSuiteThreadsItemOneTagsItemMax)).max(refreshSmsResultResponseWaSuiteThreadsItemOneTagsMax).optional(),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(refreshSmsResultResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(refreshSmsResultResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(refreshSmsResultResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(refreshSmsResultResponseWaSuiteRulesItemOneDelayMinMin).max(refreshSmsResultResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(refreshSmsResultResponseWaSuiteRulesItemOneDelayMaxMin).max(refreshSmsResultResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(refreshSmsResultResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(refreshSmsResultResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
+  "keywords": zod.string().max(refreshSmsResultResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(refreshSmsResultResponseSettingsDelayMinMin).max(refreshSmsResultResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(refreshSmsResultResponseSettingsDelayMaxMin).max(refreshSmsResultResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(refreshSmsResultResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(refreshSmsResultResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().max(refreshSmsResultResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "error": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
+  "messageContent": zod.string().optional()
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(refreshSmsResultResponseLeadsOneKeywordMax),
+  "city": zod.string().max(refreshSmsResultResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(refreshSmsResultResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.boolean()
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(refreshSmsResultResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(refreshSmsResultResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
 export const AuthorizeTelegramHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
 })
@@ -2403,7 +3084,7 @@ export const authorizeTelegramResponseAnalyticsMessagesSentMin = 0;
 export const AuthorizeTelegramResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(authorizeTelegramResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(authorizeTelegramResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(authorizeTelegramResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -2426,6 +3107,15 @@ export const AuthorizeTelegramResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -2443,13 +3133,15 @@ export const AuthorizeTelegramResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -2683,7 +3375,7 @@ export const deleteAdvancedResultResponseAnalyticsMessagesSentMin = 0;
 export const DeleteAdvancedResultResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(deleteAdvancedResultResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(deleteAdvancedResultResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(deleteAdvancedResultResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -2706,6 +3398,15 @@ export const DeleteAdvancedResultResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -2723,13 +3424,15 @@ export const DeleteAdvancedResultResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -2968,7 +3671,7 @@ export const saveWaAiResponseAnalyticsMessagesSentMin = 0;
 export const SaveWaAiResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(saveWaAiResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(saveWaAiResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(saveWaAiResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -2991,6 +3694,15 @@ export const SaveWaAiResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -3008,13 +3720,15 @@ export const SaveWaAiResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -3257,7 +3971,7 @@ export const saveWaMenuResponseAnalyticsMessagesSentMin = 0;
 export const SaveWaMenuResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(saveWaMenuResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(saveWaMenuResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(saveWaMenuResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -3280,6 +3994,15 @@ export const SaveWaMenuResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -3297,13 +4020,15 @@ export const SaveWaMenuResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -3541,7 +4266,7 @@ export const saveWaFilterResponseAnalyticsMessagesSentMin = 0;
 export const SaveWaFilterResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(saveWaFilterResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(saveWaFilterResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(saveWaFilterResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -3564,6 +4289,15 @@ export const SaveWaFilterResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -3581,13 +4315,15 @@ export const SaveWaFilterResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -3839,7 +4575,7 @@ export const createCrmThreadResponseAnalyticsMessagesSentMin = 0;
 export const CreateCrmThreadResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(createCrmThreadResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(createCrmThreadResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(createCrmThreadResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -3862,6 +4598,15 @@ export const CreateCrmThreadResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -3879,13 +4624,15 @@ export const CreateCrmThreadResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -4141,7 +4888,7 @@ export const editCrmThreadResponseAnalyticsMessagesSentMin = 0;
 export const EditCrmThreadResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(editCrmThreadResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(editCrmThreadResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(editCrmThreadResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -4164,6 +4911,15 @@ export const EditCrmThreadResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -4181,13 +4937,15 @@ export const EditCrmThreadResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -4421,7 +5179,7 @@ export const removeCrmThreadResponseAnalyticsMessagesSentMin = 0;
 export const RemoveCrmThreadResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(removeCrmThreadResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(removeCrmThreadResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(removeCrmThreadResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -4444,6 +5202,15 @@ export const RemoveCrmThreadResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -4461,13 +5228,15 @@ export const RemoveCrmThreadResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -4725,7 +5494,7 @@ export const createChatbotRuleResponseAnalyticsMessagesSentMin = 0;
 export const CreateChatbotRuleResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(createChatbotRuleResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(createChatbotRuleResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(createChatbotRuleResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -4748,6 +5517,15 @@ export const CreateChatbotRuleResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -4765,13 +5543,15 @@ export const CreateChatbotRuleResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -5033,7 +5813,7 @@ export const editChatbotRuleResponseAnalyticsMessagesSentMin = 0;
 export const EditChatbotRuleResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(editChatbotRuleResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(editChatbotRuleResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(editChatbotRuleResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -5056,6 +5836,15 @@ export const EditChatbotRuleResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -5073,13 +5862,15 @@ export const EditChatbotRuleResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -5313,7 +6104,7 @@ export const removeChatbotRuleResponseAnalyticsMessagesSentMin = 0;
 export const RemoveChatbotRuleResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(removeChatbotRuleResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(removeChatbotRuleResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(removeChatbotRuleResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -5336,6 +6127,15 @@ export const RemoveChatbotRuleResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -5353,13 +6153,15 @@ export const RemoveChatbotRuleResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -5598,7 +6400,7 @@ export const startWaSuiteSessionResponseAnalyticsMessagesSentMin = 0;
 export const StartWaSuiteSessionResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(startWaSuiteSessionResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(startWaSuiteSessionResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(startWaSuiteSessionResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -5621,6 +6423,15 @@ export const StartWaSuiteSessionResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -5638,13 +6449,15 @@ export const StartWaSuiteSessionResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -5892,7 +6705,7 @@ export const startLocalBrowserTaskResponseAnalyticsMessagesSentMin = 0;
 export const StartLocalBrowserTaskResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(startLocalBrowserTaskResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(startLocalBrowserTaskResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(startLocalBrowserTaskResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -5915,6 +6728,15 @@ export const StartLocalBrowserTaskResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -5932,13 +6754,15 @@ export const StartLocalBrowserTaskResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -6188,7 +7012,7 @@ export const saveSocialOmniLeadDraftResponseAnalyticsMessagesSentMin = 0;
 export const SaveSocialOmniLeadDraftResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(saveSocialOmniLeadDraftResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(saveSocialOmniLeadDraftResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(saveSocialOmniLeadDraftResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -6211,6 +7035,15 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -6228,13 +7061,15 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -6467,7 +7302,7 @@ export const clearSocialOmniLeadsResponseAnalyticsMessagesSentMin = 0;
 export const ClearSocialOmniLeadsResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(clearSocialOmniLeadsResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(clearSocialOmniLeadsResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(clearSocialOmniLeadsResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -6490,6 +7325,15 @@ export const ClearSocialOmniLeadsResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -6507,13 +7351,15 @@ export const ClearSocialOmniLeadsResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -6743,7 +7589,7 @@ export const getSocialOmniStateResponseAnalyticsMessagesSentMin = 0;
 export const GetSocialOmniStateResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(getSocialOmniStateResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(getSocialOmniStateResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(getSocialOmniStateResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -6766,6 +7612,15 @@ export const GetSocialOmniStateResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -6783,13 +7638,15 @@ export const GetSocialOmniStateResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -7019,7 +7876,7 @@ export const clearSocialOmniStateResponseAnalyticsMessagesSentMin = 0;
 export const ClearSocialOmniStateResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(clearSocialOmniStateResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(clearSocialOmniStateResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(clearSocialOmniStateResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -7042,6 +7899,15 @@ export const ClearSocialOmniStateResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -7059,13 +7925,15 @@ export const ClearSocialOmniStateResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -7325,7 +8193,7 @@ export const updateSocialOmniSettingsResponseAnalyticsMessagesSentMin = 0;
 export const UpdateSocialOmniSettingsResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(updateSocialOmniSettingsResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(updateSocialOmniSettingsResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(updateSocialOmniSettingsResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -7348,6 +8216,15 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -7365,13 +8242,15 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -7610,7 +8489,7 @@ export const createSocialOmniJobResponseAnalyticsMessagesSentMin = 0;
 export const CreateSocialOmniJobResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(createSocialOmniJobResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(createSocialOmniJobResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(createSocialOmniJobResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -7633,6 +8512,15 @@ export const CreateSocialOmniJobResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -7650,13 +8538,15 @@ export const CreateSocialOmniJobResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -7890,7 +8780,7 @@ export const cancelSocialOmniJobResponseAnalyticsMessagesSentMin = 0;
 export const CancelSocialOmniJobResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(cancelSocialOmniJobResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(cancelSocialOmniJobResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(cancelSocialOmniJobResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -7913,6 +8803,15 @@ export const CancelSocialOmniJobResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -7930,13 +8829,15 @@ export const CancelSocialOmniJobResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -8179,7 +9080,7 @@ export const uploadSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
 export const UploadSocialOmniMediaResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(uploadSocialOmniMediaResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(uploadSocialOmniMediaResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(uploadSocialOmniMediaResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -8202,6 +9103,15 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -8219,13 +9129,15 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -8459,7 +9371,7 @@ export const readSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
 export const ReadSocialOmniMediaResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(readSocialOmniMediaResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(readSocialOmniMediaResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(readSocialOmniMediaResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -8482,6 +9394,15 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -8499,13 +9420,15 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -8742,7 +9665,7 @@ export const deleteSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
 export const DeleteSocialOmniMediaResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(deleteSocialOmniMediaResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(deleteSocialOmniMediaResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(deleteSocialOmniMediaResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -8765,6 +9688,15 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -8782,13 +9714,15 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -9048,7 +9982,7 @@ export const createSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
 export const CreateSocialOmniRecordResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(createSocialOmniRecordResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(createSocialOmniRecordResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(createSocialOmniRecordResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -9071,6 +10005,15 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -9088,13 +10031,15 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -9358,7 +10303,7 @@ export const updateSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
 export const UpdateSocialOmniRecordResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(updateSocialOmniRecordResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(updateSocialOmniRecordResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(updateSocialOmniRecordResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -9381,6 +10326,15 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -9398,13 +10352,15 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),
@@ -9639,7 +10595,7 @@ export const deleteSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
 export const DeleteSocialOmniRecordResponse = zod.object({
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
-  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
   "name": zod.string().max(deleteSocialOmniRecordResponseAdvancedTasksItemOneNameMax),
   "source": zod.string().max(deleteSocialOmniRecordResponseAdvancedTasksItemOneSourceMax).optional(),
   "message": zod.string().max(deleteSocialOmniRecordResponseAdvancedTasksItemOneMessageMax).optional(),
@@ -9662,6 +10618,15 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "nextActionAt": zod.string().nullish()
 }))),
   "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
   "userId": zod.string().optional(),
   "username": zod.string().optional(),
   "id": zod.string(),
@@ -9679,13 +10644,15 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "connections": zod.array(zod.object({
   "sessionOnly": zod.boolean().optional(),
   "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
   "host": zod.string().optional(),
   "port": zod.number().int().optional(),
   "secure": zod.boolean().optional(),
   "username": zod.string().optional(),
   "from": zod.string().optional()
 }).optional(),
-  "id": zod.enum(['smtp', 'telegram']),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
   "configured": zod.boolean(),
   "connected": zod.boolean(),
   "label": zod.string(),

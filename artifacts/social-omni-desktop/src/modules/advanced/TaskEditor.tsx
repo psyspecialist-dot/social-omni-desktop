@@ -5,6 +5,7 @@ import type { Account } from '@/lib/workspace';
 import type { MediaAsset } from '@/lib/api';
 import { readListFile } from '@/lib/advanced-export';
 import { isDesktop } from '@/lib/persistence';
+import { estimateSms, renderSms } from '@/lib/sms';
 import { FileUp, X } from 'lucide-react';
 import { KINDS, msg, type Kind } from './config';
 
@@ -55,6 +56,7 @@ export default function TaskEditor({ kinds, task, accounts, media, onSave, onClo
     setBusy(true); setErr('');
     try { await onSave(input, task?.id); } catch (x) { setErr(msg(x, t)); setBusy(false); }
   };
+  const smsEst = kind === 'sms-send' ? estimateSms(renderSms(message, '', '+15551234567')) : null;
   const lines = source.split(/\r?\n/).filter(l => l.trim()).length;
   return <div className="dialog-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }} onKeyDown={e => { if (e.key === 'Escape') onClose(); }}>
     <form className="dialog adv-dialog" role="dialog" aria-modal="true" aria-label={task ? t('Edit task') : t('New task')} onSubmit={submit} data-testid="dialog-adv-task">
@@ -73,10 +75,12 @@ export default function TaskEditor({ kinds, task, accounts, media, onSave, onClo
         {spec.source && <div className="field-group"><label className="field-label" htmlFor="adv-src">{t(spec.source)} <span className="field-hint">{t('{n} lines', { n: lines })}</span></label>
           <textarea id="adv-src" className="field-textarea adv-mono" maxLength={15000} value={source} onChange={e => setSource(e.target.value)} placeholder={spec.sourcePlaceholder} data-testid="input-adv-source" />
           {kind === 'email-send' && <p className="adv-note" data-testid="note-adv-email-personalize">{t('Use email addresses or Name <email> recipients, one per line.')} {t('Duplicates are removed by address. Use {{name}} and {{email}} in the subject and message. Inline name wins, then the local Contacts name, then the address.')} {t('CSV import reads the email and name columns.')}</p>}
+          {kind === 'sms-send' && <p className="adv-note" data-testid="note-adv-sms-format">{t('Use +number or Name <+number>, one per line, with the full international number. Duplicates are removed by full normalized number; no country is guessed.')} {t('Use {{name}} and {{phone}} in the text. Inline name wins, then the Phone Contacts name, then the phone. Contacts marked opted out are checked before the run and again before each send.')} {t('CSV import reads phone, phonenumber, mobile or mobilenumber, and name, fullname or recipientname.')}</p>}
           {kind !== 'telegram-members' && <><button type="button" className="button button-secondary" style={{ marginTop: 8 }} onClick={() => file.current?.click()}><FileUp /> {t('Import TXT or CSV')}</button>
             <input ref={file} type="file" accept=".txt,.csv" hidden onChange={async e => { const f = e.target.files?.[0]; e.target.value = ''; if (!f) return; try { const txt = await readListFile(f, kind); setSource(p => (p.trim() ? `${p.trim()}\n${txt}` : txt)); } catch (x) { setErr(msg(x, t)); } }} data-testid="input-adv-file" /></>}</div>}
         {spec.subject && <div className="field-group"><label className="field-label" htmlFor="adv-subj">{t('Subject')}</label><input id="adv-subj" className="field-input" maxLength={200} value={subject} onChange={e => setSubject(e.target.value)} data-testid="input-adv-subject" /></div>}
         {spec.message && <div className="field-group"><label className="field-label" htmlFor="adv-msg">{t(spec.message)} <span className="field-hint">{message.length}/10000</span></label><textarea id="adv-msg" className="field-textarea" maxLength={10000} value={message} onChange={e => setMessage(e.target.value)} data-testid="input-adv-message" /></div>}
+        {smsEst && <p className="adv-note" data-testid="note-adv-sms-segments">{t('Estimated per message: {n} segment(s), {enc}, {u} units (limit 1600 characters per rendered text).', { n: smsEst.segments, enc: smsEst.encoding, u: smsEst.units })} {smsEst.overLimit && <b>{t('Too long: each rendered SMS must be 1–1600 characters.')} </b>}{t('GSM-7 fits 160 characters (153 per part when split); Arabic and other non-GSM text uses UCS-2: 70 (67 per part). Names can change the estimate. Twilio bills per segment; this is not an exact price.')}</p>}
         {wa ? <label className="check-row"><input type="checkbox" checked={auth} onChange={e => setAuth(e.target.checked)} data-testid="check-adv-wa-authorized" />{t(spec.consent)}</label> : <div className="field-group"><label className="field-label" htmlFor="adv-at">{isDesktop ? t('Schedule (optional)') : t('Schedule (optional · desktop only)')}</label><input id="adv-at" type="datetime-local" className="field-input" value={at} disabled={!isDesktop} onChange={e => setAt(e.target.value)} data-testid="input-adv-schedule" />
           <p className="adv-note">{t('Scheduled tasks run only while the desktop app is open. Tasks missed while closed become Needs review on restart and never run automatically.')}</p></div>}
         {!wa && isDesktop && at && <label className="check-row"><input type="checkbox" checked={approved} onChange={e => setApproved(e.target.checked)} data-testid="check-adv-approve" />{t(spec.consent)} {t('Approve this schedule. Without approval it stays a Draft.')}</label>}

@@ -12,4 +12,5 @@ export type AdvancedConnectionId = typeof AdvancedConnectionId[keyof typeof Adva
 export const AdvancedConnectionId = {
   smtp: 'smtp',
   telegram: 'telegram',
+  twilio: 'twilio',
 } as const;
