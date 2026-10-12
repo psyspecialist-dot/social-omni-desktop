@@ -3,6 +3,16 @@ name: Electron release packaging
 description: Non-obvious host limitations and dependency-collection behavior affecting standalone commercial installers.
 ---
 
+Canonicalize ASAR entry separators before validating archive contents across hosts.
+
+**Why:** ASAR listings use the build host's path separators. Comparing Windows
+backslash entries to POSIX paths falsely reported a missing main.js even though
+the same package passed macOS verification.
+
+**How to apply:** Normalize listed entries to forward slashes with a consistent
+leading separator before both required-file and forbidden-dev-signer checks.
+Keep genuine missing-file, WASM, and Chromium checks enabled.
+
 Build the standalone package outside the parent pnpm workspace, such as in an isolated temporary directory.
 
 **Why:** electron-builder's pnpm dependency collector runs pnpm list without the standalone ignore-workspace flag. Inside this repository it can return no production dependencies and fall back to the wrong workspace root, creating an archive without runtime modules. A missing SQLite WASM check caught this before an installer was delivered.

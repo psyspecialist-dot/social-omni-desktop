@@ -3,6 +3,20 @@ const path = require('node:path');
 const { createRequire } = require('node:module');
 const { hasChromium } = require('./prepare-browsers.cjs');
 
+function verifyArchiveFiles(entries) {
+  // ASAR lists paths using the build host's separators (Windows uses backslashes).
+  const files = new Set(entries.map(file => `/${file.replace(/\\/g, '/').replace(/^\/+/, '')}`));
+  if (files.has('/scripts/dev-license.cjs')) throw new Error('Development signer must not ship in an installer.');
+  for (const file of ['main.js', 'preload.js', 'api-service.cjs', 'renderer/index.html',
+    'license-client.cjs', 'license-crypto.cjs', 'license-machine.cjs', 'licensing-config.json',
+    'smart-replies.cjs', 'whatsapp-media.cjs', 'facebook-media.cjs', 'wa-suite-browser.cjs',
+    'node_modules/express/package.json', 'node_modules/playwright/package.json',
+    'node_modules/sql.js/package.json', 'node_modules/nodemailer/package.json',
+    'node_modules/telegram/package.json', 'node_modules/cheerio/package.json']) {
+    if (!files.has(`/${file}`)) throw new Error(`Packaged runtime file is missing: ${file}`);
+  }
+}
+
 module.exports = async function verify(context) {
   const resources = context.electronPlatformName === 'darwin'
     ? path.join(context.appOutDir, `${context.packager.appInfo.productFilename}.app`, 'Contents', 'Resources')
@@ -13,15 +27,7 @@ module.exports = async function verify(context) {
   if (!fs.existsSync(wasm)) throw new Error('Packaged SQLite WASM is missing.');
   const builder = createRequire(require.resolve('electron-builder'));
   const asar = createRequire(builder.resolve('app-builder-lib'))('@electron/asar');
-  const files = new Set(asar.listPackage(path.join(resources, 'app.asar')));
-  if (files.has('/scripts/dev-license.cjs')) throw new Error('Development signer must not ship in an installer.');
-  for (const file of ['main.js', 'preload.js', 'api-service.cjs', 'renderer/index.html',
-    'license-client.cjs', 'license-crypto.cjs', 'license-machine.cjs', 'licensing-config.json',
-    'smart-replies.cjs', 'whatsapp-media.cjs', 'facebook-media.cjs', 'wa-suite-browser.cjs',
-    'node_modules/express/package.json', 'node_modules/playwright/package.json',
-    'node_modules/sql.js/package.json', 'node_modules/nodemailer/package.json',
-    'node_modules/telegram/package.json', 'node_modules/cheerio/package.json']) {
-    if (!files.has(`/${file}`)) throw new Error(`Packaged runtime file is missing: ${file}`);
-  }
+  verifyArchiveFiles(asar.listPackage(path.join(resources, 'app.asar')));
   console.info(`Verified packaged application, Chromium and SQLite WASM: ${resources}`);
 };
+module.exports.verifyArchiveFiles = verifyArchiveFiles;

@@ -5,6 +5,37 @@ const os = require('node:os');
 const path = require('node:path');
 const prepare = require('./prepare-browsers.cjs');
 const config = require('../package.json');
+const { verifyArchiveFiles } = require('./verify-package.cjs');
+
+const archiveFixture = [
+  'main.js', 'preload.js', 'api-service.cjs', 'renderer/index.html',
+  'license-client.cjs', 'license-crypto.cjs', 'license-machine.cjs', 'licensing-config.json',
+  'smart-replies.cjs', 'whatsapp-media.cjs', 'facebook-media.cjs', 'wa-suite-browser.cjs',
+  ...['express', 'playwright', 'sql.js', 'nodemailer', 'telegram', 'cheerio']
+    .map(name => `node_modules/${name}/package.json`),
+];
+
+test('ASAR verification accepts Windows and POSIX separators, with or without a leading separator', () => {
+  for (const separator of ['/', '\\']) {
+    for (const prefix of ['', separator]) {
+      const entries = archiveFixture.map(file => prefix + file.replace(/\//g, separator));
+      assert.doesNotThrow(() => verifyArchiveFiles(entries));
+    }
+  }
+});
+
+test('ASAR verification still rejects each genuinely missing runtime file', () => {
+  for (const missing of archiveFixture) {
+    const entries = archiveFixture.filter(file => file !== missing).map(file => `\\${file.replace(/\//g, '\\')}`);
+    assert.throws(() => verifyArchiveFiles(entries), { message: `Packaged runtime file is missing: ${missing}` });
+  }
+});
+
+test('ASAR verification blocks the dev signer on Windows and POSIX hosts', () => {
+  for (const signer of ['/scripts/dev-license.cjs', '\\scripts\\dev-license.cjs', 'scripts/dev-license.cjs']) {
+    assert.throws(() => verifyArchiveFiles([...archiveFixture, signer]), /Development signer must not ship/);
+  }
+});
 
 test('release builder and Windows peer stay on the Node-20-compatible version', () => {
   assert.equal(config.devDependencies['electron-builder'], '26.0.12');
