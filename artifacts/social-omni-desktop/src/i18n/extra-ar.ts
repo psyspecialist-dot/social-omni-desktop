@@ -245,7 +245,7 @@ export const extraAr: Record<string,string> = {
   'CSV import reads the email and name columns.':'يقرأ استيراد CSV عمودي email وname.',
   'Plain text only. Use {{name}} and {{email}} in the subject and message. An inline name wins; otherwise the name comes from local Contacts, then the address. Opted-out Contacts are blocked.':'نص عادي فقط. استخدم {{name}} و{{email}} في الموضوع والرسالة. الاسم المكتوب في السطر له الأولوية، وإلا يُؤخذ من جهات الاتصال المحلية ثم العنوان. تُحظر جهات الاتصال التي ألغت اشتراكها.',
   'Consented recipients, one per line: address or Name <email>':'مستلمون وافقوا، واحد في كل سطر: عنوان أو الاسم <البريد>',
-  "SMS Marketing":"التسويق عبر الرسائل النصية",
+  "SMS Marketing":"التسويق عبر SMS",
   "SMS":"الرسائل النصية",
   "SMS campaign":"حملة رسائل نصية",
   "SMS text":"نص الرسالة النصية",

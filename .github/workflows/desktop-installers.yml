@@ -1,6 +1,15 @@
 name: Build standalone desktop installers
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'artifacts/social-omni-desktop/**'
+      - 'lib/socialomni-api/**'
+      - 'lib/api-client-react/**'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/desktop-installers.yml'
 permissions:
   contents: read
 jobs:

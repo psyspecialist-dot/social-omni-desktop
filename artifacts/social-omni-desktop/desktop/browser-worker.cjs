@@ -45,7 +45,7 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
       const reused = Boolean(context);
       if (!context) {
         context = await automation.chromium.launchPersistentContext(profile, {
-          headless: false, viewport: null, locale: 'en-US', timeout: 30000,
+          headless: false, viewport: null, locale: 'en-US', timeout: job.platform === 'WhatsApp' ? 60000 : 30000,
           args: ['--window-size=1440,1000'],
         });
         if (closed) { await context.close(); throw new Error('Application closing.'); }
@@ -67,7 +67,8 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
       update(workspace, jobId, j => { j.phase = 'Browser opened'; }, 'Browser opened. Using the saved private account session.');
       const page = (persistent && context.pages().find(p => !p.isClosed() && p.url().startsWith('https://web.whatsapp.com/')))
         || context.pages().find(p => !p.isClosed()) || await context.newPage();
-      page.setDefaultTimeout(15000);
+      page.setDefaultTimeout(job.platform === 'WhatsApp' ? 60000 : 15000);
+      if(job.platform==='WhatsApp') page.setDefaultNavigationTimeout?.(60000);
       const guard = () => {
         if (closed) throw new Error('Application closing.');
         const latest = get(workspace).jobs.find(j => j.id === jobId);
@@ -234,14 +235,14 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
             const outgoing = job.messageContent.trim()
               ? page.locator('.message-out').filter({ hasText: job.messageContent }) : page.locator('.message-out');
             const count = await outgoing.count();
-            const send = mediaSend || await readable(page, [page.locator('button:has([data-icon="send"]), [role="button"]:has([data-icon="send"])'), page.getByRole('button', { name: /^(send|إرسال)$/i })], 'WhatsApp Send button');
+            const send = mediaSend || await readable(page, [page.locator('button:has([data-icon="send"]), [role="button"]:has([data-icon="send"])'), page.getByRole('button', { name: /^(send|إرسال)$/i })], 'WhatsApp Send button', 60000);
             await act(`Sending to ${target.name}…`, async () => {
               update(workspace, jobId, j => { j.targets.find(t => t.id === target.id).sendStatus = 'Unconfirmed'; }, 'Waiting for WhatsApp server acknowledgement. No automatic retry.');
               await send.click();
             });
             // Confirm a NEW outgoing bubble and a server-accepted check, not just a click.
-            await outgoing.nth(count).waitFor({ timeout: 30000 });
-            await outgoing.nth(count).locator('[data-icon="msg-check"], [data-icon="msg-dblcheck"]').first().waitFor({ timeout: 30000 });
+            await outgoing.nth(count).waitFor({ timeout: 60000 });
+            await outgoing.nth(count).locator('[data-icon="msg-check"], [data-icon="msg-dblcheck"]').first().waitFor({ timeout: 60000 });
             await restriction();
             update(workspace, jobId, (j, state) => {
               j.targets.find(t => t.id === target.id).sendStatus = 'Sent';

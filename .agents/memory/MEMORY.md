@@ -9,3 +9,5 @@
 - [Electron release packaging](electron-release-packaging.md) — isolate standalone builds from the monorepo; cross-Windows builds need 64-bit Wine and a display.
 - [Marketing approval gates](marketing-rollout.md) — verify and report each requested marketing feature, then obtain approval before starting the next.
 - [Facebook action safety](facebook-action-safety.md) — keep joining and publishing approvals separate; feed re-renders are not post receipts, and uncertainty must stay visible.
+- [Licensing model](licensing-model.md) — one-time purchase with monthly/yearly updates and support; device binding and real verification are required.
+- [Git authentication diagnostics](git-auth-diagnostics.md) — credential helpers may stall despite GitHub being reachable; distinguish network failure from repository authorization.
