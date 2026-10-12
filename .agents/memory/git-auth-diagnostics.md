@@ -37,3 +37,14 @@ Git connection even when its metadata reported healthy OAuth.
 **How to apply:** When GitHub explicitly rejects the username/token and the
 native provider reconnect card is unsupported, direct the user to Git Providers.
 Do not ask for tokens, extract credentials, or repeat the same failed push.
+
+If the user supplies a PAT through workspace Secrets and authorizes its use,
+authenticate per operation without saving it in the remote URL.
+
+**Why:** Native Git-provider authentication continued to fail after reconnecting,
+while user-authorized PAT authentication succeeded. Existing credential helpers
+can otherwise take precedence over the newly supplied credential.
+
+**How to apply:** Use a temporary askpass helper that consumes the secret only
+inside Git, disable existing credential helpers for that operation, keep the
+remote URL credential-free, and remove the temporary helper afterwards.
