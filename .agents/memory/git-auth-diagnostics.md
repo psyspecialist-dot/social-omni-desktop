@@ -48,3 +48,14 @@ can otherwise take precedence over the newly supplied credential.
 **How to apply:** Use a temporary askpass helper that consumes the secret only
 inside Git, disable existing credential helpers for that operation, keep the
 remote URL credential-free, and remove the temporary helper afterwards.
+
+PAT authentication success does not prove permission to push Actions changes.
+For classic PATs, updating .github/workflows requires the workflow scope in
+addition to the required repository access.
+
+**Why:** GitHub accepted authentication but rejected the branch update explicitly
+because the PAT lacked workflow scope.
+
+**How to apply:** Report this as a permission blocker, not bad authentication.
+Have the user update the token's scope and replace it through Secrets; do not
+drop workflow changes or force-push to work around the scope check.
