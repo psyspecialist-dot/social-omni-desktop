@@ -26,7 +26,17 @@ import type {
   BrowserTaskInput,
   ChatbotRuleInput,
   CrmThreadInput,
+  DisableLicensePack200,
   HealthStatus,
+  IssuedLicensePack,
+  LicenseActivationInput,
+  LicenseAuthorityKey,
+  LicenseCertificate,
+  LicensePackInput,
+  LicenseRegistrationInput,
+  LicenseSupportInput,
+  ListIssuedLicenses200,
+  RenewLicenseSupport200,
   SimulatorJobInput,
   SimulatorLeadInput,
   SimulatorRecord,
@@ -45,6 +55,33 @@ import type {
 
 import { customFetch } from '../custom-fetch';
 import type { ErrorType , BodyType } from '../custom-fetch';
+
+// https://stackoverflow.com/questions/49579094/typescript-conditional-types-filter-out-readonly-properties-pick-only-requir/49579497#49579497
+type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <
+T,
+>() => T extends Y ? 1 : 2
+? A
+: B;
+
+type WritableKeys<T> = {
+[P in keyof T]-?: IfEquals<
+  { [Q in P]: T[P] },
+  { -readonly [Q in P]: T[P] },
+  P
+>;
+}[keyof T];
+
+type UnionToIntersection<U> =
+  (U extends any ? (k: U)=>void : never) extends ((k: infer I)=>void) ? I : never;
+type DistributeReadOnlyOverUnions<T> = T extends any ? NonReadonly<T> : never;
+
+type Writable<T> = Pick<T, WritableKeys<T>>;
+type NonReadonly<T> = [T] extends [UnionToIntersection<T>] ? {
+  [P in keyof Writable<T>]: T[P] extends object
+    ? NonReadonly<NonNullable<T[P]>>
+    : T[P];
+} : DistributeReadOnlyOverUnions<T>;
+
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
@@ -2238,6 +2275,690 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getClearSocialOmniStateMutationOptions(options));
     }
 
+export const getGetDeviceLicenseUrl = () => {
+
+
+
+
+  return `/api/socialomni/license`
+}
+
+export const getDeviceLicense = async ( options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+  return customFetch<WorkspaceStateResponse>(getGetDeviceLicenseUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDeviceLicenseQueryKey = () => {
+    return [
+    `/api/socialomni/license`
+    ] as const;
+    }
+
+
+export const getGetDeviceLicenseQueryOptions = <TData = Awaited<ReturnType<typeof getDeviceLicense>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDeviceLicense>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDeviceLicenseQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDeviceLicense>>> = ({ signal }) => getDeviceLicense({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDeviceLicense>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDeviceLicenseQueryResult = NonNullable<Awaited<ReturnType<typeof getDeviceLicense>>>
+export type GetDeviceLicenseQueryError = ErrorType<unknown>
+
+
+
+export function useGetDeviceLicense<TData = Awaited<ReturnType<typeof getDeviceLicense>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDeviceLicense>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDeviceLicenseQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getRemoveDeviceCertificateUrl = () => {
+
+
+
+
+  return `/api/socialomni/license`
+}
+
+/**
+ * Desktop only. Removes the local certificate, never frees a registered seat. Stop running and scheduled tasks first.
+ */
+export const removeDeviceCertificate = async ( options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+  return customFetch<WorkspaceStateResponse>(getRemoveDeviceCertificateUrl(),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getRemoveDeviceCertificateMutationKey = () => ['removeDeviceCertificate'] as const;
+
+export const getRemoveDeviceCertificateMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeDeviceCertificate>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof removeDeviceCertificate>>, TError,void, TContext> => {
+
+const mutationKey = getRemoveDeviceCertificateMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof removeDeviceCertificate>>, void> = () => {
+
+
+          return  removeDeviceCertificate(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RemoveDeviceCertificateMutationResult = NonNullable<Awaited<ReturnType<typeof removeDeviceCertificate>>>
+
+    export type RemoveDeviceCertificateMutationError = ErrorType<unknown>
+
+
+    export const useRemoveDeviceCertificate = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof removeDeviceCertificate>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof removeDeviceCertificate>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getRemoveDeviceCertificateMutationOptions(options));
+    }
+
+export const getActivateDeviceLicenseUrl = () => {
+
+
+
+
+  return `/api/socialomni/license/activate`
+}
+
+export const activateDeviceLicense = async (licenseActivationInput: LicenseActivationInput, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<WorkspaceStateResponse>(getActivateDeviceLicenseUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(licenseActivationInput)
+  }
+);}
+
+
+
+
+
+export const getActivateDeviceLicenseMutationKey = () => ['activateDeviceLicense'] as const;
+
+export const getActivateDeviceLicenseMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateDeviceLicense>>, TError,ActivateDeviceLicenseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof activateDeviceLicense>>, TError,ActivateDeviceLicenseMutationVariables, TContext> => {
+
+const mutationKey = getActivateDeviceLicenseMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof activateDeviceLicense>>, ActivateDeviceLicenseMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  activateDeviceLicense(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ActivateDeviceLicenseMutationResult = NonNullable<Awaited<ReturnType<typeof activateDeviceLicense>>>
+    export type ActivateDeviceLicenseMutationBody = BodyType<LicenseActivationInput>
+    export type ActivateDeviceLicenseMutationError = ErrorType<unknown>
+    export type ActivateDeviceLicenseMutationVariables = {data: BodyType<LicenseActivationInput>}
+
+    export const useActivateDeviceLicense = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof activateDeviceLicense>>, TError,ActivateDeviceLicenseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof activateDeviceLicense>>,
+        TError,
+        ActivateDeviceLicenseMutationVariables,
+        TContext
+      > => {
+      return useMutation(getActivateDeviceLicenseMutationOptions(options));
+    }
+
+export const getRegisterLicenseMachineUrl = () => {
+
+
+
+
+  return `/api/socialomni/licensing/activate`
+}
+
+/**
+ * Central atomic device registration. Re-activation of the same machine consumes no additional seat.
+ */
+export const registerLicenseMachine = async (licenseRegistrationInput: LicenseRegistrationInput, options?: Parameters<typeof customFetch>[1]): Promise<LicenseCertificate> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<LicenseCertificate>(getRegisterLicenseMachineUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(licenseRegistrationInput)
+  }
+);}
+
+
+
+
+
+export const getRegisterLicenseMachineMutationKey = () => ['registerLicenseMachine'] as const;
+
+export const getRegisterLicenseMachineMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerLicenseMachine>>, TError,RegisterLicenseMachineMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof registerLicenseMachine>>, TError,RegisterLicenseMachineMutationVariables, TContext> => {
+
+const mutationKey = getRegisterLicenseMachineMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof registerLicenseMachine>>, RegisterLicenseMachineMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  registerLicenseMachine(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RegisterLicenseMachineMutationResult = NonNullable<Awaited<ReturnType<typeof registerLicenseMachine>>>
+    export type RegisterLicenseMachineMutationBody = BodyType<LicenseRegistrationInput>
+    export type RegisterLicenseMachineMutationError = ErrorType<unknown>
+    export type RegisterLicenseMachineMutationVariables = {data: BodyType<LicenseRegistrationInput>}
+
+    export const useRegisterLicenseMachine = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerLicenseMachine>>, TError,RegisterLicenseMachineMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof registerLicenseMachine>>,
+        TError,
+        RegisterLicenseMachineMutationVariables,
+        TContext
+      > => {
+      return useMutation(getRegisterLicenseMachineMutationOptions(options));
+    }
+
+export const getGetLicenseAuthorityPublicKeyUrl = () => {
+
+
+
+
+  return `/api/socialomni/licensing/public-key`
+}
+
+export const getLicenseAuthorityPublicKey = async ( options?: Parameters<typeof customFetch>[1]): Promise<LicenseAuthorityKey> => {
+
+  return customFetch<LicenseAuthorityKey>(getGetLicenseAuthorityPublicKeyUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetLicenseAuthorityPublicKeyQueryKey = () => {
+    return [
+    `/api/socialomni/licensing/public-key`
+    ] as const;
+    }
+
+
+export const getGetLicenseAuthorityPublicKeyQueryOptions = <TData = Awaited<ReturnType<typeof getLicenseAuthorityPublicKey>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLicenseAuthorityPublicKey>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetLicenseAuthorityPublicKeyQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLicenseAuthorityPublicKey>>> = ({ signal }) => getLicenseAuthorityPublicKey({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLicenseAuthorityPublicKey>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetLicenseAuthorityPublicKeyQueryResult = NonNullable<Awaited<ReturnType<typeof getLicenseAuthorityPublicKey>>>
+export type GetLicenseAuthorityPublicKeyQueryError = ErrorType<unknown>
+
+
+
+export function useGetLicenseAuthorityPublicKey<TData = Awaited<ReturnType<typeof getLicenseAuthorityPublicKey>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLicenseAuthorityPublicKey>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetLicenseAuthorityPublicKeyQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListIssuedLicensesUrl = () => {
+
+
+
+
+  return `/api/socialomni/licensing/admin/licenses`
+}
+
+export const listIssuedLicenses = async ( options?: Parameters<typeof customFetch>[1]): Promise<ListIssuedLicenses200> => {
+
+  return customFetch<ListIssuedLicenses200>(getListIssuedLicensesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListIssuedLicensesQueryKey = () => {
+    return [
+    `/api/socialomni/licensing/admin/licenses`
+    ] as const;
+    }
+
+
+export const getListIssuedLicensesQueryOptions = <TData = Awaited<ReturnType<typeof listIssuedLicenses>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listIssuedLicenses>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListIssuedLicensesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listIssuedLicenses>>> = ({ signal }) => listIssuedLicenses({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listIssuedLicenses>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListIssuedLicensesQueryResult = NonNullable<Awaited<ReturnType<typeof listIssuedLicenses>>>
+export type ListIssuedLicensesQueryError = ErrorType<unknown>
+
+
+
+export function useListIssuedLicenses<TData = Awaited<ReturnType<typeof listIssuedLicenses>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listIssuedLicenses>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListIssuedLicensesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getIssueLicensePackUrl = () => {
+
+
+
+
+  return `/api/socialomni/licensing/admin/licenses`
+}
+
+export const issueLicensePack = async (licensePackInput: LicensePackInput, options?: Parameters<typeof customFetch>[1]): Promise<IssuedLicensePack> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<IssuedLicensePack>(getIssueLicensePackUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(licensePackInput)
+  }
+);}
+
+
+
+
+
+export const getIssueLicensePackMutationKey = () => ['issueLicensePack'] as const;
+
+export const getIssueLicensePackMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof issueLicensePack>>, TError,IssueLicensePackMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof issueLicensePack>>, TError,IssueLicensePackMutationVariables, TContext> => {
+
+const mutationKey = getIssueLicensePackMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof issueLicensePack>>, IssueLicensePackMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  issueLicensePack(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type IssueLicensePackMutationResult = NonNullable<Awaited<ReturnType<typeof issueLicensePack>>>
+    export type IssueLicensePackMutationBody = BodyType<LicensePackInput>
+    export type IssueLicensePackMutationError = ErrorType<unknown>
+    export type IssueLicensePackMutationVariables = {data: BodyType<LicensePackInput>}
+
+    export const useIssueLicensePack = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof issueLicensePack>>, TError,IssueLicensePackMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof issueLicensePack>>,
+        TError,
+        IssueLicensePackMutationVariables,
+        TContext
+      > => {
+      return useMutation(getIssueLicensePackMutationOptions(options));
+    }
+
+export const getRenewLicenseSupportUrl = (id: string,) => {
+
+
+
+
+  return `/api/socialomni/licensing/admin/licenses/${id}/renew`
+}
+
+export const renewLicenseSupport = async (id: string,
+    licenseSupportInput: LicenseSupportInput, options?: Parameters<typeof customFetch>[1]): Promise<RenewLicenseSupport200> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<RenewLicenseSupport200>(getRenewLicenseSupportUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(licenseSupportInput)
+  }
+);}
+
+
+
+
+
+export const getRenewLicenseSupportMutationKey = () => ['renewLicenseSupport'] as const;
+
+export const getRenewLicenseSupportMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof renewLicenseSupport>>, TError,RenewLicenseSupportMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof renewLicenseSupport>>, TError,RenewLicenseSupportMutationVariables, TContext> => {
+
+const mutationKey = getRenewLicenseSupportMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof renewLicenseSupport>>, RenewLicenseSupportMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  renewLicenseSupport(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RenewLicenseSupportMutationResult = NonNullable<Awaited<ReturnType<typeof renewLicenseSupport>>>
+    export type RenewLicenseSupportMutationBody = BodyType<LicenseSupportInput>
+    export type RenewLicenseSupportMutationError = ErrorType<unknown>
+    export type RenewLicenseSupportMutationVariables = {id: string;data: BodyType<LicenseSupportInput>}
+
+    export const useRenewLicenseSupport = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof renewLicenseSupport>>, TError,RenewLicenseSupportMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof renewLicenseSupport>>,
+        TError,
+        RenewLicenseSupportMutationVariables,
+        TContext
+      > => {
+      return useMutation(getRenewLicenseSupportMutationOptions(options));
+    }
+
+export const getDisableLicensePackUrl = (id: string,) => {
+
+
+
+
+  return `/api/socialomni/licensing/admin/licenses/${id}/disable`
+}
+
+export const disableLicensePack = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<DisableLicensePack200> => {
+
+  return customFetch<DisableLicensePack200>(getDisableLicensePackUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getDisableLicensePackMutationKey = () => ['disableLicensePack'] as const;
+
+export const getDisableLicensePackMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disableLicensePack>>, TError,DisableLicensePackMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof disableLicensePack>>, TError,DisableLicensePackMutationVariables, TContext> => {
+
+const mutationKey = getDisableLicensePackMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof disableLicensePack>>, DisableLicensePackMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  disableLicensePack(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DisableLicensePackMutationResult = NonNullable<Awaited<ReturnType<typeof disableLicensePack>>>
+
+    export type DisableLicensePackMutationError = ErrorType<unknown>
+    export type DisableLicensePackMutationVariables = {id: string}
+
+    export const useDisableLicensePack = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof disableLicensePack>>, TError,DisableLicensePackMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof disableLicensePack>>,
+        TError,
+        DisableLicensePackMutationVariables,
+        TContext
+      > => {
+      return useMutation(getDisableLicensePackMutationOptions(options));
+    }
+
 export const getUpdateSocialOmniSettingsUrl = () => {
 
 
@@ -2246,7 +2967,7 @@ export const getUpdateSocialOmniSettingsUrl = () => {
   return `/api/socialomni/settings`
 }
 
-export const updateSocialOmniSettings = async (simulatorSettings: SimulatorSettings, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
+export const updateSocialOmniSettings = async (simulatorSettings: NonReadonly<SimulatorSettings>, options?: Parameters<typeof customFetch>[1]): Promise<WorkspaceStateResponse> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -2305,9 +3026,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type UpdateSocialOmniSettingsMutationResult = NonNullable<Awaited<ReturnType<typeof updateSocialOmniSettings>>>
-    export type UpdateSocialOmniSettingsMutationBody = BodyType<SimulatorSettings>
+    export type UpdateSocialOmniSettingsMutationBody = BodyType<NonReadonly<SimulatorSettings>>
     export type UpdateSocialOmniSettingsMutationError = ErrorType<unknown>
-    export type UpdateSocialOmniSettingsMutationVariables = {data: BodyType<SimulatorSettings>}
+    export type UpdateSocialOmniSettingsMutationVariables = {data: BodyType<NonReadonly<SimulatorSettings>>}
 
     export const useUpdateSocialOmniSettings = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateSocialOmniSettings>>, TError,UpdateSocialOmniSettingsMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}

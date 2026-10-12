@@ -89,8 +89,6 @@ export const createAdvancedTaskResponseSettingsPhoneNumbersMax = 10000;
 
 export const createAdvancedTaskResponseSettingsMessageContentMax = 10000;
 
-export const createAdvancedTaskResponseSettingsLicenseKeyMax = 200;
-
 export const createAdvancedTaskResponseJobsItemSearchLimitMax = 200;
 
 export const createAdvancedTaskResponseLeadsOneKeywordMax = 100;
@@ -106,6 +104,22 @@ export const createAdvancedTaskResponseAnalyticsMessagesSentMin = 0;
 
 
 export const CreateAdvancedTaskResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -248,7 +262,7 @@ export const CreateAdvancedTaskResponse = zod.object({
   "messageContent": zod.string().max(createAdvancedTaskResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(createAdvancedTaskResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -412,8 +426,6 @@ export const editAdvancedTaskResponseSettingsPhoneNumbersMax = 10000;
 
 export const editAdvancedTaskResponseSettingsMessageContentMax = 10000;
 
-export const editAdvancedTaskResponseSettingsLicenseKeyMax = 200;
-
 export const editAdvancedTaskResponseJobsItemSearchLimitMax = 200;
 
 export const editAdvancedTaskResponseLeadsOneKeywordMax = 100;
@@ -429,6 +441,22 @@ export const editAdvancedTaskResponseAnalyticsMessagesSentMin = 0;
 
 
 export const EditAdvancedTaskResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -571,7 +599,7 @@ export const EditAdvancedTaskResponse = zod.object({
   "messageContent": zod.string().max(editAdvancedTaskResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(editAdvancedTaskResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -707,8 +735,6 @@ export const deleteAdvancedTaskResponseSettingsPhoneNumbersMax = 10000;
 
 export const deleteAdvancedTaskResponseSettingsMessageContentMax = 10000;
 
-export const deleteAdvancedTaskResponseSettingsLicenseKeyMax = 200;
-
 export const deleteAdvancedTaskResponseJobsItemSearchLimitMax = 200;
 
 export const deleteAdvancedTaskResponseLeadsOneKeywordMax = 100;
@@ -724,6 +750,22 @@ export const deleteAdvancedTaskResponseAnalyticsMessagesSentMin = 0;
 
 
 export const DeleteAdvancedTaskResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -866,7 +908,7 @@ export const DeleteAdvancedTaskResponse = zod.object({
   "messageContent": zod.string().max(deleteAdvancedTaskResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(deleteAdvancedTaskResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -1006,8 +1048,6 @@ export const runAdvancedTaskResponseSettingsPhoneNumbersMax = 10000;
 
 export const runAdvancedTaskResponseSettingsMessageContentMax = 10000;
 
-export const runAdvancedTaskResponseSettingsLicenseKeyMax = 200;
-
 export const runAdvancedTaskResponseJobsItemSearchLimitMax = 200;
 
 export const runAdvancedTaskResponseLeadsOneKeywordMax = 100;
@@ -1023,6 +1063,22 @@ export const runAdvancedTaskResponseAnalyticsMessagesSentMin = 0;
 
 
 export const RunAdvancedTaskResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -1165,7 +1221,7 @@ export const RunAdvancedTaskResponse = zod.object({
   "messageContent": zod.string().max(runAdvancedTaskResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(runAdvancedTaskResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -1301,8 +1357,6 @@ export const cancelAdvancedTaskResponseSettingsPhoneNumbersMax = 10000;
 
 export const cancelAdvancedTaskResponseSettingsMessageContentMax = 10000;
 
-export const cancelAdvancedTaskResponseSettingsLicenseKeyMax = 200;
-
 export const cancelAdvancedTaskResponseJobsItemSearchLimitMax = 200;
 
 export const cancelAdvancedTaskResponseLeadsOneKeywordMax = 100;
@@ -1318,6 +1372,22 @@ export const cancelAdvancedTaskResponseAnalyticsMessagesSentMin = 0;
 
 
 export const CancelAdvancedTaskResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -1460,7 +1530,7 @@ export const CancelAdvancedTaskResponse = zod.object({
   "messageContent": zod.string().max(cancelAdvancedTaskResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(cancelAdvancedTaskResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -1611,8 +1681,6 @@ export const saveAdvancedConnectionResponseSettingsPhoneNumbersMax = 10000;
 
 export const saveAdvancedConnectionResponseSettingsMessageContentMax = 10000;
 
-export const saveAdvancedConnectionResponseSettingsLicenseKeyMax = 200;
-
 export const saveAdvancedConnectionResponseJobsItemSearchLimitMax = 200;
 
 export const saveAdvancedConnectionResponseLeadsOneKeywordMax = 100;
@@ -1628,6 +1696,22 @@ export const saveAdvancedConnectionResponseAnalyticsMessagesSentMin = 0;
 
 
 export const SaveAdvancedConnectionResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -1770,7 +1854,7 @@ export const SaveAdvancedConnectionResponse = zod.object({
   "messageContent": zod.string().max(saveAdvancedConnectionResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(saveAdvancedConnectionResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -1906,8 +1990,6 @@ export const deleteAdvancedConnectionResponseSettingsPhoneNumbersMax = 10000;
 
 export const deleteAdvancedConnectionResponseSettingsMessageContentMax = 10000;
 
-export const deleteAdvancedConnectionResponseSettingsLicenseKeyMax = 200;
-
 export const deleteAdvancedConnectionResponseJobsItemSearchLimitMax = 200;
 
 export const deleteAdvancedConnectionResponseLeadsOneKeywordMax = 100;
@@ -1923,6 +2005,22 @@ export const deleteAdvancedConnectionResponseAnalyticsMessagesSentMin = 0;
 
 
 export const DeleteAdvancedConnectionResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -2065,7 +2163,7 @@ export const DeleteAdvancedConnectionResponse = zod.object({
   "messageContent": zod.string().max(deleteAdvancedConnectionResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(deleteAdvancedConnectionResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -2209,8 +2307,6 @@ export const sendSmtpTestMessageResponseSettingsPhoneNumbersMax = 10000;
 
 export const sendSmtpTestMessageResponseSettingsMessageContentMax = 10000;
 
-export const sendSmtpTestMessageResponseSettingsLicenseKeyMax = 200;
-
 export const sendSmtpTestMessageResponseJobsItemSearchLimitMax = 200;
 
 export const sendSmtpTestMessageResponseLeadsOneKeywordMax = 100;
@@ -2226,6 +2322,22 @@ export const sendSmtpTestMessageResponseAnalyticsMessagesSentMin = 0;
 
 
 export const SendSmtpTestMessageResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -2368,7 +2480,7 @@ export const SendSmtpTestMessageResponse = zod.object({
   "messageContent": zod.string().max(sendSmtpTestMessageResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(sendSmtpTestMessageResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -2512,8 +2624,6 @@ export const sendSmsTestMessageResponseSettingsPhoneNumbersMax = 10000;
 
 export const sendSmsTestMessageResponseSettingsMessageContentMax = 10000;
 
-export const sendSmsTestMessageResponseSettingsLicenseKeyMax = 200;
-
 export const sendSmsTestMessageResponseJobsItemSearchLimitMax = 200;
 
 export const sendSmsTestMessageResponseLeadsOneKeywordMax = 100;
@@ -2529,6 +2639,22 @@ export const sendSmsTestMessageResponseAnalyticsMessagesSentMin = 0;
 
 
 export const SendSmsTestMessageResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -2671,7 +2797,7 @@ export const SendSmsTestMessageResponse = zod.object({
   "messageContent": zod.string().max(sendSmsTestMessageResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(sendSmsTestMessageResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -2807,8 +2933,6 @@ export const refreshSmsResultResponseSettingsPhoneNumbersMax = 10000;
 
 export const refreshSmsResultResponseSettingsMessageContentMax = 10000;
 
-export const refreshSmsResultResponseSettingsLicenseKeyMax = 200;
-
 export const refreshSmsResultResponseJobsItemSearchLimitMax = 200;
 
 export const refreshSmsResultResponseLeadsOneKeywordMax = 100;
@@ -2824,6 +2948,22 @@ export const refreshSmsResultResponseAnalyticsMessagesSentMin = 0;
 
 
 export const RefreshSmsResultResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -2966,7 +3106,7 @@ export const RefreshSmsResultResponse = zod.object({
   "messageContent": zod.string().max(refreshSmsResultResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(refreshSmsResultResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -3107,8 +3247,6 @@ export const authorizeTelegramResponseSettingsPhoneNumbersMax = 10000;
 
 export const authorizeTelegramResponseSettingsMessageContentMax = 10000;
 
-export const authorizeTelegramResponseSettingsLicenseKeyMax = 200;
-
 export const authorizeTelegramResponseJobsItemSearchLimitMax = 200;
 
 export const authorizeTelegramResponseLeadsOneKeywordMax = 100;
@@ -3124,6 +3262,22 @@ export const authorizeTelegramResponseAnalyticsMessagesSentMin = 0;
 
 
 export const AuthorizeTelegramResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -3266,7 +3420,7 @@ export const AuthorizeTelegramResponse = zod.object({
   "messageContent": zod.string().max(authorizeTelegramResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(authorizeTelegramResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -3402,8 +3556,6 @@ export const deleteAdvancedResultResponseSettingsPhoneNumbersMax = 10000;
 
 export const deleteAdvancedResultResponseSettingsMessageContentMax = 10000;
 
-export const deleteAdvancedResultResponseSettingsLicenseKeyMax = 200;
-
 export const deleteAdvancedResultResponseJobsItemSearchLimitMax = 200;
 
 export const deleteAdvancedResultResponseLeadsOneKeywordMax = 100;
@@ -3419,6 +3571,22 @@ export const deleteAdvancedResultResponseAnalyticsMessagesSentMin = 0;
 
 
 export const DeleteAdvancedResultResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -3561,7 +3729,7 @@ export const DeleteAdvancedResultResponse = zod.object({
   "messageContent": zod.string().max(deleteAdvancedResultResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(deleteAdvancedResultResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -3702,8 +3870,6 @@ export const saveWaAiResponseSettingsPhoneNumbersMax = 10000;
 
 export const saveWaAiResponseSettingsMessageContentMax = 10000;
 
-export const saveWaAiResponseSettingsLicenseKeyMax = 200;
-
 export const saveWaAiResponseJobsItemSearchLimitMax = 200;
 
 export const saveWaAiResponseLeadsOneKeywordMax = 100;
@@ -3719,6 +3885,22 @@ export const saveWaAiResponseAnalyticsMessagesSentMin = 0;
 
 
 export const SaveWaAiResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -3861,7 +4043,7 @@ export const SaveWaAiResponse = zod.object({
   "messageContent": zod.string().max(saveWaAiResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(saveWaAiResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -4006,8 +4188,6 @@ export const saveWaMenuResponseSettingsPhoneNumbersMax = 10000;
 
 export const saveWaMenuResponseSettingsMessageContentMax = 10000;
 
-export const saveWaMenuResponseSettingsLicenseKeyMax = 200;
-
 export const saveWaMenuResponseJobsItemSearchLimitMax = 200;
 
 export const saveWaMenuResponseLeadsOneKeywordMax = 100;
@@ -4023,6 +4203,22 @@ export const saveWaMenuResponseAnalyticsMessagesSentMin = 0;
 
 
 export const SaveWaMenuResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -4165,7 +4361,7 @@ export const SaveWaMenuResponse = zod.object({
   "messageContent": zod.string().max(saveWaMenuResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(saveWaMenuResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -4305,8 +4501,6 @@ export const saveWaFilterResponseSettingsPhoneNumbersMax = 10000;
 
 export const saveWaFilterResponseSettingsMessageContentMax = 10000;
 
-export const saveWaFilterResponseSettingsLicenseKeyMax = 200;
-
 export const saveWaFilterResponseJobsItemSearchLimitMax = 200;
 
 export const saveWaFilterResponseLeadsOneKeywordMax = 100;
@@ -4322,6 +4516,22 @@ export const saveWaFilterResponseAnalyticsMessagesSentMin = 0;
 
 
 export const SaveWaFilterResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -4464,7 +4674,7 @@ export const SaveWaFilterResponse = zod.object({
   "messageContent": zod.string().max(saveWaFilterResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(saveWaFilterResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -4618,8 +4828,6 @@ export const createCrmThreadResponseSettingsPhoneNumbersMax = 10000;
 
 export const createCrmThreadResponseSettingsMessageContentMax = 10000;
 
-export const createCrmThreadResponseSettingsLicenseKeyMax = 200;
-
 export const createCrmThreadResponseJobsItemSearchLimitMax = 200;
 
 export const createCrmThreadResponseLeadsOneKeywordMax = 100;
@@ -4635,6 +4843,22 @@ export const createCrmThreadResponseAnalyticsMessagesSentMin = 0;
 
 
 export const CreateCrmThreadResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -4777,7 +5001,7 @@ export const CreateCrmThreadResponse = zod.object({
   "messageContent": zod.string().max(createCrmThreadResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(createCrmThreadResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -4935,8 +5159,6 @@ export const editCrmThreadResponseSettingsPhoneNumbersMax = 10000;
 
 export const editCrmThreadResponseSettingsMessageContentMax = 10000;
 
-export const editCrmThreadResponseSettingsLicenseKeyMax = 200;
-
 export const editCrmThreadResponseJobsItemSearchLimitMax = 200;
 
 export const editCrmThreadResponseLeadsOneKeywordMax = 100;
@@ -4952,6 +5174,22 @@ export const editCrmThreadResponseAnalyticsMessagesSentMin = 0;
 
 
 export const EditCrmThreadResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -5094,7 +5332,7 @@ export const EditCrmThreadResponse = zod.object({
   "messageContent": zod.string().max(editCrmThreadResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(editCrmThreadResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -5230,8 +5468,6 @@ export const removeCrmThreadResponseSettingsPhoneNumbersMax = 10000;
 
 export const removeCrmThreadResponseSettingsMessageContentMax = 10000;
 
-export const removeCrmThreadResponseSettingsLicenseKeyMax = 200;
-
 export const removeCrmThreadResponseJobsItemSearchLimitMax = 200;
 
 export const removeCrmThreadResponseLeadsOneKeywordMax = 100;
@@ -5247,6 +5483,22 @@ export const removeCrmThreadResponseAnalyticsMessagesSentMin = 0;
 
 
 export const RemoveCrmThreadResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -5389,7 +5641,7 @@ export const RemoveCrmThreadResponse = zod.object({
   "messageContent": zod.string().max(removeCrmThreadResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(removeCrmThreadResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -5549,8 +5801,6 @@ export const createChatbotRuleResponseSettingsPhoneNumbersMax = 10000;
 
 export const createChatbotRuleResponseSettingsMessageContentMax = 10000;
 
-export const createChatbotRuleResponseSettingsLicenseKeyMax = 200;
-
 export const createChatbotRuleResponseJobsItemSearchLimitMax = 200;
 
 export const createChatbotRuleResponseLeadsOneKeywordMax = 100;
@@ -5566,6 +5816,22 @@ export const createChatbotRuleResponseAnalyticsMessagesSentMin = 0;
 
 
 export const CreateChatbotRuleResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -5708,7 +5974,7 @@ export const CreateChatbotRuleResponse = zod.object({
   "messageContent": zod.string().max(createChatbotRuleResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(createChatbotRuleResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -5872,8 +6138,6 @@ export const editChatbotRuleResponseSettingsPhoneNumbersMax = 10000;
 
 export const editChatbotRuleResponseSettingsMessageContentMax = 10000;
 
-export const editChatbotRuleResponseSettingsLicenseKeyMax = 200;
-
 export const editChatbotRuleResponseJobsItemSearchLimitMax = 200;
 
 export const editChatbotRuleResponseLeadsOneKeywordMax = 100;
@@ -5889,6 +6153,22 @@ export const editChatbotRuleResponseAnalyticsMessagesSentMin = 0;
 
 
 export const EditChatbotRuleResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -6031,7 +6311,7 @@ export const EditChatbotRuleResponse = zod.object({
   "messageContent": zod.string().max(editChatbotRuleResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(editChatbotRuleResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -6167,8 +6447,6 @@ export const removeChatbotRuleResponseSettingsPhoneNumbersMax = 10000;
 
 export const removeChatbotRuleResponseSettingsMessageContentMax = 10000;
 
-export const removeChatbotRuleResponseSettingsLicenseKeyMax = 200;
-
 export const removeChatbotRuleResponseJobsItemSearchLimitMax = 200;
 
 export const removeChatbotRuleResponseLeadsOneKeywordMax = 100;
@@ -6184,6 +6462,22 @@ export const removeChatbotRuleResponseAnalyticsMessagesSentMin = 0;
 
 
 export const RemoveChatbotRuleResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -6326,7 +6620,7 @@ export const RemoveChatbotRuleResponse = zod.object({
   "messageContent": zod.string().max(removeChatbotRuleResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(removeChatbotRuleResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -6467,8 +6761,6 @@ export const startWaSuiteSessionResponseSettingsPhoneNumbersMax = 10000;
 
 export const startWaSuiteSessionResponseSettingsMessageContentMax = 10000;
 
-export const startWaSuiteSessionResponseSettingsLicenseKeyMax = 200;
-
 export const startWaSuiteSessionResponseJobsItemSearchLimitMax = 200;
 
 export const startWaSuiteSessionResponseLeadsOneKeywordMax = 100;
@@ -6484,6 +6776,22 @@ export const startWaSuiteSessionResponseAnalyticsMessagesSentMin = 0;
 
 
 export const StartWaSuiteSessionResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -6626,7 +6934,7 @@ export const StartWaSuiteSessionResponse = zod.object({
   "messageContent": zod.string().max(startWaSuiteSessionResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(startWaSuiteSessionResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -6776,8 +7084,6 @@ export const startLocalBrowserTaskResponseSettingsPhoneNumbersMax = 10000;
 
 export const startLocalBrowserTaskResponseSettingsMessageContentMax = 10000;
 
-export const startLocalBrowserTaskResponseSettingsLicenseKeyMax = 200;
-
 export const startLocalBrowserTaskResponseJobsItemSearchLimitMax = 200;
 
 export const startLocalBrowserTaskResponseLeadsOneKeywordMax = 100;
@@ -6793,6 +7099,22 @@ export const startLocalBrowserTaskResponseAnalyticsMessagesSentMin = 0;
 
 
 export const StartLocalBrowserTaskResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -6935,7 +7257,7 @@ export const StartLocalBrowserTaskResponse = zod.object({
   "messageContent": zod.string().max(startLocalBrowserTaskResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(startLocalBrowserTaskResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -7087,8 +7409,6 @@ export const saveSocialOmniLeadDraftResponseSettingsPhoneNumbersMax = 10000;
 
 export const saveSocialOmniLeadDraftResponseSettingsMessageContentMax = 10000;
 
-export const saveSocialOmniLeadDraftResponseSettingsLicenseKeyMax = 200;
-
 export const saveSocialOmniLeadDraftResponseJobsItemSearchLimitMax = 200;
 
 export const saveSocialOmniLeadDraftResponseLeadsOneKeywordMax = 100;
@@ -7104,6 +7424,22 @@ export const saveSocialOmniLeadDraftResponseAnalyticsMessagesSentMin = 0;
 
 
 export const SaveSocialOmniLeadDraftResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -7246,7 +7582,7 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
   "messageContent": zod.string().max(saveSocialOmniLeadDraftResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(saveSocialOmniLeadDraftResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -7381,8 +7717,6 @@ export const clearSocialOmniLeadsResponseSettingsPhoneNumbersMax = 10000;
 
 export const clearSocialOmniLeadsResponseSettingsMessageContentMax = 10000;
 
-export const clearSocialOmniLeadsResponseSettingsLicenseKeyMax = 200;
-
 export const clearSocialOmniLeadsResponseJobsItemSearchLimitMax = 200;
 
 export const clearSocialOmniLeadsResponseLeadsOneKeywordMax = 100;
@@ -7398,6 +7732,22 @@ export const clearSocialOmniLeadsResponseAnalyticsMessagesSentMin = 0;
 
 
 export const ClearSocialOmniLeadsResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -7540,7 +7890,7 @@ export const ClearSocialOmniLeadsResponse = zod.object({
   "messageContent": zod.string().max(clearSocialOmniLeadsResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(clearSocialOmniLeadsResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -7672,8 +8022,6 @@ export const getSocialOmniStateResponseSettingsPhoneNumbersMax = 10000;
 
 export const getSocialOmniStateResponseSettingsMessageContentMax = 10000;
 
-export const getSocialOmniStateResponseSettingsLicenseKeyMax = 200;
-
 export const getSocialOmniStateResponseJobsItemSearchLimitMax = 200;
 
 export const getSocialOmniStateResponseLeadsOneKeywordMax = 100;
@@ -7689,6 +8037,22 @@ export const getSocialOmniStateResponseAnalyticsMessagesSentMin = 0;
 
 
 export const GetSocialOmniStateResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -7831,7 +8195,7 @@ export const GetSocialOmniStateResponse = zod.object({
   "messageContent": zod.string().max(getSocialOmniStateResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(getSocialOmniStateResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -7963,8 +8327,6 @@ export const clearSocialOmniStateResponseSettingsPhoneNumbersMax = 10000;
 
 export const clearSocialOmniStateResponseSettingsMessageContentMax = 10000;
 
-export const clearSocialOmniStateResponseSettingsLicenseKeyMax = 200;
-
 export const clearSocialOmniStateResponseJobsItemSearchLimitMax = 200;
 
 export const clearSocialOmniStateResponseLeadsOneKeywordMax = 100;
@@ -7980,6 +8342,22 @@ export const clearSocialOmniStateResponseAnalyticsMessagesSentMin = 0;
 
 
 export const ClearSocialOmniStateResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -8122,7 +8500,7 @@ export const ClearSocialOmniStateResponse = zod.object({
   "messageContent": zod.string().max(clearSocialOmniStateResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(clearSocialOmniStateResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -8201,6 +8579,996 @@ export const ClearSocialOmniStateResponse = zod.object({
 })
 
 
+export const GetDeviceLicenseHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const getDeviceLicenseResponseAdvancedTasksItemOneNameMax = 150;
+
+export const getDeviceLicenseResponseAdvancedTasksItemOneSourceMax = 15000;
+
+export const getDeviceLicenseResponseAdvancedTasksItemOneMessageMax = 10000;
+
+export const getDeviceLicenseResponseAdvancedTasksItemOneSubjectMax = 200;
+
+export const getDeviceLicenseResponseAdvancedTasksItemOneQueryMax = 300;
+
+export const getDeviceLicenseResponseAdvancedTasksItemOneLimitMax = 2000;
+
+export const getDeviceLicenseResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const getDeviceLicenseResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const getDeviceLicenseResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const getDeviceLicenseResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const getDeviceLicenseResponseWaSuiteThreadsItemOneTagsMax = 20;
+
+export const getDeviceLicenseResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const getDeviceLicenseResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const getDeviceLicenseResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const getDeviceLicenseResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const getDeviceLicenseResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const getDeviceLicenseResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const getDeviceLicenseResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const getDeviceLicenseResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const getDeviceLicenseResponseSettingsLanguageDefault = `en`;
+export const getDeviceLicenseResponseSettingsKeywordsMax = 300;
+
+export const getDeviceLicenseResponseSettingsDelayMinMin = 5;
+export const getDeviceLicenseResponseSettingsDelayMinMax = 12;
+
+export const getDeviceLicenseResponseSettingsDelayMaxMin = 5;
+export const getDeviceLicenseResponseSettingsDelayMaxMax = 12;
+
+export const getDeviceLicenseResponseSettingsPhoneNumbersMax = 10000;
+
+export const getDeviceLicenseResponseSettingsMessageContentMax = 10000;
+
+export const getDeviceLicenseResponseJobsItemSearchLimitMax = 200;
+
+export const getDeviceLicenseResponseLeadsOneKeywordMax = 100;
+
+export const getDeviceLicenseResponseLeadsOneCityMax = 150;
+
+export const getDeviceLicenseResponseLeadsOneTargetCountMax = 200;
+
+export const getDeviceLicenseResponseAnalyticsRealMessagesSentMin = 0;
+
+export const getDeviceLicenseResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const GetDeviceLicenseResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
+  "advanced": zod.object({
+  "tasks": zod.array(zod.object({
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "name": zod.string().max(getDeviceLicenseResponseAdvancedTasksItemOneNameMax),
+  "source": zod.string().max(getDeviceLicenseResponseAdvancedTasksItemOneSourceMax).optional(),
+  "message": zod.string().max(getDeviceLicenseResponseAdvancedTasksItemOneMessageMax).optional(),
+  "subject": zod.string().max(getDeviceLicenseResponseAdvancedTasksItemOneSubjectMax).optional(),
+  "query": zod.string().max(getDeviceLicenseResponseAdvancedTasksItemOneQueryMax).optional(),
+  "limit": zod.number().int().min(1).max(getDeviceLicenseResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
+  "accountId": zod.string().optional(),
+  "mediaId": zod.string().optional(),
+  "scheduledAt": zod.string().optional(),
+  "approved": zod.boolean().optional()
+}).and(zod.object({
+  "id": zod.string(),
+  "status": zod.enum(['Draft', 'Scheduled', 'Queued', 'Running', 'Completed', 'Cancelled', 'Failed', 'Needs review']),
+  "progress": zod.number().int(),
+  "completedCount": zod.number().int(),
+  "totalCount": zod.number().int(),
+  "phase": zod.string(),
+  "createdAt": zod.string(),
+  "error": zod.string(),
+  "nextActionAt": zod.string().nullish()
+}))),
+  "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
+  "userId": zod.string().optional(),
+  "username": zod.string().optional(),
+  "id": zod.string(),
+  "taskId": zod.string(),
+  "kind": zod.string(),
+  "name": zod.string(),
+  "phone": zod.string(),
+  "email": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "status": zod.string(),
+  "reason": zod.string(),
+  "createdAt": zod.string()
+})),
+  "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
+  "configured": zod.boolean(),
+  "connected": zod.boolean(),
+  "label": zod.string(),
+  "stage": zod.string(),
+  "error": zod.string()
+}))
+}).optional(),
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(getDeviceLicenseResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(getDeviceLicenseResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(getDeviceLicenseResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(getDeviceLicenseResponseWaSuiteThreadsItemOneTagsItemMax)).max(getDeviceLicenseResponseWaSuiteThreadsItemOneTagsMax).optional(),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(getDeviceLicenseResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(getDeviceLicenseResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(getDeviceLicenseResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(getDeviceLicenseResponseWaSuiteRulesItemOneDelayMinMin).max(getDeviceLicenseResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(getDeviceLicenseResponseWaSuiteRulesItemOneDelayMaxMin).max(getDeviceLicenseResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(getDeviceLicenseResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(getDeviceLicenseResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
+  "keywords": zod.string().max(getDeviceLicenseResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(getDeviceLicenseResponseSettingsDelayMinMin).max(getDeviceLicenseResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(getDeviceLicenseResponseSettingsDelayMaxMin).max(getDeviceLicenseResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(getDeviceLicenseResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(getDeviceLicenseResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "error": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(getDeviceLicenseResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(getDeviceLicenseResponseLeadsOneKeywordMax),
+  "city": zod.string().max(getDeviceLicenseResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(getDeviceLicenseResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.boolean()
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(getDeviceLicenseResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(getDeviceLicenseResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
+/**
+ * Desktop only. Removes the local certificate, never frees a registered seat. Stop running and scheduled tasks first.
+ */
+export const RemoveDeviceCertificateHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const removeDeviceCertificateResponseAdvancedTasksItemOneNameMax = 150;
+
+export const removeDeviceCertificateResponseAdvancedTasksItemOneSourceMax = 15000;
+
+export const removeDeviceCertificateResponseAdvancedTasksItemOneMessageMax = 10000;
+
+export const removeDeviceCertificateResponseAdvancedTasksItemOneSubjectMax = 200;
+
+export const removeDeviceCertificateResponseAdvancedTasksItemOneQueryMax = 300;
+
+export const removeDeviceCertificateResponseAdvancedTasksItemOneLimitMax = 2000;
+
+export const removeDeviceCertificateResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const removeDeviceCertificateResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const removeDeviceCertificateResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const removeDeviceCertificateResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const removeDeviceCertificateResponseWaSuiteThreadsItemOneTagsMax = 20;
+
+export const removeDeviceCertificateResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const removeDeviceCertificateResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const removeDeviceCertificateResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const removeDeviceCertificateResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const removeDeviceCertificateResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const removeDeviceCertificateResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const removeDeviceCertificateResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const removeDeviceCertificateResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const removeDeviceCertificateResponseSettingsLanguageDefault = `en`;
+export const removeDeviceCertificateResponseSettingsKeywordsMax = 300;
+
+export const removeDeviceCertificateResponseSettingsDelayMinMin = 5;
+export const removeDeviceCertificateResponseSettingsDelayMinMax = 12;
+
+export const removeDeviceCertificateResponseSettingsDelayMaxMin = 5;
+export const removeDeviceCertificateResponseSettingsDelayMaxMax = 12;
+
+export const removeDeviceCertificateResponseSettingsPhoneNumbersMax = 10000;
+
+export const removeDeviceCertificateResponseSettingsMessageContentMax = 10000;
+
+export const removeDeviceCertificateResponseJobsItemSearchLimitMax = 200;
+
+export const removeDeviceCertificateResponseLeadsOneKeywordMax = 100;
+
+export const removeDeviceCertificateResponseLeadsOneCityMax = 150;
+
+export const removeDeviceCertificateResponseLeadsOneTargetCountMax = 200;
+
+export const removeDeviceCertificateResponseAnalyticsRealMessagesSentMin = 0;
+
+export const removeDeviceCertificateResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const RemoveDeviceCertificateResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
+  "advanced": zod.object({
+  "tasks": zod.array(zod.object({
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "name": zod.string().max(removeDeviceCertificateResponseAdvancedTasksItemOneNameMax),
+  "source": zod.string().max(removeDeviceCertificateResponseAdvancedTasksItemOneSourceMax).optional(),
+  "message": zod.string().max(removeDeviceCertificateResponseAdvancedTasksItemOneMessageMax).optional(),
+  "subject": zod.string().max(removeDeviceCertificateResponseAdvancedTasksItemOneSubjectMax).optional(),
+  "query": zod.string().max(removeDeviceCertificateResponseAdvancedTasksItemOneQueryMax).optional(),
+  "limit": zod.number().int().min(1).max(removeDeviceCertificateResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
+  "accountId": zod.string().optional(),
+  "mediaId": zod.string().optional(),
+  "scheduledAt": zod.string().optional(),
+  "approved": zod.boolean().optional()
+}).and(zod.object({
+  "id": zod.string(),
+  "status": zod.enum(['Draft', 'Scheduled', 'Queued', 'Running', 'Completed', 'Cancelled', 'Failed', 'Needs review']),
+  "progress": zod.number().int(),
+  "completedCount": zod.number().int(),
+  "totalCount": zod.number().int(),
+  "phase": zod.string(),
+  "createdAt": zod.string(),
+  "error": zod.string(),
+  "nextActionAt": zod.string().nullish()
+}))),
+  "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
+  "userId": zod.string().optional(),
+  "username": zod.string().optional(),
+  "id": zod.string(),
+  "taskId": zod.string(),
+  "kind": zod.string(),
+  "name": zod.string(),
+  "phone": zod.string(),
+  "email": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "status": zod.string(),
+  "reason": zod.string(),
+  "createdAt": zod.string()
+})),
+  "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
+  "configured": zod.boolean(),
+  "connected": zod.boolean(),
+  "label": zod.string(),
+  "stage": zod.string(),
+  "error": zod.string()
+}))
+}).optional(),
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(removeDeviceCertificateResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(removeDeviceCertificateResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(removeDeviceCertificateResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(removeDeviceCertificateResponseWaSuiteThreadsItemOneTagsItemMax)).max(removeDeviceCertificateResponseWaSuiteThreadsItemOneTagsMax).optional(),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(removeDeviceCertificateResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(removeDeviceCertificateResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(removeDeviceCertificateResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(removeDeviceCertificateResponseWaSuiteRulesItemOneDelayMinMin).max(removeDeviceCertificateResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(removeDeviceCertificateResponseWaSuiteRulesItemOneDelayMaxMin).max(removeDeviceCertificateResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(removeDeviceCertificateResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(removeDeviceCertificateResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
+  "keywords": zod.string().max(removeDeviceCertificateResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(removeDeviceCertificateResponseSettingsDelayMinMin).max(removeDeviceCertificateResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(removeDeviceCertificateResponseSettingsDelayMaxMin).max(removeDeviceCertificateResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(removeDeviceCertificateResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(removeDeviceCertificateResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "error": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(removeDeviceCertificateResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(removeDeviceCertificateResponseLeadsOneKeywordMax),
+  "city": zod.string().max(removeDeviceCertificateResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(removeDeviceCertificateResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.boolean()
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(removeDeviceCertificateResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(removeDeviceCertificateResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
+export const ActivateDeviceLicenseHeader = zod.object({
+  "x-socialomni-workspace": zod.string().uuid()
+})
+
+export const activateDeviceLicenseBodyKeyRegExp = new RegExp('^SNK-[A-Za-z0-9_-]{43}$');
+
+
+export const ActivateDeviceLicenseBody = zod.object({
+  "key": zod.string().regex(activateDeviceLicenseBodyKeyRegExp)
+})
+
+export const activateDeviceLicenseResponseAdvancedTasksItemOneNameMax = 150;
+
+export const activateDeviceLicenseResponseAdvancedTasksItemOneSourceMax = 15000;
+
+export const activateDeviceLicenseResponseAdvancedTasksItemOneMessageMax = 10000;
+
+export const activateDeviceLicenseResponseAdvancedTasksItemOneSubjectMax = 200;
+
+export const activateDeviceLicenseResponseAdvancedTasksItemOneQueryMax = 300;
+
+export const activateDeviceLicenseResponseAdvancedTasksItemOneLimitMax = 2000;
+
+export const activateDeviceLicenseResponseWaSuiteThreadsItemOneNameMax = 150;
+
+export const activateDeviceLicenseResponseWaSuiteThreadsItemOnePhoneMax = 30;
+
+export const activateDeviceLicenseResponseWaSuiteThreadsItemOneNotesMax = 10000;
+
+export const activateDeviceLicenseResponseWaSuiteThreadsItemOneTagsItemMax = 50;
+
+export const activateDeviceLicenseResponseWaSuiteThreadsItemOneTagsMax = 20;
+
+export const activateDeviceLicenseResponseWaSuiteRulesItemOneNameMax = 100;
+
+export const activateDeviceLicenseResponseWaSuiteRulesItemOneKeywordMax = 200;
+
+export const activateDeviceLicenseResponseWaSuiteRulesItemOneTemplateMax = 2000;
+
+export const activateDeviceLicenseResponseWaSuiteRulesItemOneDelayMinMin = 3;
+export const activateDeviceLicenseResponseWaSuiteRulesItemOneDelayMinMax = 8;
+
+export const activateDeviceLicenseResponseWaSuiteRulesItemOneDelayMaxMin = 3;
+export const activateDeviceLicenseResponseWaSuiteRulesItemOneDelayMaxMax = 8;
+
+export const activateDeviceLicenseResponseWaSuiteRulesItemOneCooldownMinutesMax = 1440;
+
+export const activateDeviceLicenseResponseSettingsLanguageDefault = `en`;
+export const activateDeviceLicenseResponseSettingsKeywordsMax = 300;
+
+export const activateDeviceLicenseResponseSettingsDelayMinMin = 5;
+export const activateDeviceLicenseResponseSettingsDelayMinMax = 12;
+
+export const activateDeviceLicenseResponseSettingsDelayMaxMin = 5;
+export const activateDeviceLicenseResponseSettingsDelayMaxMax = 12;
+
+export const activateDeviceLicenseResponseSettingsPhoneNumbersMax = 10000;
+
+export const activateDeviceLicenseResponseSettingsMessageContentMax = 10000;
+
+export const activateDeviceLicenseResponseJobsItemSearchLimitMax = 200;
+
+export const activateDeviceLicenseResponseLeadsOneKeywordMax = 100;
+
+export const activateDeviceLicenseResponseLeadsOneCityMax = 150;
+
+export const activateDeviceLicenseResponseLeadsOneTargetCountMax = 200;
+
+export const activateDeviceLicenseResponseAnalyticsRealMessagesSentMin = 0;
+
+export const activateDeviceLicenseResponseAnalyticsMessagesSentMin = 0;
+
+
+
+export const ActivateDeviceLicenseResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
+  "advanced": zod.object({
+  "tasks": zod.array(zod.object({
+  "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
+  "name": zod.string().max(activateDeviceLicenseResponseAdvancedTasksItemOneNameMax),
+  "source": zod.string().max(activateDeviceLicenseResponseAdvancedTasksItemOneSourceMax).optional(),
+  "message": zod.string().max(activateDeviceLicenseResponseAdvancedTasksItemOneMessageMax).optional(),
+  "subject": zod.string().max(activateDeviceLicenseResponseAdvancedTasksItemOneSubjectMax).optional(),
+  "query": zod.string().max(activateDeviceLicenseResponseAdvancedTasksItemOneQueryMax).optional(),
+  "limit": zod.number().int().min(1).max(activateDeviceLicenseResponseAdvancedTasksItemOneLimitMax).optional().describe('WhatsApp member extraction allows 2000; other task kinds allow 200.'),
+  "accountId": zod.string().optional(),
+  "mediaId": zod.string().optional(),
+  "scheduledAt": zod.string().optional(),
+  "approved": zod.boolean().optional()
+}).and(zod.object({
+  "id": zod.string(),
+  "status": zod.enum(['Draft', 'Scheduled', 'Queued', 'Running', 'Completed', 'Cancelled', 'Failed', 'Needs review']),
+  "progress": zod.number().int(),
+  "completedCount": zod.number().int(),
+  "totalCount": zod.number().int(),
+  "phase": zod.string(),
+  "createdAt": zod.string(),
+  "error": zod.string(),
+  "nextActionAt": zod.string().nullish()
+}))),
+  "results": zod.array(zod.object({
+  "providerId": zod.string().optional(),
+  "providerStatus": zod.string().optional(),
+  "providerAccountSid": zod.string().optional(),
+  "providerErrorCode": zod.number().int().optional(),
+  "estimatedSegments": zod.number().int().optional(),
+  "encoding": zod.enum(['GSM-7', 'UCS-2']).optional(),
+  "segments": zod.number().int().optional(),
+  "statusCheckedAt": zod.string().optional(),
+  "statusRefreshError": zod.string().optional(),
+  "userId": zod.string().optional(),
+  "username": zod.string().optional(),
+  "id": zod.string(),
+  "taskId": zod.string(),
+  "kind": zod.string(),
+  "name": zod.string(),
+  "phone": zod.string(),
+  "email": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "status": zod.string(),
+  "reason": zod.string(),
+  "createdAt": zod.string()
+})),
+  "connections": zod.array(zod.object({
+  "sessionOnly": zod.boolean().optional(),
+  "settings": zod.object({
+  "accountSid": zod.string().optional(),
+  "apiKeySid": zod.string().optional(),
+  "host": zod.string().optional(),
+  "port": zod.number().int().optional(),
+  "secure": zod.boolean().optional(),
+  "username": zod.string().optional(),
+  "from": zod.string().optional()
+}).optional(),
+  "id": zod.enum(['smtp', 'telegram', 'twilio']),
+  "configured": zod.boolean(),
+  "connected": zod.boolean(),
+  "label": zod.string(),
+  "stage": zod.string(),
+  "error": zod.string()
+}))
+}).optional(),
+  "automationAvailable": zod.boolean().optional(),
+  "waSuite": zod.object({
+  "filter": zod.object({
+  "source": zod.string(),
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "input": zod.string(),
+  "phone": zod.string(),
+  "status": zod.enum(['Unverified', 'Active/Valid', 'Inactive', 'Unknown']),
+  "reason": zod.string(),
+  "checkedAt": zod.string().nullish()
+}))
+}),
+  "threads": zod.array(zod.object({
+  "consentChanged": zod.boolean().optional().describe('Set false on note-only edits to preserve concurrent opt-outs'),
+  "name": zod.string().max(activateDeviceLicenseResponseWaSuiteThreadsItemOneNameMax),
+  "phone": zod.string().max(activateDeviceLicenseResponseWaSuiteThreadsItemOnePhoneMax),
+  "status": zod.enum(['New', 'Follow-up', 'Closed/Won', 'Urgent']),
+  "notes": zod.string().max(activateDeviceLicenseResponseWaSuiteThreadsItemOneNotesMax),
+  "tags": zod.array(zod.string().min(1).max(activateDeviceLicenseResponseWaSuiteThreadsItemOneTagsItemMax)).max(activateDeviceLicenseResponseWaSuiteThreadsItemOneTagsMax).optional(),
+  "optedIn": zod.boolean()
+}).and(zod.object({
+  "id": zod.string(),
+  "contactId": zod.string().nullable(),
+  "accountId": zod.string().nullish(),
+  "remoteKey": zod.string().nullish(),
+  "updatedAt": zod.string(),
+  "messages": zod.array(zod.object({
+  "id": zod.string(),
+  "text": zod.string(),
+  "direction": zod.enum(['incoming', 'outgoing']),
+  "timestamp": zod.string(),
+  "status": zod.enum(['Received', 'Accepted', 'Unconfirmed']),
+  "ruleId": zod.string().optional()
+}))
+}))),
+  "rules": zod.array(zod.object({
+  "enabledChanged": zod.boolean().optional().describe('Set false on template-only edits to preserve concurrent rule disabling'),
+  "name": zod.string().max(activateDeviceLicenseResponseWaSuiteRulesItemOneNameMax),
+  "keyword": zod.string().max(activateDeviceLicenseResponseWaSuiteRulesItemOneKeywordMax),
+  "match": zod.enum(['contains', 'exact']),
+  "template": zod.string().max(activateDeviceLicenseResponseWaSuiteRulesItemOneTemplateMax),
+  "enabled": zod.boolean(),
+  "delayMin": zod.number().int().min(activateDeviceLicenseResponseWaSuiteRulesItemOneDelayMinMin).max(activateDeviceLicenseResponseWaSuiteRulesItemOneDelayMinMax),
+  "delayMax": zod.number().int().min(activateDeviceLicenseResponseWaSuiteRulesItemOneDelayMaxMin).max(activateDeviceLicenseResponseWaSuiteRulesItemOneDelayMaxMax),
+  "cooldownMinutes": zod.number().int().min(1).max(activateDeviceLicenseResponseWaSuiteRulesItemOneCooldownMinutesMax)
+}).and(zod.object({
+  "id": zod.string(),
+  "createdAt": zod.string()
+}))),
+  "ai": zod.object({
+  "enabled": zod.boolean(),
+  "hasKey": zod.boolean(),
+  "model": zod.string(),
+  "instructions": zod.string(),
+  "revision": zod.string()
+}).optional()
+}).optional(),
+  "store": zod.object({
+  "campaigns": zod.array(zod.record(zod.string(), zod.unknown())),
+  "accounts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "contacts": zod.array(zod.record(zod.string(), zod.unknown())),
+  "lists": zod.array(zod.string()),
+  "activity": zod.array(zod.record(zod.string(), zod.unknown()))
+}),
+  "settings": zod.object({
+  "theme": zod.enum(['light', 'dark']).optional(),
+  "language": zod.enum(['en', 'ar']).default(activateDeviceLicenseResponseSettingsLanguageDefault).describe('Persisted display language; API enum values and user content remain unchanged.'),
+  "keywords": zod.string().max(activateDeviceLicenseResponseSettingsKeywordsMax).optional(),
+  "delayMin": zod.number().int().min(activateDeviceLicenseResponseSettingsDelayMinMin).max(activateDeviceLicenseResponseSettingsDelayMinMax).optional(),
+  "delayMax": zod.number().int().min(activateDeviceLicenseResponseSettingsDelayMaxMin).max(activateDeviceLicenseResponseSettingsDelayMaxMax).optional(),
+  "phoneNumbers": zod.string().max(activateDeviceLicenseResponseSettingsPhoneNumbersMax).optional(),
+  "messageContent": zod.string().max(activateDeviceLicenseResponseSettingsMessageContentMax).optional(),
+  "mediaId": zod.string().nullish(),
+  "accountId": zod.string().nullish(),
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
+}).describe('Partial updates preserve omitted fields.'),
+  "jobs": zod.array(zod.object({
+  "mode": zod.enum(['live']).optional(),
+  "action": zod.string().optional(),
+  "platform": zod.enum(['Facebook', 'WhatsApp', 'Maps']).optional(),
+  "discoveredGroups": zod.array(zod.object({
+  "name": zod.string(),
+  "url": zod.string()
+})).optional(),
+  "id": zod.string(),
+  "kind": zod.enum(['campaign', 'whatsapp', 'leads']),
+  "campaignId": zod.string().nullish(),
+  "status": zod.enum(['Pending', 'Running', 'Completed', 'Cancelled', 'Failed']),
+  "progress": zod.number().int(),
+  "currentStep": zod.number().int(),
+  "steps": zod.array(zod.string()),
+  "createdAt": zod.string(),
+  "targets": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
+  "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
+  "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
+  "error": zod.string().optional()
+})).optional(),
+  "completedCount": zod.number().int().optional(),
+  "totalCount": zod.number().int().optional(),
+  "phase": zod.string().optional(),
+  "error": zod.string().optional(),
+  "nextActionAt": zod.string().nullish(),
+  "accountName": zod.string().optional(),
+  "mediaName": zod.string().nullish(),
+  "mediaId": zod.string().nullish(),
+  "replyToExistingUnread": zod.boolean().optional(),
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(activateDeviceLicenseResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
+})),
+  "initialized": zod.boolean(),
+  "media": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+})),
+  "mediaContent": zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "mime": zod.string(),
+  "size": zod.number().int(),
+  "dataUrl": zod.string().optional()
+}).optional(),
+  "leads": zod.object({
+  "keyword": zod.string().max(activateDeviceLicenseResponseLeadsOneKeywordMax),
+  "city": zod.string().max(activateDeviceLicenseResponseLeadsOneCityMax),
+  "targetCount": zod.number().int().min(1).max(activateDeviceLicenseResponseLeadsOneTargetCountMax)
+}).and(zod.object({
+  "results": zod.array(zod.object({
+  "id": zod.string(),
+  "businessName": zod.string(),
+  "phoneNumber": zod.string(),
+  "address": zod.string(),
+  "website": zod.string(),
+  "keyword": zod.string(),
+  "city": zod.string(),
+  "jobId": zod.string(),
+  "createdAt": zod.string(),
+  "simulated": zod.boolean()
+}))
+})),
+  "analytics": zod.object({
+  "realMessagesSent": zod.number().int().min(activateDeviceLicenseResponseAnalyticsRealMessagesSentMin).optional().describe('Cumulative server-accepted live WhatsApp sends; separate from simulations'),
+  "messagesSent": zod.number().int().min(activateDeviceLicenseResponseAnalyticsMessagesSentMin).describe('Cumulative simulated sends')
+})
+})
+
+
+/**
+ * Central atomic device registration. Re-activation of the same machine consumes no additional seat.
+ */
+export const registerLicenseMachineBodyKeyRegExp = new RegExp('^SNK-[A-Za-z0-9_-]{43}$');
+export const registerLicenseMachineBodyMachineIdRegExp = new RegExp('^[a-f0-9]{64}$');
+
+
+export const RegisterLicenseMachineBody = zod.object({
+  "key": zod.string().regex(registerLicenseMachineBodyKeyRegExp),
+  "machineId": zod.string().regex(registerLicenseMachineBodyMachineIdRegExp).describe('Product-scoped hash of the OS machine identifier')
+})
+
+export const RegisterLicenseMachineResponse = zod.object({
+  "certificate": zod.string().describe('Ed25519-signed SN1 device certificate')
+})
+
+
+export const GetLicenseAuthorityPublicKeyResponse = zod.object({
+  "publicKey": zod.string().describe('Base64 DER SPKI public key'),
+  "algorithm": zod.enum(['Ed25519'])
+})
+
+
+export const ListIssuedLicensesResponse = zod.object({
+  "licenses": zod.array(zod.record(zod.string(), zod.unknown())).optional()
+})
+
+
+export const issueLicensePackBodyMaxDevicesDefault = 1;
+export const issueLicensePackBodyMaxDevicesMax = 10000;
+
+export const issueLicensePackBodySupportPlanDefault = `none`;
+
+export const IssueLicensePackBody = zod.object({
+  "maxDevices": zod.number().int().min(1).max(issueLicensePackBodyMaxDevicesMax).default(issueLicensePackBodyMaxDevicesDefault),
+  "supportPlan": zod.enum(['none', 'monthly', 'yearly']).default(issueLicensePackBodySupportPlanDefault)
+})
+
+export const IssueLicensePackResponse = zod.object({
+  "licenseId": zod.string().uuid(),
+  "key": zod.string(),
+  "maxDevices": zod.number().int(),
+  "supportPlan": zod.enum(['none', 'monthly', 'yearly']),
+  "supportUntil": zod.string().nullish()
+})
+
+
+export const RenewLicenseSupportParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const RenewLicenseSupportBody = zod.object({
+  "supportPlan": zod.enum(['monthly', 'yearly'])
+})
+
+export const RenewLicenseSupportResponse = zod.record(zod.string(), zod.unknown())
+
+
+export const DisableLicensePackParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const DisableLicensePackResponse = zod.record(zod.string(), zod.unknown())
+
+
 export const UpdateSocialOmniSettingsHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
 })
@@ -8218,8 +9586,6 @@ export const updateSocialOmniSettingsBodyPhoneNumbersMax = 10000;
 
 export const updateSocialOmniSettingsBodyMessageContentMax = 10000;
 
-export const updateSocialOmniSettingsBodyLicenseKeyMax = 200;
-
 
 
 export const UpdateSocialOmniSettingsBody = zod.object({
@@ -8231,8 +9597,7 @@ export const UpdateSocialOmniSettingsBody = zod.object({
   "phoneNumbers": zod.string().max(updateSocialOmniSettingsBodyPhoneNumbersMax).optional(),
   "messageContent": zod.string().max(updateSocialOmniSettingsBodyMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
-  "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(updateSocialOmniSettingsBodyLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "accountId": zod.string().nullish()
 }).describe('Partial updates preserve omitted fields.')
 
 export const updateSocialOmniSettingsResponseAdvancedTasksItemOneNameMax = 150;
@@ -8284,8 +9649,6 @@ export const updateSocialOmniSettingsResponseSettingsPhoneNumbersMax = 10000;
 
 export const updateSocialOmniSettingsResponseSettingsMessageContentMax = 10000;
 
-export const updateSocialOmniSettingsResponseSettingsLicenseKeyMax = 200;
-
 export const updateSocialOmniSettingsResponseJobsItemSearchLimitMax = 200;
 
 export const updateSocialOmniSettingsResponseLeadsOneKeywordMax = 100;
@@ -8301,6 +9664,22 @@ export const updateSocialOmniSettingsResponseAnalyticsMessagesSentMin = 0;
 
 
 export const UpdateSocialOmniSettingsResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -8443,7 +9822,7 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "messageContent": zod.string().max(updateSocialOmniSettingsResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(updateSocialOmniSettingsResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -8584,8 +9963,6 @@ export const createSocialOmniJobResponseSettingsPhoneNumbersMax = 10000;
 
 export const createSocialOmniJobResponseSettingsMessageContentMax = 10000;
 
-export const createSocialOmniJobResponseSettingsLicenseKeyMax = 200;
-
 export const createSocialOmniJobResponseJobsItemSearchLimitMax = 200;
 
 export const createSocialOmniJobResponseLeadsOneKeywordMax = 100;
@@ -8601,6 +9978,22 @@ export const createSocialOmniJobResponseAnalyticsMessagesSentMin = 0;
 
 
 export const CreateSocialOmniJobResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -8743,7 +10136,7 @@ export const CreateSocialOmniJobResponse = zod.object({
   "messageContent": zod.string().max(createSocialOmniJobResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(createSocialOmniJobResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -8879,8 +10272,6 @@ export const cancelSocialOmniJobResponseSettingsPhoneNumbersMax = 10000;
 
 export const cancelSocialOmniJobResponseSettingsMessageContentMax = 10000;
 
-export const cancelSocialOmniJobResponseSettingsLicenseKeyMax = 200;
-
 export const cancelSocialOmniJobResponseJobsItemSearchLimitMax = 200;
 
 export const cancelSocialOmniJobResponseLeadsOneKeywordMax = 100;
@@ -8896,6 +10287,22 @@ export const cancelSocialOmniJobResponseAnalyticsMessagesSentMin = 0;
 
 
 export const CancelSocialOmniJobResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -9038,7 +10445,7 @@ export const CancelSocialOmniJobResponse = zod.object({
   "messageContent": zod.string().max(cancelSocialOmniJobResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(cancelSocialOmniJobResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -9183,8 +10590,6 @@ export const uploadSocialOmniMediaResponseSettingsPhoneNumbersMax = 10000;
 
 export const uploadSocialOmniMediaResponseSettingsMessageContentMax = 10000;
 
-export const uploadSocialOmniMediaResponseSettingsLicenseKeyMax = 200;
-
 export const uploadSocialOmniMediaResponseJobsItemSearchLimitMax = 200;
 
 export const uploadSocialOmniMediaResponseLeadsOneKeywordMax = 100;
@@ -9200,6 +10605,22 @@ export const uploadSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
 
 
 export const UploadSocialOmniMediaResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -9342,7 +10763,7 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "messageContent": zod.string().max(uploadSocialOmniMediaResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(uploadSocialOmniMediaResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -9478,8 +10899,6 @@ export const readSocialOmniMediaResponseSettingsPhoneNumbersMax = 10000;
 
 export const readSocialOmniMediaResponseSettingsMessageContentMax = 10000;
 
-export const readSocialOmniMediaResponseSettingsLicenseKeyMax = 200;
-
 export const readSocialOmniMediaResponseJobsItemSearchLimitMax = 200;
 
 export const readSocialOmniMediaResponseLeadsOneKeywordMax = 100;
@@ -9495,6 +10914,22 @@ export const readSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
 
 
 export const ReadSocialOmniMediaResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -9637,7 +11072,7 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "messageContent": zod.string().max(readSocialOmniMediaResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(readSocialOmniMediaResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -9776,8 +11211,6 @@ export const deleteSocialOmniMediaResponseSettingsPhoneNumbersMax = 10000;
 
 export const deleteSocialOmniMediaResponseSettingsMessageContentMax = 10000;
 
-export const deleteSocialOmniMediaResponseSettingsLicenseKeyMax = 200;
-
 export const deleteSocialOmniMediaResponseJobsItemSearchLimitMax = 200;
 
 export const deleteSocialOmniMediaResponseLeadsOneKeywordMax = 100;
@@ -9793,6 +11226,22 @@ export const deleteSocialOmniMediaResponseAnalyticsMessagesSentMin = 0;
 
 
 export const DeleteSocialOmniMediaResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -9935,7 +11384,7 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "messageContent": zod.string().max(deleteSocialOmniMediaResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(deleteSocialOmniMediaResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -10097,8 +11546,6 @@ export const createSocialOmniRecordResponseSettingsPhoneNumbersMax = 10000;
 
 export const createSocialOmniRecordResponseSettingsMessageContentMax = 10000;
 
-export const createSocialOmniRecordResponseSettingsLicenseKeyMax = 200;
-
 export const createSocialOmniRecordResponseJobsItemSearchLimitMax = 200;
 
 export const createSocialOmniRecordResponseLeadsOneKeywordMax = 100;
@@ -10114,6 +11561,22 @@ export const createSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
 
 
 export const CreateSocialOmniRecordResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -10256,7 +11719,7 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "messageContent": zod.string().max(createSocialOmniRecordResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(createSocialOmniRecordResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -10422,8 +11885,6 @@ export const updateSocialOmniRecordResponseSettingsPhoneNumbersMax = 10000;
 
 export const updateSocialOmniRecordResponseSettingsMessageContentMax = 10000;
 
-export const updateSocialOmniRecordResponseSettingsLicenseKeyMax = 200;
-
 export const updateSocialOmniRecordResponseJobsItemSearchLimitMax = 200;
 
 export const updateSocialOmniRecordResponseLeadsOneKeywordMax = 100;
@@ -10439,6 +11900,22 @@ export const updateSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
 
 
 export const UpdateSocialOmniRecordResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -10581,7 +12058,7 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "messageContent": zod.string().max(updateSocialOmniRecordResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(updateSocialOmniRecordResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),
@@ -10718,8 +12195,6 @@ export const deleteSocialOmniRecordResponseSettingsPhoneNumbersMax = 10000;
 
 export const deleteSocialOmniRecordResponseSettingsMessageContentMax = 10000;
 
-export const deleteSocialOmniRecordResponseSettingsLicenseKeyMax = 200;
-
 export const deleteSocialOmniRecordResponseJobsItemSearchLimitMax = 200;
 
 export const deleteSocialOmniRecordResponseLeadsOneKeywordMax = 100;
@@ -10735,6 +12210,22 @@ export const deleteSocialOmniRecordResponseAnalyticsMessagesSentMin = 0;
 
 
 export const DeleteSocialOmniRecordResponse = zod.object({
+  "license": zod.object({
+  "native": zod.boolean(),
+  "configured": zod.boolean(),
+  "status": zod.enum(['active', 'not_activated', 'invalid', 'unconfigured', 'desktop_only']),
+  "machineId": zod.string().nullable(),
+  "licenseId": zod.string().nullable(),
+  "maxDevices": zod.number().int().nullable(),
+  "devicesUsed": zod.number().int().nullable().describe('Count at last activation; not a live count when offline'),
+  "kind": zod.union([zod.literal('standard'),zod.literal('reseller'),zod.literal(null)]).nullable(),
+  "supportPlan": zod.union([zod.literal('none'),zod.literal('monthly'),zod.literal('yearly'),zod.literal(null)]).nullable(),
+  "supportUntil": zod.string().nullable(),
+  "supportActive": zod.boolean(),
+  "activatedAt": zod.string().nullable(),
+  "serverUrl": zod.string(),
+  "error": zod.string().nullable()
+}).optional(),
   "advanced": zod.object({
   "tasks": zod.array(zod.object({
   "kind": zod.enum(['whatsapp-members', 'maps', 'b2b', 'verify-email', 'email-send', 'sms-send', 'telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post']),
@@ -10877,7 +12368,7 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "messageContent": zod.string().max(deleteSocialOmniRecordResponseSettingsMessageContentMax).optional(),
   "mediaId": zod.string().nullish(),
   "accountId": zod.string().nullish(),
-  "licenseKey": zod.string().max(deleteSocialOmniRecordResponseSettingsLicenseKeyMax).optional().describe('Locally stored future-license placeholder; no activation or validation')
+  "licenseKey": zod.string().optional().describe('Legacy field only; rejected in settings updates. Use device license activation.')
 }).describe('Partial updates preserve omitted fields.'),
   "jobs": zod.array(zod.object({
   "mode": zod.enum(['live']).optional(),

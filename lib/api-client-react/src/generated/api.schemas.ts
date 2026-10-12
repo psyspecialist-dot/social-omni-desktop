@@ -5,6 +5,150 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export type LicensePackInputSupportPlan = typeof LicensePackInputSupportPlan[keyof typeof LicensePackInputSupportPlan];
+
+
+export const LicensePackInputSupportPlan = {
+  none: 'none',
+  monthly: 'monthly',
+  yearly: 'yearly',
+} as const;
+
+export interface LicensePackInput {
+  /**
+     * @minimum 1
+     * @maximum 10000
+     */
+  maxDevices?: number;
+  supportPlan?: LicensePackInputSupportPlan;
+}
+
+export type IssuedLicensePackSupportPlan = typeof IssuedLicensePackSupportPlan[keyof typeof IssuedLicensePackSupportPlan];
+
+
+export const IssuedLicensePackSupportPlan = {
+  none: 'none',
+  monthly: 'monthly',
+  yearly: 'yearly',
+} as const;
+
+export interface IssuedLicensePack {
+  licenseId: string;
+  key: string;
+  maxDevices: number;
+  supportPlan: IssuedLicensePackSupportPlan;
+  /** @nullable */
+  supportUntil?: string | null;
+}
+
+export type LicenseSupportInputSupportPlan = typeof LicenseSupportInputSupportPlan[keyof typeof LicenseSupportInputSupportPlan];
+
+
+export const LicenseSupportInputSupportPlan = {
+  monthly: 'monthly',
+  yearly: 'yearly',
+} as const;
+
+export interface LicenseSupportInput {
+  supportPlan: LicenseSupportInputSupportPlan;
+}
+
+export interface LicenseActivationInput {
+  /** @pattern ^SNK-[A-Za-z0-9_-]{43}$ */
+  key: string;
+}
+
+export interface LicenseRegistrationInput {
+  /** @pattern ^SNK-[A-Za-z0-9_-]{43}$ */
+  key: string;
+  /**
+     * Product-scoped hash of the OS machine identifier
+     * @pattern ^[a-f0-9]{64}$
+     */
+  machineId: string;
+}
+
+export interface LicenseCertificate {
+  /** Ed25519-signed SN1 device certificate */
+  certificate: string;
+}
+
+export type LicenseAuthorityKeyAlgorithm = typeof LicenseAuthorityKeyAlgorithm[keyof typeof LicenseAuthorityKeyAlgorithm];
+
+
+export const LicenseAuthorityKeyAlgorithm = {
+  Ed25519: 'Ed25519',
+} as const;
+
+export interface LicenseAuthorityKey {
+  /** Base64 DER SPKI public key */
+  publicKey: string;
+  algorithm: LicenseAuthorityKeyAlgorithm;
+}
+
+export type DeviceLicenseStatusStatus = typeof DeviceLicenseStatusStatus[keyof typeof DeviceLicenseStatusStatus];
+
+
+export const DeviceLicenseStatusStatus = {
+  active: 'active',
+  not_activated: 'not_activated',
+  invalid: 'invalid',
+  unconfigured: 'unconfigured',
+  desktop_only: 'desktop_only',
+} as const;
+
+/**
+ * @nullable
+ */
+export type DeviceLicenseStatusKind = typeof DeviceLicenseStatusKind[keyof typeof DeviceLicenseStatusKind] | null;
+
+
+export const DeviceLicenseStatusKind = {
+  standard: 'standard',
+  reseller: 'reseller',
+} as const;
+
+/**
+ * @nullable
+ */
+export type DeviceLicenseStatusSupportPlan = typeof DeviceLicenseStatusSupportPlan[keyof typeof DeviceLicenseStatusSupportPlan] | null;
+
+
+export const DeviceLicenseStatusSupportPlan = {
+  none: 'none',
+  monthly: 'monthly',
+  yearly: 'yearly',
+} as const;
+
+export interface DeviceLicenseStatus {
+  native: boolean;
+  configured: boolean;
+  status: DeviceLicenseStatusStatus;
+  /** @nullable */
+  machineId: string | null;
+  /** @nullable */
+  licenseId: string | null;
+  /** @nullable */
+  maxDevices: number | null;
+  /**
+     * Count at last activation; not a live count when offline
+     * @nullable
+     */
+  devicesUsed: number | null;
+  /** @nullable */
+  kind: DeviceLicenseStatusKind;
+  /** @nullable */
+  supportPlan: DeviceLicenseStatusSupportPlan;
+  /** @nullable */
+  supportUntil: string | null;
+  supportActive: boolean;
+  /** @nullable */
+  activatedAt: string | null;
+  serverUrl: string;
+  /** @nullable */
+  error: string | null;
+}
+
 export interface AdvancedApproval {
   approved: boolean;
 }
@@ -509,10 +653,10 @@ export interface SimulatorSettings {
   /** @nullable */
   accountId?: string | null;
   /**
-     * Locally stored future-license placeholder; no activation or validation
-     * @maxLength 200
+     * Legacy field only; rejected in settings updates. Use device license activation.
+     * @deprecated
      */
-  licenseKey?: string;
+  readonly licenseKey?: string;
 }
 
 export type SimulatorRecordPlatform = typeof SimulatorRecordPlatform[keyof typeof SimulatorRecordPlatform];
@@ -749,6 +893,7 @@ export type SimulatorStateStore = {
 };
 
 export interface SimulatorState {
+  license?: DeviceLicenseStatus;
   advanced?: AdvancedSuite;
   automationAvailable?: boolean;
   waSuite?: WaSuite;
@@ -772,4 +917,14 @@ export interface HealthStatus {
 export type WorkspaceStateResponse = SimulatorState;
 
 export type WorkspaceParameter = string;
+
+export type ListIssuedLicenses200LicensesItem = { [key: string]: unknown };
+
+export type ListIssuedLicenses200 = {
+  licenses?: ListIssuedLicenses200LicensesItem[];
+};
+
+export type RenewLicenseSupport200 = { [key: string]: unknown };
+
+export type DisableLicensePack200 = { [key: string]: unknown };
 

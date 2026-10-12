@@ -36,8 +36,8 @@ export interface SimulatorSettings {
   /** @nullable */
   accountId?: string | null;
   /**
-     * Locally stored future-license placeholder; no activation or validation
-     * @maxLength 200
+     * Legacy field only; rejected in settings updates. Use device license activation.
+     * @deprecated
      */
-  licenseKey?: string;
+  readonly licenseKey?: string;
 }

@@ -22,5 +22,25 @@ as 5, 10, or 50 devices.
 **How to apply:** Enforce the device allowance, not just display a signed
 number. Fully offline licenses need signed, explicitly authorized Machine IDs;
 a shared key for previously unknown devices needs a central activation ledger
-to enforce its total device count. Do not present a local counter as a global
-device limit.
+to enforce its total device count. The user selected connection at activation
+only, followed by offline operation. Do not present a local counter as a global
+device limit or require recurring online validation for normal use.
+
+Do not recycle a registered seat while a permanent offline certificate may
+still be usable. Disabling the master key stops new activations, not already
+issued offline certificates.
+
+**Why:** Central activation plus permanent offline use cannot establish that
+an old certificate has stopped being used; recycling would violate maxDevices.
+
+**How to apply:** Treat the allowance as total distinct registered machines,
+and explain this limitation in owner/customer controls.
+
+Keep a covered release usable after support expires; a newer release needs an
+updates entitlement covering its release date.
+
+**Why:** The requested recurring subscription is for updates/support, not for
+continued use of the purchased application.
+
+**How to apply:** Release dates are release metadata, not export/build times.
+Do not advance the release date during a mere re-export or repack.

@@ -53,7 +53,15 @@ export interface Lead {
 }
 export interface LeadWorkspace { keyword: string; city: string; targetCount: number; results: Lead[] }
 export interface SimulationAnalytics { messagesSent: number; realMessagesSent?: number }
+export interface LicenseStatus {
+  native: boolean; configured: boolean;
+  status: 'active' | 'not_activated' | 'invalid' | 'unconfigured' | 'desktop_only';
+  machineId: string | null; licenseId: string | null; maxDevices: number | null; devicesUsed: number | null;
+  kind: 'standard' | 'reseller' | null; supportPlan: 'none' | 'monthly' | 'yearly' | null;
+  supportUntil: string | null; supportActive: boolean; activatedAt: string | null; serverUrl: string; error: string | null;
+}
 export interface ApiState {
+  license?: LicenseStatus;
   waSuite?: WaSuite;
   advanced?: AdvancedSuite;
   automationAvailable?: boolean;

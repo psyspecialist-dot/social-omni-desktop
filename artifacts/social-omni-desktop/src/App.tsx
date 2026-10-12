@@ -3,7 +3,8 @@ import { useForm } from 'react-hook-form';
 import { Form } from '@/components/ui/form';
 import { useHashLocation } from 'wouter/use-hash-location';
 import { isDesktop, openOfficialPlatform, readLocal } from '@/lib/persistence';
-import { apiRequest, type ApiState, type MediaAsset, type SimulationJob, type SimulationSettings, type LeadWorkspace, type SimulationAnalytics } from '@/lib/api';
+import { apiRequest, type ApiState, type MediaAsset, type SimulationJob, type SimulationSettings, type LeadWorkspace, type SimulationAnalytics, type LicenseStatus } from '@/lib/api';
+import LicenseSettings, { LicenseNotice } from '@/components/LicenseSettings';
 import WhatsApp from '@/WhatsApp';
 import Leads from '@/Leads';
 import MediaUpload from '@/components/MediaUpload';
@@ -41,7 +42,7 @@ const formatTime = (value: string) => {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat(localeFor(uiLang), { hour: 'numeric', minute: '2-digit' }).format(date);
 };
-const titleForPath: Record<string, string> = { '/': 'Overview & Analytics', '/campaigns': 'Campaigns', '/automation': 'Facebook & Instagram Automation', '/accounts': 'Accounts Manager', '/whatsapp': 'WhatsApp Marketing', '/leads': 'Google Maps Lead Extractor', '/contacts': 'Contacts', '/settings': 'Settings & Future License', '/wafilter': 'WaFilter', '/wa-crm': 'WA-CRM', '/chatbots': 'Auto-Reply / Chatbot', '/extractors': 'B2B & Data Extractors', '/multi-platform': 'Telegram & Facebook Automation', '/facebook': 'Facebook Groups', '/email': 'Email Marketing', '/sms': 'SMS Marketing', '/help': 'Help & Guidelines' };
+const titleForPath: Record<string, string> = { '/': 'Overview & Analytics', '/campaigns': 'Campaigns', '/automation': 'Facebook & Instagram Automation', '/accounts': 'Accounts Manager', '/whatsapp': 'WhatsApp Marketing', '/leads': 'Google Maps Lead Extractor', '/contacts': 'Contacts', '/settings': 'Settings & License', '/wafilter': 'WaFilter', '/wa-crm': 'WA-CRM', '/chatbots': 'Auto-Reply / Chatbot', '/extractors': 'B2B & Data Extractors', '/multi-platform': 'Telegram & Facebook Automation', '/facebook': 'Facebook Groups', '/email': 'Email Marketing', '/sms': 'SMS Marketing', '/help': 'Help & Guidelines' };
 
 function Workspace() {
   const [store, setStore] = useState<Store>(seedStore);
@@ -57,6 +58,7 @@ function Workspace() {
   const [settings, setSettings] = useState<SimulationSettings>({ theme: 'dark', keywords: '', delayMin: 5, delayMax: 12, phoneNumbers: '', messageContent: '', mediaId: null, accountId: null, licenseKey: '', language: 'en' });
   const [leads, setLeads] = useState<LeadWorkspace>({ keyword: '', city: '', targetCount: 10, results: [] });
   const [analytics, setAnalytics] = useState<SimulationAnalytics>({ messagesSent: 0 });
+  const [license, setLicense] = useState<LicenseStatus | undefined>(undefined);
   const [media, setMedia] = useState<MediaAsset[]>([]);
   const [jobs, setJobs] = useState<SimulationJob[]>([]);
   const [waSuite, setWaSuite] = useState<WaSuite>({ filter: { source: '', results: [] }, threads: [], rules: [] });
@@ -70,6 +72,7 @@ function Workspace() {
   const [path, setPath] = useLocation();
   const applyState = (data: ApiState) => {
     setStore(data.store);
+    if (data.license) setLicense(data.license);
     setSettings(data.settings);
     setJobs(data.jobs);
     setWaSuite(data.waSuite || { filter: { source: '', results: [] }, threads: [], rules: [] });
@@ -235,6 +238,7 @@ function Workspace() {
                 </div>
               </header>
                {storageError && <div className="storage-alert" role="alert" data-testid="error-storage-save">{storageError}<button className="button button-secondary" onClick={() => { apiRequest('GET', '/state').then(data => { applyState(data); setStorageError(''); }).catch(report); }} data-testid="button-retry-save">{t('Reconnect')}</button></div>}
+              <LicenseNotice license={license} />
               <ErrorBoundary resetKey={path}>
                 <Switch>
                   <Route path="/"><NetworkHub data={hub} /><Dashboard jobs={jobs} store={store} leads={leads} analytics={analytics} onStatus={saveStatus} run={id => { void runTask('campaign', id).catch(report); }} /></Route>
@@ -252,7 +256,7 @@ function Workspace() {
                    <Route path="/chatbots"><WhatsAppSuite view="chatbots" suite={waSuite} accounts={store.accounts} contacts={store.contacts} jobs={jobs} perform={perform} /></Route>
                    <Route path="/leads"><Leads leads={leads} jobs={jobs} perform={perform} onCancel={cancelTask} /></Route>
                   <Route path="/contacts"><Contacts store={store} open={item => setDialog({ type: 'contact', item })} create={() => setDialog({ type: 'contact' })} remove={item => remove('contact', item)} /></Route>
-                  <Route path="/settings"><Settings smartReplies={<SmartReplySettings ai={waSuite.ai} perform={perform} />} settings={settings} saveSettings={async value => { await perform('PUT', '/settings', value); }} theme={theme} setTheme={value => { void perform('PUT', '/settings', { theme: value }).catch(report); }} store={store} clear={clearWorkspace} onToggleLang={changeLanguage} /></Route>
+                  <Route path="/settings"><Settings license={license} perform={perform} smartReplies={<SmartReplySettings ai={waSuite.ai} perform={perform} />} settings={settings} saveSettings={async value => { await perform('PUT', '/settings', value); }} theme={theme} setTheme={value => { void perform('PUT', '/settings', { theme: value }).catch(report); }} store={store} clear={clearWorkspace} onToggleLang={changeLanguage} /></Route>
                   <Route path="/help"><Help /></Route>
                   <Route component={NotFound} />
                 </Switch>
@@ -446,14 +450,11 @@ function Contacts({ store, open, create, remove }: { store: Store; open: (c: Con
   </main>;
 }
 
-function Settings({ settings, saveSettings, theme, setTheme, store, clear, onToggleLang, smartReplies }: { smartReplies: ReactNode; onToggleLang: () => void; settings: SimulationSettings; saveSettings: (v: Partial<SimulationSettings>) => Promise<void>; theme: 'light' | 'dark'; setTheme: (t: 'light' | 'dark') => void; store: Store; clear: () => void }) {
+function Settings({ license, perform, settings, saveSettings, theme, setTheme, store, clear, onToggleLang, smartReplies }: { license?: LicenseStatus; perform: (method: 'POST' | 'DELETE', route: string, body?: unknown) => Promise<ApiState>; smartReplies: ReactNode; onToggleLang: () => void; settings: SimulationSettings; saveSettings: (v: Partial<SimulationSettings>) => Promise<void>; theme: 'light' | 'dark'; setTheme: (t: 'light' | 'dark') => void; store: Store; clear: () => void }) {
   const { t, lang } = useI18n();
   const [min, setMin] = useState(settings.delayMin);
   const [max, setMax] = useState(settings.delayMax);
   const [note, setNote] = useState('');
-  const [license, setLicense] = useState(settings.licenseKey);
-  const [licenseNote, setLicenseNote] = useState('');
-  const [licenseBusy, setLicenseBusy] = useState(false);
   const [downloadBusy, setDownloadBusy] = useState(false);
   const [downloadNote, setDownloadNote] = useState('');
   const downloadDesktop = async () => {
@@ -473,20 +474,13 @@ function Settings({ settings, saveSettings, theme, setTheme, store, clear, onTog
       setDownloadNote(error instanceof Error ? error.message : t('Download failed. Please try again.'));
     } finally { setDownloadBusy(false); }
   };
-  useEffect(() => { setLicense(settings.licenseKey); }, [settings.licenseKey]);
   useEffect(() => { setMin(settings.delayMin); setMax(settings.delayMax); }, [settings.delayMin, settings.delayMax]);
-  const saveLicense = async () => {
-    setLicenseBusy(true); setLicenseNote('');
-    try { await saveSettings({ licenseKey: license }); setLicenseNote(t('Placeholder saved locally. No activation or license verification has occurred.')); }
-    catch (e) { setLicenseNote(e instanceof Error ? e.message : t('Could not save the placeholder.')); }
-    finally { setLicenseBusy(false); }
-  };
   const go = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   const saveDelay = () => { setNote(''); saveSettings({ delayMin: min, delayMax: max }).then(() => setNote(t('Delay settings saved.'))).catch(e => setNote(e instanceof Error ? e.message : t('Could not save.'))); };
   return <main className="page">
-    <PageHeading eyebrow="Make the desk yours" title="Settings & Future License" subtitle="Simulation preferences, local data controls, and a future-license placeholder." />
+    <PageHeading eyebrow="Make the desk yours" title="Settings & License" subtitle="Preferences, local data controls, and license activation." />
     <div className="settings-layout">
-      <nav className="settings-nav" aria-label={t('Settings sections')}><button onClick={() => go('appearance')} data-testid="settings-nav-appearance">{t('Appearance')}</button><button onClick={() => go('local-data')} data-testid="settings-nav-local-data">{t('Local data')}</button><button onClick={() => go('simulation')} data-testid="settings-nav-simulation">{t('Simulation')}</button><button onClick={() => go('future-license')} data-testid="settings-nav-license">{t('Future license')}</button></nav>
+      <nav className="settings-nav" aria-label={t('Settings sections')}><button onClick={() => go('appearance')} data-testid="settings-nav-appearance">{t('Appearance')}</button><button onClick={() => go('local-data')} data-testid="settings-nav-local-data">{t('Local data')}</button><button onClick={() => go('simulation')} data-testid="settings-nav-simulation">{t('Simulation')}</button><button onClick={() => go('license')} data-testid="settings-nav-license">{t('License')}</button></nav>
       <div className="settings-content">
         {smartReplies}
         <section className="setting-card" id="appearance"><div className="setting-head"><div><strong>{t('Appearance')}</strong><p>{t('Choose the reading mode that feels right at your desk.')}</p></div><div className="mode-switch">
@@ -504,7 +498,7 @@ function Settings({ settings, saveSettings, theme, setTheme, store, clear, onTog
           <div className="field-group"><label className="field-label" htmlFor="set-max">{t('Maximum delay')}<span className="field-hint">{max}{t('s')}</span></label><input id="set-max" type="range" min={5} max={12} value={max} onChange={e => { const v = Number(e.target.value); setMax(v); if (v < min) setMin(v); }} style={{ width: '100%' }} data-testid="settings-delay-max" /></div></div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}><button className="button button-secondary" onClick={saveDelay} data-testid="button-save-delay">{t('Save delay')}</button><Link href="/whatsapp" className="text-link" data-testid="link-settings-whatsapp">{t('Open WhatsApp rehearsal')}</Link>{note && <span role="status" style={{ fontSize: 10, color: 'hsl(var(--muted-foreground))' }} data-testid="status-delay-saved">{note}</span>}</div>
         </section>
-         <section className="setting-card" id="future-license"><div className="setting-head"><div><strong>{t('Future license')}</strong><p>{t('Placeholder only. The simulator is not license-gated and does not contact an activation service. Use a demo value, not a password or API token.')}</p></div><span className="mono-tag">{t('NOT ACTIVATED')}</span></div><form onSubmit={e => { e.preventDefault(); void saveLicense(); }} style={{ marginTop: 15 }}><div className="field-group"><label className="field-label" htmlFor="license-key">{t('License key placeholder')}</label><input id="license-key" dir="ltr" className="field-input" maxLength={200} autoComplete="off" placeholder="DEMO-XXXX-XXXX-XXXX" value={license} onChange={e => { setLicense(e.target.value); setLicenseNote(''); }} data-testid="input-license-key" /></div><button type="submit" className="button button-secondary" disabled={licenseBusy} data-testid="button-save-license">{licenseBusy ? t('Saving…') : t('Save placeholder')}</button>{licenseNote && <p role="status" className="heading-sub" data-testid="status-license-saved">{licenseNote}</p>}</form></section>
+        <LicenseSettings license={license} perform={perform} />
          <section className="setting-card"><div className="setting-head"><div><strong>{isDesktop ? t('Secure desktop bridge') : t('Run Social Najhin locally')}</strong><p>{isDesktop ? t('The renderer uses a restricted preload bridge and local SQLite. Live actions run in visible local Playwright browsers with private account profiles.') : t('Download the complete application ZIP, unzip it, then run npm install and npm start inside the social-najhin-desktop folder. The install includes Chromium for local browser automation. Includes frontend/backend source, main.js, preload.js, package.json, and a macOS README. This is source, not a signed installer.')}</p></div><ShieldCheck size={18} color="hsl(var(--primary))" /></div>{!isDesktop && <><button type="button" className="button button-primary" style={{ marginTop: 16 }} onClick={downloadDesktop} disabled={downloadBusy} data-testid="link-download-desktop"><Download size={14} /> {downloadBusy ? t('Downloading ZIP…') : t('Download desktop ZIP')}</button>{downloadNote && <p role="status" style={{ marginTop: 12 }}>{downloadNote}</p>}</>}</section>
       </div>
     </div>

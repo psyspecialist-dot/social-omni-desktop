@@ -29,6 +29,8 @@
     "files": [
       "*.js",
       "*.cjs",
+      "licensing-config.json",
+      "LICENSING.md",
       "renderer/**/*",
       "package.json",
       "!renderer/downloads/**/*"

@@ -288,6 +288,107 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/WorkspaceState"
+  /socialomni/license:
+    get:
+      operationId: getDeviceLicense
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+    delete:
+      operationId: removeDeviceCertificate
+      description: Desktop only. Removes the local certificate, never frees a registered seat. Stop running and scheduled tasks first.
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/license/activate:
+    post:
+      operationId: activateDeviceLicense
+      parameters: [{$ref: "#/components/parameters/Workspace"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/LicenseActivationInput"}
+      responses:
+        "200": {$ref: "#/components/responses/WorkspaceState"}
+  /socialomni/licensing/activate:
+    post:
+      operationId: registerLicenseMachine
+      description: Central atomic device registration. Re-activation of the same machine consumes no additional seat.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/LicenseRegistrationInput"}
+      responses:
+        "200":
+          description: Signed permanent device entitlement and dated support entitlement
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/LicenseCertificate"}
+  /socialomni/licensing/public-key:
+    get:
+      operationId: getLicenseAuthorityPublicKey
+      responses:
+        "200":
+          description: Public key; must be pinned in the desktop release, never trusted dynamically by the renderer
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/LicenseAuthorityKey"}
+  /socialomni/licensing/admin/licenses:
+    get:
+      operationId: listIssuedLicenses
+      security: [{LicenseAdmin: []}]
+      responses:
+        "200":
+          description: Owner-only license ledger
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  licenses: {type: array, items: {type: object, additionalProperties: true}}
+    post:
+      operationId: issueLicensePack
+      security: [{LicenseAdmin: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/LicensePackInput"}
+      responses:
+        "201":
+          description: Buyer key returned once to the authenticated owner
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/IssuedLicensePack"}
+  /socialomni/licensing/admin/licenses/{id}/renew:
+    post:
+      operationId: renewLicenseSupport
+      security: [{LicenseAdmin: []}]
+      parameters: [{$ref: "#/components/parameters/RecordId"}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/LicenseSupportInput"}
+      responses:
+        "200":
+          description: Support period updated; device must re-activate to download the new signed period
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
+  /socialomni/licensing/admin/licenses/{id}/disable:
+    post:
+      operationId: disableLicensePack
+      security: [{LicenseAdmin: []}]
+      parameters: [{$ref: "#/components/parameters/RecordId"}]
+      responses:
+        "200":
+          description: Further activations disabled; previously issued offline certificates remain valid
+          content:
+            application/json:
+              schema: {type: object, additionalProperties: true}
   /socialomni/settings:
     put:
       operationId: updateSocialOmniSettings
@@ -402,6 +503,11 @@ paths:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
 components:
+  securitySchemes:
+    LicenseAdmin:
+      type: http
+      scheme: bearer
+      description: Owner-only administration token; never stored in the renderer or desktop release
   parameters:
     Workspace:
       name: x-socialomni-workspace
@@ -425,6 +531,65 @@ components:
         application/json:
           schema: {$ref: "#/components/schemas/SimulatorState"}
   schemas:
+    LicensePackInput:
+      type: object
+      properties:
+        maxDevices: {type: integer, minimum: 1, maximum: 10000, default: 1}
+        supportPlan: {type: string, enum: [none, monthly, yearly], default: none}
+    IssuedLicensePack:
+      type: object
+      required: [licenseId, key, maxDevices, supportPlan]
+      properties:
+        licenseId: {type: string, format: uuid}
+        key: {type: string}
+        maxDevices: {type: integer}
+        supportPlan: {type: string, enum: [none, monthly, yearly]}
+        supportUntil: {type: [string, "null"]}
+    LicenseSupportInput:
+      type: object
+      required: [supportPlan]
+      properties:
+        supportPlan: {type: string, enum: [monthly, yearly]}
+    LicenseActivationInput:
+      type: object
+      required: [key]
+      properties:
+        key: {type: string, pattern: "^SNK-[A-Za-z0-9_-]{43}$"}
+    LicenseRegistrationInput:
+      type: object
+      required: [key, machineId]
+      properties:
+        key: {type: string, pattern: "^SNK-[A-Za-z0-9_-]{43}$"}
+        machineId: {type: string, pattern: "^[a-f0-9]{64}$", description: Product-scoped hash of the OS machine identifier}
+    LicenseCertificate:
+      type: object
+      required: [certificate]
+      properties:
+        certificate: {type: string, description: Ed25519-signed SN1 device certificate}
+    LicenseAuthorityKey:
+      type: object
+      required: [publicKey, algorithm]
+      properties:
+        publicKey: {type: string, description: Base64 DER SPKI public key, not a secret}
+        algorithm: {type: string, enum: [Ed25519]}
+    DeviceLicenseStatus:
+      type: object
+      required: [native, configured, status, machineId, licenseId, maxDevices, devicesUsed, kind, supportPlan, supportUntil, supportActive, activatedAt, serverUrl, error]
+      properties:
+        native: {type: boolean}
+        configured: {type: boolean}
+        status: {type: string, enum: [active, not_activated, invalid, unconfigured, desktop_only]}
+        machineId: {type: [string, "null"]}
+        licenseId: {type: [string, "null"]}
+        maxDevices: {type: [integer, "null"]}
+        devicesUsed: {type: [integer, "null"], description: Count at last activation; not a live count when offline}
+        kind: {type: [string, "null"], enum: [standard, reseller, null]}
+        supportPlan: {type: [string, "null"], enum: [none, monthly, yearly, null]}
+        supportUntil: {type: [string, "null"]}
+        supportActive: {type: boolean}
+        activatedAt: {type: [string, "null"]}
+        serverUrl: {type: string}
+        error: {type: [string, "null"]}
     AdvancedApproval:
       type: object
       required: [approved]
@@ -701,7 +866,7 @@ components:
         messageContent: {type: string, maxLength: 10000}
         mediaId: {type: [string, "null"]}
         accountId: {type: [string, "null"]}
-        licenseKey: {type: string, maxLength: 200, description: Locally stored future-license placeholder; no activation or validation}
+        licenseKey: {type: string, readOnly: true, deprecated: true, description: Legacy field only; rejected in settings updates. Use device license activation.}
     SimulatorRecord:
       type: object
       description: Campaign fields title/platform/caption/scheduledAt/status; account fields displayLabel/platform/handle/status; contact fields name/channel/value/optedIn/list.
@@ -811,6 +976,7 @@ components:
       type: object
       required: [store, settings, jobs, initialized, media, leads, analytics]
       properties:
+        license: {$ref: "#/components/schemas/DeviceLicenseStatus"}
         advanced: {$ref: "#/components/schemas/AdvancedSuite"}
         automationAvailable: {type: boolean}
         waSuite: {$ref: "#/components/schemas/WaSuite"}

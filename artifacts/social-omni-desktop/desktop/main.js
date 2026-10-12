@@ -8,6 +8,7 @@ const { randomBytes } = require('node:crypto');
 const initSqlJs = require('sql.js');
 const express = require('express');
 const createService = require('./api-service.cjs');
+const { createLicenseClient } = require('./license-client.cjs');
 const registerBrowserIpc = require('./browser-ipc.cjs');
 // Visible macOS app name changes independently of the existing storage location.
 const existingUserDataPath = app.getPath('userData');
@@ -112,6 +113,15 @@ async function startApi() {
   }
   apiService = createService({
     express, dbPath: path.join(app.getPath('userData'), 'socialomni-workspace.sqlite'), secret: apiSecret,
+    licenseClient: createLicenseClient({
+      file: path.join(app.getPath('userData'), 'license-certificate.bin'),
+      config: require('./licensing-config.json'),
+      secureStore: {
+        available: () => safeStorage.isEncryptionAvailable() && (process.platform !== 'linux' || safeStorage.getSelectedStorageBackend() !== 'basic_text'),
+        encrypt: value => safeStorage.encryptString(value),
+        decrypt: value => safeStorage.decryptString(value),
+      },
+    }),
     automation: {
       chromium,
       profileDir: path.join(app.getPath('userData'), 'browser-profiles'),
