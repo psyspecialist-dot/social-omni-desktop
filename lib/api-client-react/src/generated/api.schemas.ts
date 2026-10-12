@@ -607,6 +607,8 @@ export interface SimulatorTarget {
   name: string;
   joinStatus: SimulatorTargetJoinStatus;
   postStatus: SimulatorTargetPostStatus;
+  /** A newly observed matching Facebook post permalink, when confirmed. */
+  postUrl?: string;
   sendStatus: SimulatorTargetSendStatus;
   error?: string;
 }
@@ -680,6 +682,12 @@ export interface SimulatorJob {
   mediaId?: string | null;
   replyToExistingUnread?: boolean;
   messageContent?: string;
+  /**
+     * Maximum observed Facebook group search results; coverage may be partial.
+     * @minimum 1
+     * @maximum 200
+     */
+  searchLimit?: number;
 }
 
 export interface SimulatorLeadInput {

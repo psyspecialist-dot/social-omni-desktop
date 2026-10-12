@@ -40,4 +40,10 @@ export interface SimulatorJob {
   mediaId?: string | null;
   replyToExistingUnread?: boolean;
   messageContent?: string;
+  /**
+     * Maximum observed Facebook group search results; coverage may be partial.
+     * @minimum 1
+     * @maximum 200
+     */
+  searchLimit?: number;
 }

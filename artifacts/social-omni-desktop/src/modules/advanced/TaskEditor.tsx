@@ -7,21 +7,21 @@ import { readListFile } from '@/lib/advanced-export';
 import { isDesktop } from '@/lib/persistence';
 import { estimateSms, renderSms } from '@/lib/sms';
 import { FileUp, X } from 'lucide-react';
-import { KINDS, msg, type Kind } from './config';
+import { KINDS, msg, normalizeGroupLines, type Kind } from './config';
 
 const toLocal = (iso?: string) => { const d = iso ? new Date(iso) : null; if (!d || Number.isNaN(d.getTime())) return ''; return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16); };
-interface Props { kinds: Kind[]; task?: AdvancedTask; accounts: Account[]; media: MediaAsset[]; onSave: (input: AdvancedTaskInput, id?: string) => Promise<void>; onClose: () => void }
+interface Props { kinds: Kind[]; task?: AdvancedTask; accounts: Account[]; media: MediaAsset[]; onSave: (input: AdvancedTaskInput, id?: string) => Promise<void>; onClose: () => void; initial?: { kind: Kind; source: string; accountId: string } }
 
-export default function TaskEditor({ kinds, task, accounts, media, onSave, onClose }: Props) {
+export default function TaskEditor({ kinds, task, accounts, media, onSave, onClose, initial }: Props) {
   const { t } = useI18n();
-  const [kind, setKind] = useState<Kind>(task?.kind || kinds[0]);
+  const [kind, setKind] = useState<Kind>(task?.kind || initial?.kind || kinds[0]);
   const [name, setName] = useState(task?.name || '');
-  const [source, setSource] = useState(task?.source || '');
+  const [source, setSource] = useState(task?.source || initial?.source || '');
   const [message, setMessage] = useState(task?.message || '');
   const [subject, setSubject] = useState(task?.subject || '');
   const [query, setQuery] = useState(task?.query || '');
   const [limit, setLimit] = useState(String(task?.limit ?? ((task?.kind || kinds[0]) === 'whatsapp-members' ? 2000 : 50)));
-  const [accountId, setAccountId] = useState(task?.accountId || '');
+  const [accountId, setAccountId] = useState(task?.accountId || initial?.accountId || '');
   const [mediaId, setMediaId] = useState(task?.mediaId || '');
   const [at, setAt] = useState(toLocal(task?.scheduledAt));
   const [approved, setApproved] = useState(false);
@@ -34,6 +34,9 @@ export default function TaskEditor({ kinds, task, accounts, media, onSave, onClo
   const changeKind = (k: Kind) => { setKind(k); setAt(''); setApproved(false); setAuth(false); setLimit(k === 'whatsapp-members' ? '2000' : '50'); };
   const accts = accounts.filter(a => a.platform === spec.account && !a.status.startsWith('Paused'));
   const images = media.filter(m => m.mime === 'image/jpeg' || m.mime === 'image/png');
+  const fbMedia = media.filter(m => m.mime.startsWith('image/') || m.mime.startsWith('video/'));
+  const fbMissing = spec.mediaOptional && mediaId && !fbMedia.some(m => m.id === mediaId);
+  const isFb = kind.startsWith('facebook-');
   const file = useRef<HTMLInputElement>(null);
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,14 +46,23 @@ export default function TaskEditor({ kinds, task, accounts, media, onSave, onClo
     if (wa && !query.trim()) { setErr(t('Enter the exact group name.')); return; }
     if (wa && !accountId) { setErr(t('Choose a WhatsApp account.')); return; }
     if (wa && !auth) { setErr(t('Confirm you are authorized to collect this group.')); return; }
+    let src = source;
+    if (kind === 'facebook-join' || kind === 'facebook-post') {
+      const g = normalizeGroupLines(source);
+      if (g.bad.length) { setErr(`${t('These lines are not exact https://www.facebook.com/groups/<id> URLs:')} ${g.bad.slice(0, 3).join(', ')}`); return; }
+      src = g.ok.join('\n');
+    }
+    if (fbMissing) { setErr(t('The selected media is missing or not an image/video. Choose another or None.')); return; }
+    if (isFb && at && !approved) { setErr(t('Tick the approval box to schedule, or clear the schedule to save a draft.')); return; }
     const input: AdvancedTaskInput = { kind, name: name.trim() };
-    if (spec.source) input.source = source;
+    if (spec.source) input.source = src;
     if (spec.message) input.message = message;
     if (spec.subject) input.subject = subject;
     if (spec.query) input.query = query;
     if (spec.limit) input.limit = Math.max(1, Math.min(maxLimit, Math.round(Number(limit) || 1)));
     if (spec.account) input.accountId = accountId;
     if (spec.media) input.mediaId = mediaId;
+    if (spec.mediaOptional) input.mediaId = mediaId;
     if (!wa && isDesktop && at) input.scheduledAt = new Date(at).toISOString();
     if (!wa && isDesktop && at && approved) input.approved = true;
     setBusy(true); setErr('');
@@ -72,6 +84,9 @@ export default function TaskEditor({ kinds, task, accounts, media, onSave, onClo
         {wa && <div className="live-warning" data-testid="note-adv-wa-setup"><div><b>{t('Setup')}</b><ol style={{ margin: '6px 0 0', paddingInlineStart: 18 }}><li>{t('Run from the desktop app. Hosted preview only saves drafts.')}</li><li>{t('Start the task. A local WhatsApp browser opens for the selected account.')}</li><li>{t('Log in if asked, then manually open the exact group you named. The app waits up to five minutes.')}</li></ol><p style={{ margin: '8px 0 0' }}>{t('Only participant names and phone numbers displayed on screen are read. Nothing is sent. Members whose phone is hidden are saved without a phone. Coverage may be partial, and the limit caps how many are collected.')}</p></div></div>}
         {spec.media && <div className="field-group"><label className="field-label" htmlFor="adv-media">{t('Image (JPEG or PNG)')}</label>
           <select id="adv-media" className="field-select" style={{ width: '100%' }} value={mediaId} onChange={e => setMediaId(e.target.value)} data-testid="select-adv-media"><option value="">{images.length ? t('Choose saved media') : t('Upload a JPEG or PNG in WhatsApp Marketing first')}</option>{images.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}</select></div>}
+        {spec.mediaOptional && <div className="field-group"><label className="field-label" htmlFor="adv-fbmedia">{t('Image or video (optional)')}</label>
+          <select id="adv-fbmedia" className="field-select" style={{ width: '100%' }} value={mediaId} onChange={e => setMediaId(e.target.value)} data-testid="select-adv-fbmedia"><option value="">{t('None (text only)')}</option>{fbMissing && <option value={mediaId}>{t('Missing media')}</option>}{fbMedia.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}</select>
+          <p className="adv-note">{t('A caption is not required when media is selected. Media-only posts stay Unconfirmed for manual review unless a textual receipt proves a new post.')}</p><p className="adv-note">{mediaId && !fbMissing ? `${t('Selected media')}: ${media.find(m => m.id === mediaId)?.name}` : t('Upload images or videos (not PDF) in the Facebook media library on this page first.')}</p>{fbMissing && <p className="wa-err" role="alert">{t('The selected media is missing or not an image/video. Choose another or None.')}</p>}</div>}
         {spec.source && <div className="field-group"><label className="field-label" htmlFor="adv-src">{t(spec.source)} <span className="field-hint">{t('{n} lines', { n: lines })}</span></label>
           <textarea id="adv-src" className="field-textarea adv-mono" maxLength={15000} value={source} onChange={e => setSource(e.target.value)} placeholder={spec.sourcePlaceholder} data-testid="input-adv-source" />
           {kind === 'email-send' && <p className="adv-note" data-testid="note-adv-email-personalize">{t('Use email addresses or Name <email> recipients, one per line.')} {t('Duplicates are removed by address. Use {{name}} and {{email}} in the subject and message. Inline name wins, then the local Contacts name, then the address.')} {t('CSV import reads the email and name columns.')}</p>}

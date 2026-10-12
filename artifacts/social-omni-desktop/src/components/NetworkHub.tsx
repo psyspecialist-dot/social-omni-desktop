@@ -14,6 +14,7 @@ const BASE: Omit<HubNode, 'meta' | 'tone'>[] = [
   { href: '/chatbots', label: 'Auto-Reply / Chatbot', icon: Bot },
   { href: '/campaigns', label: 'Campaigns', icon: ClipboardList },
   { href: '/automation', label: 'Facebook & Instagram', icon: Activity },
+  { href: '/facebook', label: 'Facebook Groups', icon: Activity },
   { href: '/multi-platform', label: 'Telegram & Facebook', icon: Send },
   { href: '/email', label: 'Email Marketing', icon: Mail },
   { href: '/sms', label: 'SMS Marketing', icon: Smartphone },

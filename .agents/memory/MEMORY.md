@@ -8,3 +8,4 @@
 - [Bilingual product scope](bilingual-product-scope.md) — AR/EN covers every module and guide; Arabic RTL, English LTR, without rewriting user content or API values.
 - [Electron release packaging](electron-release-packaging.md) — isolate standalone builds from the monorepo; cross-Windows builds need 64-bit Wine and a display.
 - [Marketing approval gates](marketing-rollout.md) — verify and report each requested marketing feature, then obtain approval before starting the next.
+- [Facebook action safety](facebook-action-safety.md) — keep joining and publishing approvals separate; feed re-renders are not post receipts, and uncertainty must stay visible.

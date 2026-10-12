@@ -2,19 +2,20 @@ import { useEffect, useState } from 'react';
 import { useI18n } from '@/i18n';
 import type { AdvancedSuite, AdvancedTask, AdvancedTaskInput } from '@workspace/api-client-react';
 import type { Account } from '@/lib/workspace';
-import type { ApiState, MediaAsset } from '@/lib/api';
+import type { ApiState, MediaAsset, SimulationJob } from '@/lib/api';
 import { isDesktop } from '@/lib/persistence';
 import { AlertTriangle, Ban, Info, Pencil, Play, Plus, Trash2 } from 'lucide-react';
 import TaskEditor from './TaskEditor';
 import ResultsTable from './ResultsTable';
+import FacebookPanel from './FacebookPanel';
 import SmsPanel from './SmsPanel';
 import { SmtpPanel, TelegramPanel } from './ConnectionPanel';
-import { ACTIVE, KINDS, MODULES, NATIVE_NOTE, msg, when, type ModuleId } from './config';
+import { ACTIVE, KINDS, MODULES, NATIVE_NOTE, msg, when, type Kind, type ModuleId } from './config';
 import '../wa-suite.css';
 import './advanced.css';
 
 type Perform = (method: 'POST' | 'PUT' | 'PATCH' | 'DELETE', route: string, body?: unknown) => Promise<ApiState>;
-interface Props { module: ModuleId; advanced?: AdvancedSuite; accounts: Account[]; media: MediaAsset[]; perform: Perform }
+interface Props { module: ModuleId; advanced?: AdvancedSuite; accounts: Account[]; media: MediaAsset[]; perform: Perform; jobs?: SimulationJob[] }
 const tone: Record<string, string> = { Completed: 'green', Running: 'blue', Queued: 'blue', Scheduled: 'blue', Failed: 'red', 'Needs review': 'amber', Cancelled: '', Draft: '' };
 const EMPTY: AdvancedSuite = { tasks: [], results: [], connections: [] };
 
@@ -28,12 +29,12 @@ function Countdown({ at }: { at?: string | null }) {
   return <span className="adv-mono"> · {t('next')} {s > 0 ? t('in {m}m {s}s', { m: Math.floor(s / 60), s: String(s % 60).padStart(2, '0') }) : t('now')} ({when(at, locale)})</span>;
 }
 
-export default function AdvancedModule({ module, advanced, accounts, media, perform }: Props) {
+export default function AdvancedModule({ module, advanced, accounts, media, perform, jobs }: Props) {
   const { t, locale } = useI18n();
   const suite = advanced || EMPTY;
   const def = MODULES[module];
   const tasks = suite.tasks.filter(x => def.kinds.includes(x.kind)).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  const [editor, setEditor] = useState<{ task?: AdvancedTask } | null>(null);
+  const [editor, setEditor] = useState<{ task?: AdvancedTask; initial?: { kind: Kind; source: string; accountId: string } } | null>(null);
   const [runFor, setRunFor] = useState<AdvancedTask | null>(null);
   const [delFor, setDelFor] = useState<AdvancedTask | null>(null);
   const [consent, setConsent] = useState(false);
@@ -53,6 +54,7 @@ export default function AdvancedModule({ module, advanced, accounts, media, perf
     {module === 'sms' && <div className="wa-banner warn" role="note"><AlertTriangle /><div>{t('SMS is paid. “Accepted/queued” is not delivered; “Sent” means submitted to the carrier; “Delivered” is carrier-reported, not read. Unknown or unconfirmed outcomes are never retried automatically; review the task and results first.')}</div></div>}
     {module === 'extractors' && <div className="wa-banner info" role="note"><Info /><div>{t('Invalid addresses are excluded from clean exports. Valid domains show “Domain ready” and the mailbox status is Unknown. B2B fields are read from real sites; anything not found stays blank.')}</div></div>}
     {module === 'multi-platform' && <div className="wa-banner info" role="note"><Info /><div>{t('Telegram member export lists IDs, usernames and names from one group you administer. No emails or phones are returned, and members are not added to any outreach list. Instagram supports only your own feed image post.')}</div></div>}
+    {module === 'facebook' && <FacebookPanel accounts={accounts} media={media} jobs={jobs || []} tasks={suite.tasks} perform={perform} />}
     {err && <p className="wa-err" role="alert" data-testid="error-adv">{err}</p>}
     <section className="wa-card" aria-label={t('Tasks')} data-testid="panel-adv-tasks">
       <div className="wa-row" style={{ justifyContent: 'space-between', marginBottom: 10 }}><h2 style={{ margin: 0 }}>{t('Tasks')} <span className="mono-tag">{tasks.length}</span></h2>{running && <span className="wa-chip blue">{t('One task at a time')}</span>}</div>
@@ -63,7 +65,7 @@ export default function AdvancedModule({ module, advanced, accounts, media, perf
           return <article key={tk.id} className="adv-task" data-testid={`row-adv-task-${tk.id}`}>
             <div className="adv-task-main"><div><strong>{tk.name}</strong><span className="adv-sub">{t(KINDS[tk.kind].label)}{tk.query ? ` · ${tk.query}` : ''}{tk.scheduledAt ? ` · ${when(tk.scheduledAt, locale)}` : ''}</span></div><span className={`wa-chip ${tone[tk.status] || ''}`} data-testid={`status-adv-task-${tk.id}`}>{t(tk.status)}</span></div>
             {(tk.status === 'Running' || tk.status === 'Queued' || tk.progress > 0) && <><div className="adv-sub">{t(tk.phase || 'Waiting')} · {tk.completedCount}/{tk.totalCount || '?'}<Countdown at={tk.nextActionAt} /></div><div className="wa-prog" role="progressbar" aria-label={t('{name} progress', { name: tk.name })} aria-valuenow={tk.progress} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${tk.progress}%` }} /></div></>}
-            {tk.status === 'Needs review' && <p className="adv-note">{t('The app was closed when this was due, so it did not run. Review it and run again if you still want it.')}</p>}
+            {tk.status === 'Needs review' && (!tk.kind.startsWith('facebook-') || !suite.results.some(r => r.taskId === tk.id)) && <p className="adv-note">{t('The app was closed when this was due, so it did not run. Review it and run again if you still want it.')}</p>}
             {tk.error && <p className="wa-err" role="alert">{t(tk.error)}</p>}
             <div className="adv-actions">
               {(tk.status === 'Draft' || tk.status === 'Needs review' || tk.status === 'Scheduled') && <button className="button button-primary" disabled={!isDesktop || running || busy === tk.id} title={isDesktop ? '' : t(NATIVE_NOTE)} onClick={() => { setConsent(false); setRunFor(tk); }} data-testid={`button-adv-run-${tk.id}`}><Play /> {tk.scheduledAt && tk.status !== 'Needs review' ? t('Approve') : t('Run')}</button>}
@@ -74,11 +76,12 @@ export default function AdvancedModule({ module, advanced, accounts, media, perf
             </div></article>; })}</div>}
     </section>
     <ResultsTable results={suite.results} tasks={suite.tasks} kinds={def.results} selectedTask={selected} onSelectTask={setSelected} onDelete={async id => { await perform('DELETE', `/advanced/results/${id}`); }}
-      onRefresh={module === 'sms' ? async id => { await perform('POST', `/advanced/sms/results/${id}/refresh`); } : undefined} refreshDisabled={!isDesktop || running} />
+      onRefresh={module === 'sms' ? async id => { await perform('POST', `/advanced/sms/results/${id}/refresh`); } : undefined} refreshDisabled={!isDesktop || running}
+      onHandoff={module === 'facebook' ? (kind, urls, taskId) => { const src = suite.tasks.find(x => x.id === taskId); const acct = accounts.find(a => a.id === src?.accountId && a.platform === 'Facebook' && !a.status.startsWith('Paused')); setConsent(false); setEditor({ initial: { kind, source: urls.join('\n'), accountId: acct?.id || '' } }); } : undefined} />
     {module === 'sms' && <SmsPanel connections={suite.connections} perform={perform} />}
     {needsConn && <SmtpPanel connections={suite.connections} perform={perform} />}
     {module === 'multi-platform' && <TelegramPanel connections={suite.connections} perform={perform} />}
-    {editor && <TaskEditor kinds={def.kinds} task={editor.task} accounts={accounts} media={media} onSave={save} onClose={() => setEditor(null)} />}
+    {editor && <TaskEditor kinds={def.kinds} task={editor.task} accounts={accounts} media={media} initial={editor.initial} onSave={save} onClose={() => setEditor(null)} />}
     {runFor && <div className="dialog-backdrop" onKeyDown={e => { if (e.key === 'Escape') setRunFor(null); }}><div className="dialog" role="alertdialog" aria-modal="true" aria-label={t('Approve run')} data-testid="dialog-adv-run">
       <div className="dialog-header"><div><h2>{t('Approve “{name}”', { name: runFor.name })}</h2><p>{runFor.scheduledAt ? t('This will be scheduled for {time}, while the app is open.', { time: when(runFor.scheduledAt, locale) }) : t('This starts now.')}</p></div></div>
       <div className="dialog-form"><label className="check-row" style={{ marginTop: 0 }}><input type="checkbox" autoFocus checked={consent} onChange={e => setConsent(e.target.checked)} data-testid="check-adv-run-consent" />{t(KINDS[runFor.kind].consent)} {t('I understand uncertain sends are not retried automatically.')}</label>

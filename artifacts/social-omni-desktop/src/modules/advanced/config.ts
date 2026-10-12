@@ -1,8 +1,8 @@
 import type { AdvancedTaskInput } from '@workspace/api-client-react';
 
 export type Kind = AdvancedTaskInput['kind'];
-export type ModuleId = 'extractors' | 'multi-platform' | 'email' | 'sms';
-export interface KindSpec { kind: Kind; label: string; hint: string; source?: string; sourcePlaceholder?: string; query?: string; limit?: boolean; message?: string; subject?: boolean; account?: 'Facebook' | 'Instagram' | 'WhatsApp'; media?: boolean; consent: string }
+export type ModuleId = 'extractors' | 'multi-platform' | 'email' | 'sms' | 'facebook';
+export interface KindSpec { kind: Kind; label: string; hint: string; source?: string; sourcePlaceholder?: string; query?: string; limit?: boolean; message?: string; subject?: boolean; account?: 'Facebook' | 'Instagram' | 'WhatsApp'; media?: boolean; mediaOptional?: boolean; consent: string }
 export const KINDS: Record<Kind, KindSpec> = {
   'whatsapp-members': { kind: 'whatsapp-members', label: 'WhatsApp group member extraction', hint: 'Reads participant names and phone numbers shown in ONE WhatsApp group you are authorized to collect from. Nothing is sent.', query: 'Exact group name', limit: true, account: 'WhatsApp', consent: 'I am authorized to collect the visible member names and phone numbers of this group. This is not consent to message them.' },
   maps: { kind: 'maps', label: 'Google Maps search', hint: 'Business listings matching a search.', query: 'dentists in Boston', limit: true, consent: 'I am allowed to collect this business information for B2B outreach.' },
@@ -15,16 +15,26 @@ export const KINDS: Record<Kind, KindSpec> = {
   'telegram-channel': { kind: 'telegram-channel', label: 'Telegram channel / group post', hint: 'Posts to channels or groups you are allowed to post in.', source: 'Channel or group identifiers, one per line', sourcePlaceholder: '@my_channel', message: 'Post text', consent: 'I have permission to post in these channels or groups.' },
   'facebook-search': { kind: 'facebook-search', label: 'Facebook group search', hint: 'Keyword search with a chosen Facebook account.', query: 'local bakery owners', limit: true, account: 'Facebook', consent: 'I will review results before joining or posting.' },
   'facebook-join': { kind: 'facebook-join', label: 'Facebook group join', hint: 'Exact group URLs; requests may need admin approval.', source: 'www.facebook.com/groups/<id> URLs, one per line', sourcePlaceholder: 'https://www.facebook.com/groups/123456', account: 'Facebook', consent: 'I choose to request joining these groups.' },
-  'facebook-post': { kind: 'facebook-post', label: 'Facebook group post', hint: 'Posts only where group rules and admins allow it.', source: 'www.facebook.com/groups/<id> URLs, one per line', sourcePlaceholder: 'https://www.facebook.com/groups/123456', message: 'Post text', account: 'Facebook', consent: 'I have permission to post in these groups.' },
+  'facebook-post': { kind: 'facebook-post', label: 'Facebook group post', hint: 'Posts only where group rules and admins allow it.', source: 'www.facebook.com/groups/<id> URLs, one per line', sourcePlaceholder: 'https://www.facebook.com/groups/123456', message: 'Post text', account: 'Facebook', mediaOptional: true, consent: 'I have permission to post in these groups.' },
   'instagram-post': { kind: 'instagram-post', label: 'Instagram feed image', hint: 'Your own feed, one JPEG or PNG from saved media. No group search on Instagram.', message: 'Caption', account: 'Instagram', media: true, consent: 'I own this account and this image.' },
 };
 export const MODULES: Record<ModuleId, { eyebrow: string; title: string; sub: string; kinds: Kind[]; results: Kind[] }> = {
   extractors: { eyebrow: 'Data tools', title: 'B2B & Data Extractors', sub: 'Collect business facts and check email syntax from sources you may use.', kinds: ['whatsapp-members', 'maps', 'b2b', 'verify-email'], results: ['whatsapp-members', 'maps', 'b2b', 'verify-email'] },
   'multi-platform': { eyebrow: 'Multi-platform', title: 'Telegram & Facebook Automation', sub: 'Approved, paced actions through your own accounts. Nothing sends without your explicit approval.', kinds: ['telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post'], results: ['telegram-send', 'telegram-members', 'telegram-channel', 'facebook-search', 'facebook-join', 'facebook-post', 'instagram-post'] },
   email: { eyebrow: 'Email', title: 'Email Marketing', sub: 'Plain-text campaigns to people who agreed to hear from you, through your own SMTP server.', kinds: ['email-send', 'verify-email'], results: ['email-send', 'verify-email'] },
+  facebook: { eyebrow: 'Facebook', title: 'Facebook Groups', sub: 'Read-only group search, separately approved joins, and posts only to groups you already belong to.', kinds: ['facebook-search', 'facebook-join', 'facebook-post'], results: ['facebook-search', 'facebook-join', 'facebook-post'] },
   sms: { eyebrow: 'SMS', title: 'SMS Marketing', sub: 'Plain-text SMS to people who agreed, through your own Twilio account. Nothing sends without your explicit approval.', kinds: ['sms-send'], results: ['sms-send'] },
 };
 export const NATIVE_NOTE = 'Live runs need the downloaded Social Najhin desktop app and are disabled in this hosted preview. Drafts still save here.';
 export const msg = (e: unknown, t: (key: string) => string) => t(e instanceof Error ? e.message : 'Request failed.');
 export const when = (v: string | null | undefined, locale = 'en') => { const d = v ? new Date(v) : null; return d && !Number.isNaN(d.getTime()) ? d.toLocaleString(locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '—'; };
 export const ACTIVE = ['Queued', 'Running', 'Scheduled'];
+export const normalizeGroupUrl = (raw: string): string | null => {
+  const v = raw.trim(); if (!v) return null;
+  try { const u = new URL(v); if (u.protocol !== 'https:' || u.username || u.password || u.port || u.hostname !== 'www.facebook.com') return null; const m = u.pathname.match(/^\/groups\/([a-zA-Z0-9._-]+)\/?$/); return m ? `https://www.facebook.com/groups/${m[1]}/` : null; } catch { return null; }
+};
+export const normalizeGroupLines = (text: string) => { const ok: string[] = [], bad: string[] = []; for (const l of text.split(/\r?\n/)) { if (!l.trim()) continue; const n = normalizeGroupUrl(l); if (!n) bad.push(l.trim()); else if (!ok.includes(n)) ok.push(n); } return { ok, bad }; };
+export const FB_PHASE = ['Pending', 'Running'];
+export const safePermalink = (raw: string): string | null => {
+  try { const u = new URL(raw); if (u.protocol !== 'https:' || u.hostname !== 'www.facebook.com' || u.username || u.password || u.port) return null; return /^\/groups\/[a-zA-Z0-9._-]+\/(posts|permalink)\/[a-zA-Z0-9_-]+\/?$/.test(u.pathname) ? u.href : null; } catch { return null; }
+};

@@ -91,6 +91,8 @@ export const createAdvancedTaskResponseSettingsMessageContentMax = 10000;
 
 export const createAdvancedTaskResponseSettingsLicenseKeyMax = 200;
 
+export const createAdvancedTaskResponseJobsItemSearchLimitMax = 200;
+
 export const createAdvancedTaskResponseLeadsOneKeywordMax = 100;
 
 export const createAdvancedTaskResponseLeadsOneCityMax = 150;
@@ -269,6 +271,7 @@ export const CreateAdvancedTaskResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -281,7 +284,8 @@ export const CreateAdvancedTaskResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(createAdvancedTaskResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -409,6 +413,8 @@ export const editAdvancedTaskResponseSettingsPhoneNumbersMax = 10000;
 export const editAdvancedTaskResponseSettingsMessageContentMax = 10000;
 
 export const editAdvancedTaskResponseSettingsLicenseKeyMax = 200;
+
+export const editAdvancedTaskResponseJobsItemSearchLimitMax = 200;
 
 export const editAdvancedTaskResponseLeadsOneKeywordMax = 100;
 
@@ -588,6 +594,7 @@ export const EditAdvancedTaskResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -600,7 +607,8 @@ export const EditAdvancedTaskResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(editAdvancedTaskResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -700,6 +708,8 @@ export const deleteAdvancedTaskResponseSettingsPhoneNumbersMax = 10000;
 export const deleteAdvancedTaskResponseSettingsMessageContentMax = 10000;
 
 export const deleteAdvancedTaskResponseSettingsLicenseKeyMax = 200;
+
+export const deleteAdvancedTaskResponseJobsItemSearchLimitMax = 200;
 
 export const deleteAdvancedTaskResponseLeadsOneKeywordMax = 100;
 
@@ -879,6 +889,7 @@ export const DeleteAdvancedTaskResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -891,7 +902,8 @@ export const DeleteAdvancedTaskResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(deleteAdvancedTaskResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -995,6 +1007,8 @@ export const runAdvancedTaskResponseSettingsPhoneNumbersMax = 10000;
 export const runAdvancedTaskResponseSettingsMessageContentMax = 10000;
 
 export const runAdvancedTaskResponseSettingsLicenseKeyMax = 200;
+
+export const runAdvancedTaskResponseJobsItemSearchLimitMax = 200;
 
 export const runAdvancedTaskResponseLeadsOneKeywordMax = 100;
 
@@ -1174,6 +1188,7 @@ export const RunAdvancedTaskResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -1186,7 +1201,8 @@ export const RunAdvancedTaskResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(runAdvancedTaskResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -1286,6 +1302,8 @@ export const cancelAdvancedTaskResponseSettingsPhoneNumbersMax = 10000;
 export const cancelAdvancedTaskResponseSettingsMessageContentMax = 10000;
 
 export const cancelAdvancedTaskResponseSettingsLicenseKeyMax = 200;
+
+export const cancelAdvancedTaskResponseJobsItemSearchLimitMax = 200;
 
 export const cancelAdvancedTaskResponseLeadsOneKeywordMax = 100;
 
@@ -1465,6 +1483,7 @@ export const CancelAdvancedTaskResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -1477,7 +1496,8 @@ export const CancelAdvancedTaskResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(cancelAdvancedTaskResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -1592,6 +1612,8 @@ export const saveAdvancedConnectionResponseSettingsPhoneNumbersMax = 10000;
 export const saveAdvancedConnectionResponseSettingsMessageContentMax = 10000;
 
 export const saveAdvancedConnectionResponseSettingsLicenseKeyMax = 200;
+
+export const saveAdvancedConnectionResponseJobsItemSearchLimitMax = 200;
 
 export const saveAdvancedConnectionResponseLeadsOneKeywordMax = 100;
 
@@ -1771,6 +1793,7 @@ export const SaveAdvancedConnectionResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -1783,7 +1806,8 @@ export const SaveAdvancedConnectionResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(saveAdvancedConnectionResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -1883,6 +1907,8 @@ export const deleteAdvancedConnectionResponseSettingsPhoneNumbersMax = 10000;
 export const deleteAdvancedConnectionResponseSettingsMessageContentMax = 10000;
 
 export const deleteAdvancedConnectionResponseSettingsLicenseKeyMax = 200;
+
+export const deleteAdvancedConnectionResponseJobsItemSearchLimitMax = 200;
 
 export const deleteAdvancedConnectionResponseLeadsOneKeywordMax = 100;
 
@@ -2062,6 +2088,7 @@ export const DeleteAdvancedConnectionResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -2074,7 +2101,8 @@ export const DeleteAdvancedConnectionResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(deleteAdvancedConnectionResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -2182,6 +2210,8 @@ export const sendSmtpTestMessageResponseSettingsPhoneNumbersMax = 10000;
 export const sendSmtpTestMessageResponseSettingsMessageContentMax = 10000;
 
 export const sendSmtpTestMessageResponseSettingsLicenseKeyMax = 200;
+
+export const sendSmtpTestMessageResponseJobsItemSearchLimitMax = 200;
 
 export const sendSmtpTestMessageResponseLeadsOneKeywordMax = 100;
 
@@ -2361,6 +2391,7 @@ export const SendSmtpTestMessageResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -2373,7 +2404,8 @@ export const SendSmtpTestMessageResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(sendSmtpTestMessageResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -2481,6 +2513,8 @@ export const sendSmsTestMessageResponseSettingsPhoneNumbersMax = 10000;
 export const sendSmsTestMessageResponseSettingsMessageContentMax = 10000;
 
 export const sendSmsTestMessageResponseSettingsLicenseKeyMax = 200;
+
+export const sendSmsTestMessageResponseJobsItemSearchLimitMax = 200;
 
 export const sendSmsTestMessageResponseLeadsOneKeywordMax = 100;
 
@@ -2660,6 +2694,7 @@ export const SendSmsTestMessageResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -2672,7 +2707,8 @@ export const SendSmsTestMessageResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(sendSmsTestMessageResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -2772,6 +2808,8 @@ export const refreshSmsResultResponseSettingsPhoneNumbersMax = 10000;
 export const refreshSmsResultResponseSettingsMessageContentMax = 10000;
 
 export const refreshSmsResultResponseSettingsLicenseKeyMax = 200;
+
+export const refreshSmsResultResponseJobsItemSearchLimitMax = 200;
 
 export const refreshSmsResultResponseLeadsOneKeywordMax = 100;
 
@@ -2951,6 +2989,7 @@ export const RefreshSmsResultResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -2963,7 +3002,8 @@ export const RefreshSmsResultResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(refreshSmsResultResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -3068,6 +3108,8 @@ export const authorizeTelegramResponseSettingsPhoneNumbersMax = 10000;
 export const authorizeTelegramResponseSettingsMessageContentMax = 10000;
 
 export const authorizeTelegramResponseSettingsLicenseKeyMax = 200;
+
+export const authorizeTelegramResponseJobsItemSearchLimitMax = 200;
 
 export const authorizeTelegramResponseLeadsOneKeywordMax = 100;
 
@@ -3247,6 +3289,7 @@ export const AuthorizeTelegramResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -3259,7 +3302,8 @@ export const AuthorizeTelegramResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(authorizeTelegramResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -3359,6 +3403,8 @@ export const deleteAdvancedResultResponseSettingsPhoneNumbersMax = 10000;
 export const deleteAdvancedResultResponseSettingsMessageContentMax = 10000;
 
 export const deleteAdvancedResultResponseSettingsLicenseKeyMax = 200;
+
+export const deleteAdvancedResultResponseJobsItemSearchLimitMax = 200;
 
 export const deleteAdvancedResultResponseLeadsOneKeywordMax = 100;
 
@@ -3538,6 +3584,7 @@ export const DeleteAdvancedResultResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -3550,7 +3597,8 @@ export const DeleteAdvancedResultResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(deleteAdvancedResultResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -3655,6 +3703,8 @@ export const saveWaAiResponseSettingsPhoneNumbersMax = 10000;
 export const saveWaAiResponseSettingsMessageContentMax = 10000;
 
 export const saveWaAiResponseSettingsLicenseKeyMax = 200;
+
+export const saveWaAiResponseJobsItemSearchLimitMax = 200;
 
 export const saveWaAiResponseLeadsOneKeywordMax = 100;
 
@@ -3834,6 +3884,7 @@ export const SaveWaAiResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -3846,7 +3897,8 @@ export const SaveWaAiResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(saveWaAiResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -3955,6 +4007,8 @@ export const saveWaMenuResponseSettingsPhoneNumbersMax = 10000;
 export const saveWaMenuResponseSettingsMessageContentMax = 10000;
 
 export const saveWaMenuResponseSettingsLicenseKeyMax = 200;
+
+export const saveWaMenuResponseJobsItemSearchLimitMax = 200;
 
 export const saveWaMenuResponseLeadsOneKeywordMax = 100;
 
@@ -4134,6 +4188,7 @@ export const SaveWaMenuResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -4146,7 +4201,8 @@ export const SaveWaMenuResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(saveWaMenuResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -4250,6 +4306,8 @@ export const saveWaFilterResponseSettingsPhoneNumbersMax = 10000;
 export const saveWaFilterResponseSettingsMessageContentMax = 10000;
 
 export const saveWaFilterResponseSettingsLicenseKeyMax = 200;
+
+export const saveWaFilterResponseJobsItemSearchLimitMax = 200;
 
 export const saveWaFilterResponseLeadsOneKeywordMax = 100;
 
@@ -4429,6 +4487,7 @@ export const SaveWaFilterResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -4441,7 +4500,8 @@ export const SaveWaFilterResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(saveWaFilterResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -4559,6 +4619,8 @@ export const createCrmThreadResponseSettingsPhoneNumbersMax = 10000;
 export const createCrmThreadResponseSettingsMessageContentMax = 10000;
 
 export const createCrmThreadResponseSettingsLicenseKeyMax = 200;
+
+export const createCrmThreadResponseJobsItemSearchLimitMax = 200;
 
 export const createCrmThreadResponseLeadsOneKeywordMax = 100;
 
@@ -4738,6 +4800,7 @@ export const CreateCrmThreadResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -4750,7 +4813,8 @@ export const CreateCrmThreadResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(createCrmThreadResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -4872,6 +4936,8 @@ export const editCrmThreadResponseSettingsPhoneNumbersMax = 10000;
 export const editCrmThreadResponseSettingsMessageContentMax = 10000;
 
 export const editCrmThreadResponseSettingsLicenseKeyMax = 200;
+
+export const editCrmThreadResponseJobsItemSearchLimitMax = 200;
 
 export const editCrmThreadResponseLeadsOneKeywordMax = 100;
 
@@ -5051,6 +5117,7 @@ export const EditCrmThreadResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -5063,7 +5130,8 @@ export const EditCrmThreadResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(editCrmThreadResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -5163,6 +5231,8 @@ export const removeCrmThreadResponseSettingsPhoneNumbersMax = 10000;
 export const removeCrmThreadResponseSettingsMessageContentMax = 10000;
 
 export const removeCrmThreadResponseSettingsLicenseKeyMax = 200;
+
+export const removeCrmThreadResponseJobsItemSearchLimitMax = 200;
 
 export const removeCrmThreadResponseLeadsOneKeywordMax = 100;
 
@@ -5342,6 +5412,7 @@ export const RemoveCrmThreadResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -5354,7 +5425,8 @@ export const RemoveCrmThreadResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(removeCrmThreadResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -5478,6 +5550,8 @@ export const createChatbotRuleResponseSettingsPhoneNumbersMax = 10000;
 export const createChatbotRuleResponseSettingsMessageContentMax = 10000;
 
 export const createChatbotRuleResponseSettingsLicenseKeyMax = 200;
+
+export const createChatbotRuleResponseJobsItemSearchLimitMax = 200;
 
 export const createChatbotRuleResponseLeadsOneKeywordMax = 100;
 
@@ -5657,6 +5731,7 @@ export const CreateChatbotRuleResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -5669,7 +5744,8 @@ export const CreateChatbotRuleResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(createChatbotRuleResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -5797,6 +5873,8 @@ export const editChatbotRuleResponseSettingsPhoneNumbersMax = 10000;
 export const editChatbotRuleResponseSettingsMessageContentMax = 10000;
 
 export const editChatbotRuleResponseSettingsLicenseKeyMax = 200;
+
+export const editChatbotRuleResponseJobsItemSearchLimitMax = 200;
 
 export const editChatbotRuleResponseLeadsOneKeywordMax = 100;
 
@@ -5976,6 +6054,7 @@ export const EditChatbotRuleResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -5988,7 +6067,8 @@ export const EditChatbotRuleResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(editChatbotRuleResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -6088,6 +6168,8 @@ export const removeChatbotRuleResponseSettingsPhoneNumbersMax = 10000;
 export const removeChatbotRuleResponseSettingsMessageContentMax = 10000;
 
 export const removeChatbotRuleResponseSettingsLicenseKeyMax = 200;
+
+export const removeChatbotRuleResponseJobsItemSearchLimitMax = 200;
 
 export const removeChatbotRuleResponseLeadsOneKeywordMax = 100;
 
@@ -6267,6 +6349,7 @@ export const RemoveChatbotRuleResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -6279,7 +6362,8 @@ export const RemoveChatbotRuleResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(removeChatbotRuleResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -6384,6 +6468,8 @@ export const startWaSuiteSessionResponseSettingsPhoneNumbersMax = 10000;
 export const startWaSuiteSessionResponseSettingsMessageContentMax = 10000;
 
 export const startWaSuiteSessionResponseSettingsLicenseKeyMax = 200;
+
+export const startWaSuiteSessionResponseJobsItemSearchLimitMax = 200;
 
 export const startWaSuiteSessionResponseLeadsOneKeywordMax = 100;
 
@@ -6563,6 +6649,7 @@ export const StartWaSuiteSessionResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -6575,7 +6662,8 @@ export const StartWaSuiteSessionResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(startWaSuiteSessionResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -6689,6 +6777,8 @@ export const startLocalBrowserTaskResponseSettingsPhoneNumbersMax = 10000;
 export const startLocalBrowserTaskResponseSettingsMessageContentMax = 10000;
 
 export const startLocalBrowserTaskResponseSettingsLicenseKeyMax = 200;
+
+export const startLocalBrowserTaskResponseJobsItemSearchLimitMax = 200;
 
 export const startLocalBrowserTaskResponseLeadsOneKeywordMax = 100;
 
@@ -6868,6 +6958,7 @@ export const StartLocalBrowserTaskResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -6880,7 +6971,8 @@ export const StartLocalBrowserTaskResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(startLocalBrowserTaskResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -6996,6 +7088,8 @@ export const saveSocialOmniLeadDraftResponseSettingsPhoneNumbersMax = 10000;
 export const saveSocialOmniLeadDraftResponseSettingsMessageContentMax = 10000;
 
 export const saveSocialOmniLeadDraftResponseSettingsLicenseKeyMax = 200;
+
+export const saveSocialOmniLeadDraftResponseJobsItemSearchLimitMax = 200;
 
 export const saveSocialOmniLeadDraftResponseLeadsOneKeywordMax = 100;
 
@@ -7175,6 +7269,7 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -7187,7 +7282,8 @@ export const SaveSocialOmniLeadDraftResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(saveSocialOmniLeadDraftResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -7286,6 +7382,8 @@ export const clearSocialOmniLeadsResponseSettingsPhoneNumbersMax = 10000;
 export const clearSocialOmniLeadsResponseSettingsMessageContentMax = 10000;
 
 export const clearSocialOmniLeadsResponseSettingsLicenseKeyMax = 200;
+
+export const clearSocialOmniLeadsResponseJobsItemSearchLimitMax = 200;
 
 export const clearSocialOmniLeadsResponseLeadsOneKeywordMax = 100;
 
@@ -7465,6 +7563,7 @@ export const ClearSocialOmniLeadsResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -7477,7 +7576,8 @@ export const ClearSocialOmniLeadsResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(clearSocialOmniLeadsResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -7573,6 +7673,8 @@ export const getSocialOmniStateResponseSettingsPhoneNumbersMax = 10000;
 export const getSocialOmniStateResponseSettingsMessageContentMax = 10000;
 
 export const getSocialOmniStateResponseSettingsLicenseKeyMax = 200;
+
+export const getSocialOmniStateResponseJobsItemSearchLimitMax = 200;
 
 export const getSocialOmniStateResponseLeadsOneKeywordMax = 100;
 
@@ -7752,6 +7854,7 @@ export const GetSocialOmniStateResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -7764,7 +7867,8 @@ export const GetSocialOmniStateResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(getSocialOmniStateResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -7860,6 +7964,8 @@ export const clearSocialOmniStateResponseSettingsPhoneNumbersMax = 10000;
 export const clearSocialOmniStateResponseSettingsMessageContentMax = 10000;
 
 export const clearSocialOmniStateResponseSettingsLicenseKeyMax = 200;
+
+export const clearSocialOmniStateResponseJobsItemSearchLimitMax = 200;
 
 export const clearSocialOmniStateResponseLeadsOneKeywordMax = 100;
 
@@ -8039,6 +8145,7 @@ export const ClearSocialOmniStateResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -8051,7 +8158,8 @@ export const ClearSocialOmniStateResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(clearSocialOmniStateResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -8177,6 +8285,8 @@ export const updateSocialOmniSettingsResponseSettingsPhoneNumbersMax = 10000;
 export const updateSocialOmniSettingsResponseSettingsMessageContentMax = 10000;
 
 export const updateSocialOmniSettingsResponseSettingsLicenseKeyMax = 200;
+
+export const updateSocialOmniSettingsResponseJobsItemSearchLimitMax = 200;
 
 export const updateSocialOmniSettingsResponseLeadsOneKeywordMax = 100;
 
@@ -8356,6 +8466,7 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -8368,7 +8479,8 @@ export const UpdateSocialOmniSettingsResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(updateSocialOmniSettingsResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -8473,6 +8585,8 @@ export const createSocialOmniJobResponseSettingsPhoneNumbersMax = 10000;
 export const createSocialOmniJobResponseSettingsMessageContentMax = 10000;
 
 export const createSocialOmniJobResponseSettingsLicenseKeyMax = 200;
+
+export const createSocialOmniJobResponseJobsItemSearchLimitMax = 200;
 
 export const createSocialOmniJobResponseLeadsOneKeywordMax = 100;
 
@@ -8652,6 +8766,7 @@ export const CreateSocialOmniJobResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -8664,7 +8779,8 @@ export const CreateSocialOmniJobResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(createSocialOmniJobResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -8764,6 +8880,8 @@ export const cancelSocialOmniJobResponseSettingsPhoneNumbersMax = 10000;
 export const cancelSocialOmniJobResponseSettingsMessageContentMax = 10000;
 
 export const cancelSocialOmniJobResponseSettingsLicenseKeyMax = 200;
+
+export const cancelSocialOmniJobResponseJobsItemSearchLimitMax = 200;
 
 export const cancelSocialOmniJobResponseLeadsOneKeywordMax = 100;
 
@@ -8943,6 +9061,7 @@ export const CancelSocialOmniJobResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -8955,7 +9074,8 @@ export const CancelSocialOmniJobResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(cancelSocialOmniJobResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -9064,6 +9184,8 @@ export const uploadSocialOmniMediaResponseSettingsPhoneNumbersMax = 10000;
 export const uploadSocialOmniMediaResponseSettingsMessageContentMax = 10000;
 
 export const uploadSocialOmniMediaResponseSettingsLicenseKeyMax = 200;
+
+export const uploadSocialOmniMediaResponseJobsItemSearchLimitMax = 200;
 
 export const uploadSocialOmniMediaResponseLeadsOneKeywordMax = 100;
 
@@ -9243,6 +9365,7 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -9255,7 +9378,8 @@ export const UploadSocialOmniMediaResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(uploadSocialOmniMediaResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -9355,6 +9479,8 @@ export const readSocialOmniMediaResponseSettingsPhoneNumbersMax = 10000;
 export const readSocialOmniMediaResponseSettingsMessageContentMax = 10000;
 
 export const readSocialOmniMediaResponseSettingsLicenseKeyMax = 200;
+
+export const readSocialOmniMediaResponseJobsItemSearchLimitMax = 200;
 
 export const readSocialOmniMediaResponseLeadsOneKeywordMax = 100;
 
@@ -9534,6 +9660,7 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -9546,7 +9673,8 @@ export const ReadSocialOmniMediaResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(readSocialOmniMediaResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -9649,6 +9777,8 @@ export const deleteSocialOmniMediaResponseSettingsPhoneNumbersMax = 10000;
 export const deleteSocialOmniMediaResponseSettingsMessageContentMax = 10000;
 
 export const deleteSocialOmniMediaResponseSettingsLicenseKeyMax = 200;
+
+export const deleteSocialOmniMediaResponseJobsItemSearchLimitMax = 200;
 
 export const deleteSocialOmniMediaResponseLeadsOneKeywordMax = 100;
 
@@ -9828,6 +9958,7 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -9840,7 +9971,8 @@ export const DeleteSocialOmniMediaResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(deleteSocialOmniMediaResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -9966,6 +10098,8 @@ export const createSocialOmniRecordResponseSettingsPhoneNumbersMax = 10000;
 export const createSocialOmniRecordResponseSettingsMessageContentMax = 10000;
 
 export const createSocialOmniRecordResponseSettingsLicenseKeyMax = 200;
+
+export const createSocialOmniRecordResponseJobsItemSearchLimitMax = 200;
 
 export const createSocialOmniRecordResponseLeadsOneKeywordMax = 100;
 
@@ -10145,6 +10279,7 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -10157,7 +10292,8 @@ export const CreateSocialOmniRecordResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(createSocialOmniRecordResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -10287,6 +10423,8 @@ export const updateSocialOmniRecordResponseSettingsPhoneNumbersMax = 10000;
 export const updateSocialOmniRecordResponseSettingsMessageContentMax = 10000;
 
 export const updateSocialOmniRecordResponseSettingsLicenseKeyMax = 200;
+
+export const updateSocialOmniRecordResponseJobsItemSearchLimitMax = 200;
 
 export const updateSocialOmniRecordResponseLeadsOneKeywordMax = 100;
 
@@ -10466,6 +10604,7 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -10478,7 +10617,8 @@ export const UpdateSocialOmniRecordResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(updateSocialOmniRecordResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({
@@ -10579,6 +10719,8 @@ export const deleteSocialOmniRecordResponseSettingsPhoneNumbersMax = 10000;
 export const deleteSocialOmniRecordResponseSettingsMessageContentMax = 10000;
 
 export const deleteSocialOmniRecordResponseSettingsLicenseKeyMax = 200;
+
+export const deleteSocialOmniRecordResponseJobsItemSearchLimitMax = 200;
 
 export const deleteSocialOmniRecordResponseLeadsOneKeywordMax = 100;
 
@@ -10758,6 +10900,7 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "name": zod.string(),
   "joinStatus": zod.enum(['Pending', 'Joined', 'Requested', 'Needs review']),
   "postStatus": zod.enum(['Pending', 'Posted', 'Not posted', 'Unconfirmed']),
+  "postUrl": zod.string().optional().describe('A newly observed matching Facebook post permalink, when confirmed.'),
   "sendStatus": zod.enum(['Pending', 'Sent', 'Unconfirmed', 'Failed']),
   "error": zod.string().optional()
 })).optional(),
@@ -10770,7 +10913,8 @@ export const DeleteSocialOmniRecordResponse = zod.object({
   "mediaName": zod.string().nullish(),
   "mediaId": zod.string().nullish(),
   "replyToExistingUnread": zod.boolean().optional(),
-  "messageContent": zod.string().optional()
+  "messageContent": zod.string().optional(),
+  "searchLimit": zod.number().int().min(1).max(deleteSocialOmniRecordResponseJobsItemSearchLimitMax).optional().describe('Maximum observed Facebook group search results; coverage may be partial.')
 })),
   "initialized": zod.boolean(),
   "media": zod.array(zod.object({

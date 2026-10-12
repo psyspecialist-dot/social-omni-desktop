@@ -14,6 +14,8 @@ export interface SimulatorTarget {
   name: string;
   joinStatus: SimulatorTargetJoinStatus;
   postStatus: SimulatorTargetPostStatus;
+  /** A newly observed matching Facebook post permalink, when confirmed. */
+  postUrl?: string;
   sendStatus: SimulatorTargetSendStatus;
   error?: string;
 }

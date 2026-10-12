@@ -37,7 +37,7 @@ function validateRun(state, task, runtime) {
     const account = state.store.accounts.find(a => a.id === task.accountId && a.platform === 'WhatsApp' && !a.status.startsWith('Paused'));
     if (!account || !/^[a-f0-9-]{36}$/i.test(account.id)) throw bad('Choose an active WhatsApp account.');
   }
-  if (['email-send','telegram-send','telegram-channel','facebook-post','instagram-post'].includes(task.kind) && !task.message) throw bad('Message or caption is required.');
+  if (['email-send','telegram-send','telegram-channel','instagram-post'].includes(task.kind) && !task.message) throw bad('Message or caption is required.');
   if (task.kind === 'email-send') {
     if (!task.subject || /[\r\n]/.test(task.subject)) throw bad('Enter a single-line email subject.');
     require('./email-marketing.cjs').recipients(task.source);
@@ -52,8 +52,15 @@ function validateRun(state, task, runtime) {
     if (!account) throw bad(`Choose an active ${platform} account.`);
     if (!/^[a-f0-9-]{36}$/i.test(account.id)) throw bad('This imported account cannot use a browser profile. Create a new account label first.');
     if (/^facebook-(join|post)$/.test(task.kind)) {
-      const { groupUrl } = require('./browser-worker.cjs');
-      for (const url of lines(task.source)) { try { groupUrl(url); } catch { throw bad('Use exact https://www.facebook.com/groups/<group-id> URLs.'); } }
+      require('./facebook-marketing.cjs').targets(task.source,task.limit);
+    }
+    if(task.kind==='facebook-post') {
+      if(!task.message.trim() && !task.mediaId) throw bad('Enter Facebook post text or choose an image or video.');
+      if(task.mediaId && !state.media.some(m=>m.id===task.mediaId && /^(image|video)\//.test(m.mime))) throw bad('Choose a saved image or video for Facebook posts.');
+    }
+    if(task.kind.startsWith('facebook-')) {
+      const count=task.kind==='facebook-search'?task.limit:require('./facebook-marketing.cjs').targets(task.source,task.limit).length;
+      if(state.advanced.results.length+count>2000) throw bad('Remove old results before starting Facebook actions (limit 2000).');
     }
     if (task.kind === 'instagram-post' && !state.media.some(m => m.id === task.mediaId && ['image/jpeg','image/png'].includes(m.mime))) throw bad('Choose a saved JPEG or PNG image.');
   }

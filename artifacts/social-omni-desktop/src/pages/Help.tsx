@@ -9,6 +9,21 @@ interface Section { id: string; icon: ReactNode; title: Bi; intro?: Bi; items?: 
 
 const SECTIONS: Section[] = [
   {
+    id: 'facebook', icon: <Compass size={18} />,
+    title: { en: 'Facebook Groups guide', ar: 'دليل مجموعات فيسبوك' },
+    intro: { en: 'The Facebook module works only in the desktop app. It has not been verified against live Facebook here; always check outcomes yourself.', ar: 'تعمل وحدة فيسبوك في تطبيق سطح المكتب فقط. لم يتم التحقق منها مع فيسبوك الحقيقي هنا؛ تحقق من النتائج بنفسك دائماً.' },
+    items: [
+      { en: 'Sign in manually in the visible desktop browser, including any checkpoint. Captchas are never bypassed.', ar: 'سجّل الدخول يدوياً في متصفح سطح المكتب الظاهر، بما في ذلك أي فحص أمني. لا يتم تجاوز الكابتشا أبداً.' },
+      { en: 'Group search is read-only. Found groups are never joined or posted to automatically.', ar: 'بحث المجموعات للقراءة فقط. لا يتم الانضمام إلى المجموعات المكتشفة أو النشر فيها تلقائياً.' },
+      { en: 'Joins are a separate task with their own consent. Membership questions must be answered manually.', ar: 'الانضمام مهمة منفصلة بموافقة مستقلة. أسئلة العضوية تُجاب يدوياً.' },
+      { en: 'Posts go only to existing groups where you are authorized. Posting never joins a group; groups without a composer or membership are marked Needs review or Not posted.', ar: 'تُنشر المنشورات فقط في مجموعات موجودة ومصرّح لك فيها. النشر لا ينضم أبداً؛ المجموعات بلا مربع نشر أو عضوية تُوسم بـ يحتاج مراجعة أو لم يُنشر.' },
+      { en: 'A post may include one saved image or video, or none. PDFs are not allowed.', ar: 'يمكن أن يتضمن المنشور صورة أو فيديو محفوظاً واحداً أو بدونهما. ملفات PDF غير مسموحة.' },
+      { en: 'Search collects only real visible results. Coverage may be partial, and the limit (maximum 200) is a cap, not a guarantee.', ar: 'يجمع البحث النتائج الظاهرة الحقيقية فقط. قد تكون التغطية جزئية، والحد (الأقصى 200) سقف وليس ضماناً.' },
+      { en: 'Posted is shown only when a newly observed post with matching text appears in the same group; its permalink is linked. Public visibility and moderator approval are not guaranteed. Media-only posts without a textual receipt stay Unconfirmed and need manual review.', ar: 'تظهر حالة تم النشر فقط عند ظهور منشور جديد مطابق للنص في المجموعة نفسها، ويُربط برابطه الدائم. لا يُضمن الظهور العام ولا موافقة المشرف. المنشورات بالوسائط فقط دون إيصال نصي تبقى غير مؤكدة وتحتاج مراجعة يدوية.' },
+      { en: 'Schedules run only while the app is open. Uncertain outcomes are never retried automatically; check Facebook first.', ar: 'الجداول تعمل فقط والتطبيق مفتوح. النتائج غير المؤكدة لا تُعاد تلقائياً؛ تحقق من فيسبوك أولاً.' },
+    ],
+  },
+  {
     id: 'start', icon: <Compass size={18} />,
     title: { en: 'Start here', ar: 'ابدأ من هنا' },
     intro: { en: 'Social Najhin keeps your records in a local SQLite database on this computer. Live browser actions run in visible local browser windows, and only after you start them.', ar: 'يحفظ Social Najhin سجلاتك في قاعدة بيانات SQLite محلية على هذا الجهاز. تعمل الإجراءات الحية في نوافذ متصفح محلية ظاهرة، ولا تبدأ إلا بعد أن تبدأها أنت.' },
