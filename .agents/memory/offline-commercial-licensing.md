@@ -34,6 +34,19 @@ behind seller access. Call the existing private issuer only on the backend;
 never send the signing key to the browser or include the seller dashboard in
 buyer distributions.
 
+Do not initialize or rotate the seller issuer to fix an activation warning in a
+released app. Check the existing issuer's public key against the source config,
+then verify the configuration in the newly packaged application.
+
+**Why:** A desktop activation warning was reported while the current source
+already had the matching public key and enabled offline licensing. Correct
+source configuration alone does not establish which build a customer installed;
+rotating the issuer would invalidate previously issued licenses.
+
+**How to apply:** Rebuild using the original public key and give the corrected
+release a distinguishable version. Keep intentional owner-disabled builds
+separate from missing/invalid public-key configuration.
+
 Source buyers can change configuration and rebuild; no client-side scheme
 prevents that. Offline permanent certificates cannot be remotely revoked.
 
