@@ -1,5 +1,31 @@
 # Social Najhin licensing / تراخيص سوشيال ناجحين
 
+## Commercial offline mode / الوضع التجاري المحلي
+
+The commercial configuration defaults to `mode:"offline", enabled:true`.
+Paste the seller's complete `SN1.…` signed license into Settings → License.
+It is verified against this build's pinned Ed25519 public key and your Machine
+ID without any network request, then saved with native OS encryption.
+Copy/Paste use native platform Edit roles and context menus; Copy Machine ID
+verifies the clipboard by reading it back. No private key or secret salt ships.
+
+الرخصة التجارية تُفعّل محلياً دون خادم. انسخ معرّف الجهاز وأرسله للبائع،
+ثم الصق الرخصة الموقعة كاملة. تُحفظ مشفرة بواسطة النظام وتُرفض على جهاز آخر.
+
+The owner can set `enabled:false` in the source config and rebuild to disable
+checking, visibly reported as Disabled rather than a paid license. Anyone with
+source can rebuild a modified application; do not promise tamper-proof DRM.
+Only seller tools outside the customer bundle issue original signed licenses.
+Each offline certificate is specific to one device. Offline reseller bundles
+need individually issued device certificates and a seller register, not a
+shared unknown-device key. Keep your signed license for offline reactivation.
+
+This is custom device licensing, NOT automatic Envato purchase-code validation.
+The seller confirms purchase evidence before issuance. The sections below
+describe the OPTIONAL legacy `mode:"online"` authority, not a requirement for
+the current offline commercial installers. Its admin CLI is seller-only and
+omitted from the customer source bundle.
+
 ## Model / النموذج
 
 One-time perpetual application entitlement. Updates/support can be none,

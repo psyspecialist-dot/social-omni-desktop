@@ -1,5 +1,13 @@
 /** Display-only translations for shared controls and locally recorded service events. */
 export const extraAr: Record<string,string> = {
+  "License checking disabled": "فحص الترخيص معطّل",
+  "License checking is disabled by the build owner. This is not proof of a paid license.": "عطّل مالك الإصدار فحص الترخيص. هذا ليس إثباتاً لشراء رخصة.",
+  "License checking is disabled in this build.": "فحص الترخيص معطّل في هذا الإصدار.",
+  "This build has no trusted licensing public key or valid licensing configuration. Contact the seller.": "لا يتضمن هذا الإصدار مفتاحاً عاماً موثوقاً أو إعدادات ترخيص صالحة. تواصل مع البائع.",
+  "Offline activation: send your Machine ID to the seller and paste the signed license here. No activation server or internet connection is required. Keep your license for reactivation.": "تفعيل محلي: أرسل معرّف الجهاز للبائع والصق الرخصة الموقعة هنا. لا يحتاج التفعيل خادماً أو اتصالاً بالإنترنت. احتفظ بالرخصة لإعادة التفعيل.",
+  "This removes only the local certificate. Keep your signed license to reactivate this same machine offline. It cannot activate a different device.": "يُحذف ملف الرخصة المحلي فقط. احتفظ بالرخصة الموقعة لإعادة تفعيل الجهاز نفسه دون اتصال. لا يمكنها تفعيل جهاز مختلف.",
+  "Local certificate removed. Keep your signed license for offline reactivation.": "حُذفت الرخصة المحلية. احتفظ بالرخصة الموقعة لإعادة التفعيل دون اتصال.",
+  "Clipboard verification failed.": "تعذّر التحقق من النسخ إلى الحافظة.",
   "Development test license — not valid for distribution.": "ترخيص اختبار تطوير محلي — غير صالح للتوزيع.",
   "This deletes only the certificate stored on this device. It does NOT free the device slot on the license server. You will need your key and internet to activate again; the same registered machine does not consume another slot.": "تُحذف الشهادة المحفوظة على هذا الجهاز فقط، ولا يُحرَّر المقعد على خادم التراخيص. لإعادة التفعيل تحتاج المفتاح والاتصال بالإنترنت؛ الجهاز المسجّل نفسه لا يستهلك مقعداً إضافياً.",
   "This release is newer than your updates entitlement. Install a covered release or renew updates and support.": "هذا الإصدار أحدث من الفترة المشمولة بحق التحديثات. ثبّت إصداراً مشمولاً أو جدّد التحديثات والدعم.",

@@ -1,5 +1,7 @@
 {
-  "serverUrl": "https://social-omni-desktop-campaign-manager.replit.app",
-  "publicKey": "",
+  "enabled": true,
+  "mode": "offline",
+  "serverUrl": "",
+  "publicKey": "MCowBQYDK2VwAyEAMoUkW6UOUTIp4ygzwdxCvVHWaKVzeCi7ENON2B1Wy+M=",
   "releaseDate": "2026-10-12T00:00:00.000Z"
 }

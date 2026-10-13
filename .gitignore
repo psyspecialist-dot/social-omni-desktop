@@ -49,5 +49,8 @@ Thumbs.db
 .local/
 artifacts/api-server/data/
 /generated-artifacts/
+**/signing-private.base64
+**/admin-token.txt
+**/.social-najhin-offline-issuer/
 artifacts/social-omni-desktop/desktop/browser-runtime/
 artifacts/social-omni-desktop/public/downloads/native-*

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain, shell, safeStorage } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, shell, safeStorage, Menu, clipboard } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 // Browser binaries live outside ASAR and do not depend on the customer's cache.
@@ -10,6 +10,8 @@ const express = require('express');
 const createService = require('./api-service.cjs');
 const { createLicenseClient } = require('./license-client.cjs');
 const registerBrowserIpc = require('./browser-ipc.cjs');
+const { installEditing } = require('./editing.cjs');
+let attachEditing;
 // Visible macOS app name changes independently of the existing storage location.
 const existingUserDataPath = app.getPath('userData');
 const developmentLicense = process.argv.includes('--dev-license');
@@ -172,6 +174,7 @@ function createWindow() {
       webSecurity: true,
     },
   });
+  attachEditing(window);
   window.webContents.setWindowOpenHandler(({url}) => {
     if (['https://my.telegram.org','https://my.telegram.org/'].includes(url)) void shell.openExternal('https://my.telegram.org/');
     return {action:'deny'};
@@ -198,6 +201,7 @@ app.whenReady().then(async () => {
     if (process.platform === 'darwin' && app.dock) app.dock.setIcon(appIconPath);
     await openDatabase();
     await startApi();
+    attachEditing = installEditing({ app, Menu, clipboard, ipcMain, assertTrustedSender, getWindow: () => window });
     registerIpc();
     createWindow();
     app.on('activate', () => {

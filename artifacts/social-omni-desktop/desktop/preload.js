@@ -17,6 +17,7 @@ async function invokeBackend(channel, ...args) {
 }
 contextBridge.exposeInMainWorld('socialOmni', Object.freeze({
   isDesktop: true,
+  copyText: (value) => invokeBackend('socialomni:copy-text', value),
   getItem: (key) => ipcRenderer.invoke('socialomni:get-item', key),
   setItem: (key, value) => ipcRenderer.invoke('socialomni:set-item', key, value),
   removeItem: (key) => ipcRenderer.invoke('socialomni:remove-item', key),

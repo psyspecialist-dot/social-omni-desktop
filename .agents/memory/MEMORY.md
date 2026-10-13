@@ -10,4 +10,5 @@
 - [Marketing approval gates](marketing-rollout.md) — verify and report each requested marketing feature, then obtain approval before starting the next.
 - [Facebook action safety](facebook-action-safety.md) — keep joining and publishing approvals separate; feed re-renders are not post receipts, and uncertainty must stay visible.
 - [Licensing model](licensing-model.md) — one-time purchase with monthly/yearly updates and support; device binding and real verification are required.
+- [Offline commercial licensing](offline-commercial-licensing.md) — seller-only key generation; buyer bundles exclude issuers and signing keys; offline and CodeCanyon limits.
 - [Git authentication diagnostics](git-auth-diagnostics.md) — credential helpers may stall despite GitHub being reachable; distinguish network failure from repository authorization.

@@ -13,6 +13,8 @@ on:
       - 'artifacts/api-server/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
+      - 'tools/licensing/**'
+      - 'distribution/codecanyon/**'
       - '.github/workflows/desktop-installers.yml'
 permissions:
   contents: read
@@ -37,6 +39,20 @@ jobs:
       # CI only needs the renderer here, not Electron's Node-22-only npm installer.
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm --filter @workspace/social-omni-desktop run desktop:export
+      - run: node --test tools/licensing/keygen.test.cjs
+      - run: pnpm --filter @workspace/social-omni-desktop run desktop:distribution
+      - uses: actions/upload-artifact@v4
+        with:
+          name: codecanyon-customer-source
+          path: generated-artifacts/codecanyon/customer-source.zip
+          if-no-files-found: error
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: seller-tools
+          path: generated-artifacts/codecanyon/seller-tools.zip
+          if-no-files-found: error
+          retention-days: 7
       - uses: actions/upload-artifact@v4
         with:
           name: standalone-source
@@ -173,6 +189,40 @@ jobs:
             ${{ runner.temp }}/najhin-release/social-najhin-desktop/dist/installers/*.exe
             ${{ runner.temp }}/najhin-release/social-najhin-desktop/dist/installers/*.blockmap
             ${{ runner.temp }}/najhin-release/social-najhin-desktop/dist/installers/latest*.yml
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 14
+  distribution:
+    needs: [source, installers]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: codecanyon-customer-source
+          path: customer-base
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: installers-*
+          path: installers
+      - name: Assemble buyer-only CodeCanyon package
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p package
+          unzip -q customer-base/customer-source.zip -d package
+          mkdir -p package/Social-Najhin/Installers/Windows package/Social-Najhin/Installers/macOS
+          find installers/installers-windows-2022 -maxdepth 1 -name '*.exe' -exec cp '{}' package/Social-Najhin/Installers/Windows/ \;
+          find installers/installers-macos-14 -maxdepth 1 \( -name '*.dmg' -o -name '*.zip' \) -exec cp '{}' package/Social-Najhin/Installers/macOS/ \;
+          test "$(find package/Social-Najhin/Installers/Windows -name '*.exe' | wc -l)" -eq 1
+          test "$(find package/Social-Najhin/Installers/macOS -name '*.dmg' | wc -l)" -eq 2
+          test "$(find package/Social-Najhin/Installers/macOS -name '*.zip' | wc -l)" -eq 2
+          test -z "$(find package -iname '*signing-private*' -o -iname '*admin-token*' -o -name 'keygen.cjs' -o -iname '*.pem' -o -iname '*.pfx' -o -iname '*.p12')"
+          cd package
+          zip -0 -q -r ../Social-Najhin-CodeCanyon.zip Social-Najhin
+      - uses: actions/upload-artifact@v4
+        with:
+          name: codecanyon-customer-package
+          path: Social-Najhin-CodeCanyon.zip
           compression-level: 0
           if-no-files-found: error
           retention-days: 14

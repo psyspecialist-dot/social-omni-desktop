@@ -7,7 +7,7 @@ function verifyArchiveFiles(entries) {
   // ASAR lists paths using the build host's separators (Windows uses backslashes).
   const files = new Set(entries.map(file => `/${file.replace(/\\/g, '/').replace(/^\/+/, '')}`));
   if (files.has('/scripts/dev-license.cjs')) throw new Error('Development signer must not ship in an installer.');
-  for (const file of ['main.js', 'preload.js', 'api-service.cjs', 'renderer/index.html',
+  for (const file of ['main.js', 'preload.js', 'editing.cjs', 'api-service.cjs', 'renderer/index.html',
     'license-client.cjs', 'license-crypto.cjs', 'license-machine.cjs', 'licensing-config.json',
     'smart-replies.cjs', 'whatsapp-media.cjs', 'facebook-media.cjs', 'wa-suite-browser.cjs',
     'node_modules/express/package.json', 'node_modules/playwright/package.json',

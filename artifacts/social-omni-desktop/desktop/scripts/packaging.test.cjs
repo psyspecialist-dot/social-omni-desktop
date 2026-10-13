@@ -8,7 +8,7 @@ const config = require('../package.json');
 const { verifyArchiveFiles } = require('./verify-package.cjs');
 
 const archiveFixture = [
-  'main.js', 'preload.js', 'api-service.cjs', 'renderer/index.html',
+  'main.js', 'preload.js', 'editing.cjs', 'api-service.cjs', 'renderer/index.html',
   'license-client.cjs', 'license-crypto.cjs', 'license-machine.cjs', 'licensing-config.json',
   'smart-replies.cjs', 'whatsapp-media.cjs', 'facebook-media.cjs', 'wa-suite-browser.cjs',
   ...['express', 'playwright', 'sql.js', 'nodemailer', 'telegram', 'cheerio']

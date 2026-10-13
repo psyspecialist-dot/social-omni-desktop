@@ -55,7 +55,8 @@ export interface LeadWorkspace { keyword: string; city: string; targetCount: num
 export interface SimulationAnalytics { messagesSent: number; realMessagesSent?: number }
 export interface LicenseStatus {
   native: boolean; configured: boolean;
-  status: 'active' | 'not_activated' | 'invalid' | 'unconfigured' | 'desktop_only';
+  status: 'active' | 'disabled' | 'not_activated' | 'invalid' | 'unconfigured' | 'desktop_only';
+  mode?: 'online' | 'offline'; enabled?: boolean;
   machineId: string | null; licenseId: string | null; maxDevices: number | null; devicesUsed: number | null;
   kind: 'standard' | 'reseller' | null; supportPlan: 'none' | 'monthly' | 'yearly' | null;
   supportUntil: string | null; supportActive: boolean; activatedAt: string | null; serverUrl: string; error: string | null;
