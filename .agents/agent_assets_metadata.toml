@@ -14,6 +14,7 @@ mtime_ms = 1791319327076
 storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:0a0a899b-e4f4-4dc0-ade7-a053f07deac3/0cadc9f6-219b-4082-ace0-dede9872b8ca/384a0338-ccdf-4fd3-9379-57d4e1f2174b"
 storage_version_token = "1791319445600750"
 content_type = "application/octet-stream"
+
 [[outputs]]
 id = "PNI_dqJbPfBCFv1aUyZq9"
 uri = "file://tmp/desktop-smoke/native-window.png"
@@ -27,3 +28,17 @@ mtime_ms = 1791309026410
 storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:0a0a899b-e4f4-4dc0-ade7-a053f07deac3/e39f0aaf-3236-49bf-86cb-118087ec0e82/d91e2de8-bb55-4d27-b363-4283d7b7a44a"
 storage_version_token = "1791309159852763"
 content_type = "image/png"
+
+[[outputs]]
+id = "ZUWsyLCegPBoW6Wpli4-_"
+uri = "file://distribution/codecanyon/index.html"
+type = "html"
+title = "دليل تثبيت وتفعيل Social Najhin"
+description = "دليل HTML بالعربية والإنجليزية. يوجد أيضاً داخل حزمة CodeCanyon مع المستندات المرجعية في Documentation."
+logical_id = "da8537e2-6089-48d5-9405-5f2c5e7978a4"
+content_hash = "sha256:fef8673613e48879c0c88223357111a35b70c57214d67561f8babaad29160336"
+size = 5371
+mtime_ms = 1791883269663
+storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:0a0a899b-e4f4-4dc0-ade7-a053f07deac3/da8537e2-6089-48d5-9405-5f2c5e7978a4/c6615e68-e34c-4975-8246-25c4309d6659"
+storage_version_token = "1791885011320877"
+content_type = "text/html"
