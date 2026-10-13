@@ -5,6 +5,62 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export interface SellerSession {
+  authenticated: boolean;
+  passwordConfigured: boolean;
+  issuerReady: boolean;
+  /** @nullable */
+  setupError: string | null;
+  /**
+     * Short-lived seller access token returned only at sign-in; never the private signing key
+     * @nullable
+     */
+  sessionToken?: string | null;
+}
+
+export interface SellerLoginInput {
+  /**
+     * @minLength 1
+     * @maxLength 256
+     */
+  password: string;
+}
+
+export type SellerLicenseInputPlan = typeof SellerLicenseInputPlan[keyof typeof SellerLicenseInputPlan];
+
+
+export const SellerLicenseInputPlan = {
+  lifetime: 'lifetime',
+  yearly: 'yearly',
+  monthly: 'monthly',
+  none: 'none',
+} as const;
+
+export interface SellerLicenseInput {
+  /** @pattern ^[a-fA-F0-9]{64}$ */
+  deviceId: string;
+  plan: SellerLicenseInputPlan;
+}
+
+export type SellerLicenseResultPlan = typeof SellerLicenseResultPlan[keyof typeof SellerLicenseResultPlan];
+
+
+export const SellerLicenseResultPlan = {
+  lifetime: 'lifetime',
+  yearly: 'yearly',
+  monthly: 'monthly',
+  none: 'none',
+} as const;
+
+export interface SellerLicenseResult {
+  licenseKey: string;
+  licenseId: string;
+  deviceId: string;
+  plan: SellerLicenseResultPlan;
+  /** @nullable */
+  supportUntil: string | null;
+}
+
 export type LicensePackInputSupportPlan = typeof LicensePackInputSupportPlan[keyof typeof LicensePackInputSupportPlan];
 
 

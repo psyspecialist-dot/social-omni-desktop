@@ -11,6 +11,58 @@ tags:
   - name: health
     description: Health operations
 paths:
+  /seller-dashboard/session:
+    get:
+      operationId: getSellerSession
+      summary: Seller-only dashboard session and issuer readiness
+      responses:
+        "200":
+          description: Session state; issuer details are restricted to signed-in sellers
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/SellerSession"}
+    post:
+      operationId: loginSeller
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/SellerLoginInput"}
+      responses:
+        "200":
+          description: Authenticated seller session
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/SellerSession"}
+        "401": {description: Incorrect seller password}
+        "429": {description: Too many sign-in attempts}
+        "503": {description: Seller password not configured}
+    delete:
+      operationId: logoutSeller
+      responses:
+        "200":
+          description: Signed out
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/SellerSession"}
+  /seller-dashboard/licenses:
+    post:
+      operationId: generateSellerLicense
+      summary: Issue a signed offline certificate using the existing private issuer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: "#/components/schemas/SellerLicenseInput"}
+      responses:
+        "201":
+          description: Device-bound license; never includes signing secrets
+          content:
+            application/json:
+              schema: {$ref: "#/components/schemas/SellerLicenseResult"}
+        "400": {description: Invalid Device ID or plan}
+        "401": {description: Seller sign-in required}
+        "503": {description: Existing issuer missing or does not match desktop public key}
   /socialomni/advanced/tasks:
     post:
       operationId: createAdvancedTask
@@ -531,6 +583,37 @@ components:
         application/json:
           schema: {$ref: "#/components/schemas/SimulatorState"}
   schemas:
+    SellerSession:
+      type: object
+      required: [authenticated, passwordConfigured, issuerReady, setupError]
+      properties:
+        authenticated: {type: boolean}
+        passwordConfigured: {type: boolean}
+        issuerReady: {type: boolean}
+        setupError: {type: [string, "null"]}
+        sessionToken: {type: [string, "null"], description: Short-lived seller access token returned only at sign-in; never the private signing key}
+    SellerLoginInput:
+      type: object
+      additionalProperties: false
+      required: [password]
+      properties:
+        password: {type: string, minLength: 1, maxLength: 256, writeOnly: true}
+    SellerLicenseInput:
+      type: object
+      additionalProperties: false
+      required: [deviceId, plan]
+      properties:
+        deviceId: {type: string, pattern: "^[a-fA-F0-9]{64}$"}
+        plan: {type: string, enum: [lifetime, yearly, monthly, none]}
+    SellerLicenseResult:
+      type: object
+      required: [licenseKey, licenseId, deviceId, plan, supportUntil]
+      properties:
+        licenseKey: {type: string}
+        licenseId: {type: string}
+        deviceId: {type: string}
+        plan: {type: string, enum: [lifetime, yearly, monthly, none]}
+        supportUntil: {type: [string, "null"]}
     LicensePackInput:
       type: object
       properties:

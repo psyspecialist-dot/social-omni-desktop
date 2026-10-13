@@ -37,6 +37,10 @@ import type {
   LicenseSupportInput,
   ListIssuedLicenses200,
   RenewLicenseSupport200,
+  SellerLicenseInput,
+  SellerLicenseResult,
+  SellerLoginInput,
+  SellerSession,
   SimulatorJobInput,
   SimulatorLeadInput,
   SimulatorRecord,
@@ -106,6 +110,321 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getGetSellerSessionUrl = () => {
+
+
+
+
+  return `/api/seller-dashboard/session`
+}
+
+/**
+ * @summary Seller-only dashboard session and issuer readiness
+ */
+export const getSellerSession = async ( options?: Parameters<typeof customFetch>[1]): Promise<SellerSession> => {
+
+  return customFetch<SellerSession>(getGetSellerSessionUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetSellerSessionQueryKey = () => {
+    return [
+    `/api/seller-dashboard/session`
+    ] as const;
+    }
+
+
+export const getGetSellerSessionQueryOptions = <TData = Awaited<ReturnType<typeof getSellerSession>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSellerSession>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSellerSessionQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSellerSession>>> = ({ signal }) => getSellerSession({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSellerSession>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetSellerSessionQueryResult = NonNullable<Awaited<ReturnType<typeof getSellerSession>>>
+export type GetSellerSessionQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Seller-only dashboard session and issuer readiness
+ */
+
+export function useGetSellerSession<TData = Awaited<ReturnType<typeof getSellerSession>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSellerSession>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetSellerSessionQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getLoginSellerUrl = () => {
+
+
+
+
+  return `/api/seller-dashboard/session`
+}
+
+export const loginSeller = async (sellerLoginInput: SellerLoginInput, options?: Parameters<typeof customFetch>[1]): Promise<SellerSession> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<SellerSession>(getLoginSellerUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(sellerLoginInput)
+  }
+);}
+
+
+
+
+
+export const getLoginSellerMutationKey = () => ['loginSeller'] as const;
+
+export const getLoginSellerMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof loginSeller>>, TError,LoginSellerMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof loginSeller>>, TError,LoginSellerMutationVariables, TContext> => {
+
+const mutationKey = getLoginSellerMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof loginSeller>>, LoginSellerMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  loginSeller(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type LoginSellerMutationResult = NonNullable<Awaited<ReturnType<typeof loginSeller>>>
+    export type LoginSellerMutationBody = BodyType<SellerLoginInput>
+    export type LoginSellerMutationError = ErrorType<void>
+    export type LoginSellerMutationVariables = {data: BodyType<SellerLoginInput>}
+
+    export const useLoginSeller = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof loginSeller>>, TError,LoginSellerMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof loginSeller>>,
+        TError,
+        LoginSellerMutationVariables,
+        TContext
+      > => {
+      return useMutation(getLoginSellerMutationOptions(options));
+    }
+
+export const getLogoutSellerUrl = () => {
+
+
+
+
+  return `/api/seller-dashboard/session`
+}
+
+export const logoutSeller = async ( options?: Parameters<typeof customFetch>[1]): Promise<SellerSession> => {
+
+  return customFetch<SellerSession>(getLogoutSellerUrl(),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getLogoutSellerMutationKey = () => ['logoutSeller'] as const;
+
+export const getLogoutSellerMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logoutSeller>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof logoutSeller>>, TError,void, TContext> => {
+
+const mutationKey = getLogoutSellerMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof logoutSeller>>, void> = () => {
+
+
+          return  logoutSeller(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type LogoutSellerMutationResult = NonNullable<Awaited<ReturnType<typeof logoutSeller>>>
+
+    export type LogoutSellerMutationError = ErrorType<unknown>
+
+
+    export const useLogoutSeller = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logoutSeller>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof logoutSeller>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getLogoutSellerMutationOptions(options));
+    }
+
+export const getGenerateSellerLicenseUrl = () => {
+
+
+
+
+  return `/api/seller-dashboard/licenses`
+}
+
+/**
+ * @summary Issue a signed offline certificate using the existing private issuer
+ */
+export const generateSellerLicense = async (sellerLicenseInput: SellerLicenseInput, options?: Parameters<typeof customFetch>[1]): Promise<SellerLicenseResult> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<SellerLicenseResult>(getGenerateSellerLicenseUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(sellerLicenseInput)
+  }
+);}
+
+
+
+
+
+export const getGenerateSellerLicenseMutationKey = () => ['generateSellerLicense'] as const;
+
+export const getGenerateSellerLicenseMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateSellerLicense>>, TError,GenerateSellerLicenseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof generateSellerLicense>>, TError,GenerateSellerLicenseMutationVariables, TContext> => {
+
+const mutationKey = getGenerateSellerLicenseMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof generateSellerLicense>>, GenerateSellerLicenseMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  generateSellerLicense(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type GenerateSellerLicenseMutationResult = NonNullable<Awaited<ReturnType<typeof generateSellerLicense>>>
+    export type GenerateSellerLicenseMutationBody = BodyType<SellerLicenseInput>
+    export type GenerateSellerLicenseMutationError = ErrorType<void>
+    export type GenerateSellerLicenseMutationVariables = {data: BodyType<SellerLicenseInput>}
+
+    /**
+ * @summary Issue a signed offline certificate using the existing private issuer
+ */
+export const useGenerateSellerLicense = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof generateSellerLicense>>, TError,GenerateSellerLicenseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof generateSellerLicense>>,
+        TError,
+        GenerateSellerLicenseMutationVariables,
+        TContext
+      > => {
+      return useMutation(getGenerateSellerLicenseMutationOptions(options));
+    }
 
 export const getCreateAdvancedTaskUrl = () => {
 

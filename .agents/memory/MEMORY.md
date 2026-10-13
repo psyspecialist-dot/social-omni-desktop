@@ -12,3 +12,4 @@
 - [Licensing model](licensing-model.md) — one-time purchase with monthly/yearly updates and support; device binding and real verification are required.
 - [Offline commercial licensing](offline-commercial-licensing.md) — seller-only key generation; buyer bundles exclude issuers and signing keys; offline and CodeCanyon limits.
 - [Git authentication diagnostics](git-auth-diagnostics.md) — credential helpers may stall despite GitHub being reachable; distinguish network failure from repository authorization.
+- [Local browser verification](local-browser-verification.md) — a full Chromium installation does not imply Playwright's separate headless-shell executable is installed.

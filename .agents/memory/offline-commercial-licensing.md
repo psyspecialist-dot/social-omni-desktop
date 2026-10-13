@@ -24,6 +24,16 @@ explicit device-specific licenses; it is not automatic Envato purchase-code
 verification or a central reseller device-count ledger. Preserve optional
 online-authority compatibility, but do not make it necessary for offline sales.
 
+The seller wants daily license generation through a browser dashboard in Replit,
+without using the terminal.
+
+**Why:** The user explicitly requested this merchant workflow.
+
+**How to apply:** Keep issuance separate from the buyer application and gated
+behind seller access. Call the existing private issuer only on the backend;
+never send the signing key to the browser or include the seller dashboard in
+buyer distributions.
+
 Source buyers can change configuration and rebuild; no client-side scheme
 prevents that. Offline permanent certificates cannot be remotely revoked.
 

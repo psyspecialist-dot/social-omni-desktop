@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/seller-dashboard/"
+title = "Social Najhin · Seller Dashboard"
+description = "Private seller-only interface to issue device-bound offline Social Najhin license keys using the existing issuer. No signing secrets are sent to the browser."
+version = "1.0.0"
+id = "artifacts/seller-dashboard"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/seller-dashboard/", "/seller-dashboard/__hmr", "/api/seller-dashboard" ]
+localPort = 26141
+
+[services.development]
+run = "pnpm --filter @workspace/seller-dashboard run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/seller-dashboard", "run", "build" ]
+
+[services.production.run]
+args = [ "node", "artifacts/seller-dashboard/server/index.mjs" ]
+
+[services.production.run.env]
+NODE_ENV = "production"
+
+[services.env]
+PORT = "26141"
+BASE_PATH = "/seller-dashboard/"

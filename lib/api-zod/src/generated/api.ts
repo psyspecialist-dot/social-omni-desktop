@@ -8,6 +8,64 @@
 import * as zod from 'zod';
 
 
+/**
+ * @summary Seller-only dashboard session and issuer readiness
+ */
+export const GetSellerSessionResponse = zod.object({
+  "authenticated": zod.boolean(),
+  "passwordConfigured": zod.boolean(),
+  "issuerReady": zod.boolean(),
+  "setupError": zod.string().nullable(),
+  "sessionToken": zod.string().nullish().describe('Short-lived seller access token returned only at sign-in; never the private signing key')
+})
+
+
+export const loginSellerBodyPasswordMax = 256;
+
+
+
+export const LoginSellerBody = zod.object({
+  "password": zod.string().min(1).max(loginSellerBodyPasswordMax)
+})
+
+export const LoginSellerResponse = zod.object({
+  "authenticated": zod.boolean(),
+  "passwordConfigured": zod.boolean(),
+  "issuerReady": zod.boolean(),
+  "setupError": zod.string().nullable(),
+  "sessionToken": zod.string().nullish().describe('Short-lived seller access token returned only at sign-in; never the private signing key')
+})
+
+
+export const LogoutSellerResponse = zod.object({
+  "authenticated": zod.boolean(),
+  "passwordConfigured": zod.boolean(),
+  "issuerReady": zod.boolean(),
+  "setupError": zod.string().nullable(),
+  "sessionToken": zod.string().nullish().describe('Short-lived seller access token returned only at sign-in; never the private signing key')
+})
+
+
+/**
+ * @summary Issue a signed offline certificate using the existing private issuer
+ */
+export const generateSellerLicenseBodyDeviceIdRegExp = new RegExp('^[a-fA-F0-9]{64}$');
+
+
+export const GenerateSellerLicenseBody = zod.object({
+  "deviceId": zod.string().regex(generateSellerLicenseBodyDeviceIdRegExp),
+  "plan": zod.enum(['lifetime', 'yearly', 'monthly', 'none'])
+})
+
+export const GenerateSellerLicenseResponse = zod.object({
+  "licenseKey": zod.string(),
+  "licenseId": zod.string(),
+  "deviceId": zod.string(),
+  "plan": zod.enum(['lifetime', 'yearly', 'monthly', 'none']),
+  "supportUntil": zod.string().nullable()
+})
+
+
 export const CreateAdvancedTaskHeader = zod.object({
   "x-socialomni-workspace": zod.string().uuid()
 })
