@@ -6,6 +6,36 @@ const path = require('node:path');
 const prepare = require('./prepare-browsers.cjs');
 const config = require('../package.json');
 const { verifyArchiveFiles } = require('./verify-package.cjs');
+const { verifyLicenseConfiguration } = require('./verify-license-config.cjs');
+
+test('buyer release embeds enabled offline licensing and a working public verification key', () => {
+  const licensing = require('../licensing-config.json');
+  assert.equal(licensing.enabled, true);
+  assert.equal(licensing.mode, 'offline');
+  assert.doesNotThrow(() => verifyLicenseConfiguration(licensing));
+  const { createLicenseClient } = require('../license-client.cjs');
+  const client = createLicenseClient({
+    config: licensing,
+    file: path.join(os.tmpdir(), `nonexistent-license-${Date.now()}`),
+    detect: () => 'a'.repeat(64),
+    secureStore: { available: () => true },
+  });
+  const status = client.status();
+  assert.equal(status.native, true);
+  assert.equal(status.enabled, true);
+  assert.equal(status.configured, true);
+  assert.equal(status.mode, 'offline');
+  assert.equal(status.status, 'not_activated');
+});
+
+test('export/package guard rejects missing public keys but needs no server for offline activation', () => {
+  const licensing = require('../licensing-config.json');
+  assert.throws(() => verifyLicenseConfiguration({ ...licensing, publicKey: '' }), /valid Ed25519 publicKey/);
+  assert.throws(() => verifyLicenseConfiguration({ ...licensing, publicKey: 'not-a-key' }), /valid Ed25519 publicKey/);
+  assert.throws(() => verifyLicenseConfiguration({ ...licensing, mode: 'online', serverUrl: '' }), /HTTPS/);
+  assert.doesNotThrow(() => verifyLicenseConfiguration({ ...licensing, serverUrl: '' }));
+  assert.doesNotThrow(() => verifyLicenseConfiguration({ ...licensing, enabled: false }));
+});
 
 const archiveFixture = [
   'main.js', 'preload.js', 'editing.cjs', 'api-service.cjs', 'renderer/index.html',

@@ -1,7 +1,7 @@
 {
   "name": "socialomni-desktop",
   "productName": "Social Najhin",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Social Najhin local social management and approved browser automation.",
   "main": "main.js",
   "type": "commonjs",

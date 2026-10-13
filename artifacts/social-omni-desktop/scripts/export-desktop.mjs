@@ -1,9 +1,13 @@
 import { spawnSync } from 'node:child_process';
-import { cpSync, existsSync, rmSync } from 'node:fs';
+import { cpSync, existsSync, rmSync, readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const appDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const { verifyLicenseConfiguration } = createRequire(import.meta.url)('../desktop/scripts/verify-license-config.cjs');
+const licenseConfig = verifyLicenseConfiguration(JSON.parse(readFileSync(path.join(appDirectory, 'desktop/licensing-config.json'), 'utf8')));
+console.log(`Desktop license configuration verified: enabled=${licenseConfig.enabled}, mode=${licenseConfig.mode}.`);
 const result = spawnSync(
   process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm',
   ['exec', 'vite', 'build', '--config', 'vite.config.ts'],

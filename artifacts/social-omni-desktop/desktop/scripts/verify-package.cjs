@@ -2,6 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { createRequire } = require('node:module');
 const { hasChromium } = require('./prepare-browsers.cjs');
+const { verifyLicenseConfiguration } = require('./verify-license-config.cjs');
 
 function verifyArchiveFiles(entries) {
   // ASAR lists paths using the build host's separators (Windows uses backslashes).
@@ -27,7 +28,9 @@ module.exports = async function verify(context) {
   if (!fs.existsSync(wasm)) throw new Error('Packaged SQLite WASM is missing.');
   const builder = createRequire(require.resolve('electron-builder'));
   const asar = createRequire(builder.resolve('app-builder-lib'))('@electron/asar');
-  verifyArchiveFiles(asar.listPackage(path.join(resources, 'app.asar')));
+  const archive = path.join(resources, 'app.asar');
+  verifyArchiveFiles(asar.listPackage(archive));
+  verifyLicenseConfiguration(JSON.parse(asar.extractFile(archive, 'licensing-config.json').toString('utf8')));
   console.info(`Verified packaged application, Chromium and SQLite WASM: ${resources}`);
 };
 module.exports.verifyArchiveFiles = verifyArchiveFiles;
