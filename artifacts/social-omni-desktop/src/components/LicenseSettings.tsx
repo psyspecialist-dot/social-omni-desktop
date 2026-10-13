@@ -28,11 +28,11 @@ export default function LicenseSettings({ license, perform }: { license?: Licens
   const canActivate = l.native && l.configured && !['desktop_only', 'unconfigured', 'disabled'].includes(l.status);
   const run = async (fn: () => Promise<ApiState>, ok: string) => {
     setBusy(true); setErr(''); setNote('');
-    try { await fn(); setNote(t(ok)); } catch (e) { setErr(e instanceof Error ? t(e.message) : t('The local request failed.')); } finally { setBusy(false); }
+    try { await fn(); setNote(ok); } catch (e) { setErr(e instanceof Error ? e.message : 'The local request failed.'); } finally { setBusy(false); }
   };
   const activate = () => {
     const k = key.trim();
-    if (!k) { setErr(t('Enter your license key.')); return; }
+    if (!k) { setErr('Enter your license key.'); return; }
     void run(async () => { const r = await perform('POST', '/license/activate', { key: k }); setKey(''); return r; }, 'License activated on this device.');
   };
   const copy = async () => {
@@ -46,7 +46,7 @@ export default function LicenseSettings({ license, perform }: { license?: Licens
         if (await navigator.clipboard.readText() !== l.machineId) throw new Error('Clipboard verification failed.');
       }
       setCopied(true); window.setTimeout(() => setCopied(false), 2000);
-    } catch { setErr(t('Copy failed. Select the Machine ID and copy it manually.')); }
+    } catch { setErr('Copy failed. Select the Machine ID and copy it manually.'); }
   };
   const support = !l.supportPlan || l.supportPlan === 'none' ? t('No updates or support plan') : `${t(l.supportPlan === 'monthly' ? 'Monthly updates & support' : 'Yearly updates & support')} · ${l.supportActive ? t('Active until {date}', { date: date(l.supportUntil) }) : t('Expired {date}', { date: date(l.supportUntil) })}`;
   const row = (label: string, value: string, id: string) => <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '6px 0', fontSize: 12 }}><span style={{ opacity: .7 }}>{t(label)}</span><span data-testid={id} dir="auto" style={{ textAlign: 'end' }}>{value}</span></div>;
@@ -75,8 +75,8 @@ export default function LicenseSettings({ license, perform }: { license?: Licens
         <textarea id="license-key" dir="ltr" className="field-input" rows={4} autoComplete="off" spellCheck={false} maxLength={6000} value={key} readOnly={!canActivate || busy} style={{ userSelect: 'text', overflowWrap: 'anywhere' }} onChange={e => { setKey(e.target.value); setErr(''); }} aria-label={t('License key')} data-testid="input-license-key" /></div>
       <button type="submit" className="button button-primary" disabled={!canActivate || busy || !key.trim()} aria-label={t('Activate license')} data-testid="button-activate-license"><KeyRound size={14} /> {busy ? t('Working…') : t('Activate')}</button>
     </form>
-    {note && <p role="status" className="heading-sub" data-testid="status-license-note">{note}</p>}
-    {err && <p role="alert" className="heading-sub" data-testid="error-license-action">{err}</p>}
+    {note && <p role="status" className="heading-sub" data-testid="status-license-note">{t(note)}</p>}
+    {err && <p role="alert" className="heading-sub" data-testid="error-license-action">{t(err)}</p>}
     <p className="heading-sub" style={{ fontSize: 11 }}><ShieldCheck size={12} style={{ verticalAlign: 'middle' }} /> {t(l.mode === 'offline' || !l.native ? 'Offline activation: send your Machine ID to the seller and paste the signed license here. No activation server or internet connection is required. Keep your license for reactivation.' : 'First activation needs an internet connection. After that, the signed certificate is verified offline. Disabling or revoking a license centrally cannot instantly revoke certificates already issued to devices.')}</p>
     {l.native && l.status === 'active' && <div style={{ marginTop: 8 }}>
       {!confirmRemove ? <button type="button" className="button button-secondary" onClick={() => setConfirmRemove(true)} disabled={busy} data-testid="button-remove-license">{t('Remove local certificate')}</button>
