@@ -87,3 +87,41 @@ download lifecycle in CI, letting electron-builder download the target runtime.
 Check the builder's automatically installed Windows peer too: an incompatible
 peer can reintroduce the newer builder and its Node requirements even when the
 main builder is pinned.
+
+An Actions artifact-storage quota failure is not a compiler/package failure.
+Use an unpublished release draft as a separate transfer/output store when
+native builds must proceed without deleting older user downloads.
+
+**Why:** The source export and tests succeeded, but the first artifact upload
+hit GitHub storage quota before native jobs could start. Draft release assets
+allowed the exact source archive to reach native runners without that store.
+
+**How to apply:** Keep the draft unpublished, bind every job to the same source
+commit, preserve native install/mount and archive checks, and upload checksums.
+Do not delete previous artifacts or publish the draft without user approval.
+Draft assets in a private repository require authenticated access; do not
+describe their links as public release downloads.
+
+Explicitly disable electron-builder publisher discovery in standalone builds
+and keep release-upload credentials out of the packaging steps.
+
+**Why:** Providing GH_TOKEN for draft-asset uploads made electron-builder try
+to infer a GitHub updater provider from an extracted source without repository
+metadata. Even with `--publish never`, it built the EXE and then crashed while
+generating update metadata from a null provider.
+
+**How to apply:** Retain explicit `publish: null` for non-publishing packages,
+isolate upload authentication to the steps that need it, and do not mistake a
+partially generated EXE for a validated successful build.
+
+Check runner-image retirement and scheduled brownouts when a native macOS job
+never acquires a runner.
+
+**Why:** A macOS job remained queued without annotations during the provider's
+scheduled macOS 14 brownout. The image retirement notice, rather than source or
+dependency debugging, explained why waiting was not a reliable fix.
+
+**How to apply:** Consult the current actions/runner-images support table and
+retirement notices. Move to a supported standard image without paying for a
+larger runner or weakening DMG checks. If Windows already passed, reuse the
+same source archive/commit and its verified output rather than rebuild it.
