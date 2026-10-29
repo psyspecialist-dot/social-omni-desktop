@@ -42,3 +42,31 @@ mtime_ms = 1791883269663
 storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:0a0a899b-e4f4-4dc0-ade7-a053f07deac3/da8537e2-6089-48d5-9405-5f2c5e7978a4/c6615e68-e34c-4975-8246-25c4309d6659"
 storage_version_token = "1791885011320877"
 content_type = "text/html"
+
+[[outputs]]
+id = "nHGVzZToUTDQ9kEgDpzqN"
+uri = "file://generated-artifacts/cloud-api/Social-Najhin-Cloud-API-Contract.html"
+type = "html"
+title = "Social Najhin — عقد API ومخطط الربط السحابي"
+description = "دليل عربي مستقل مع عقد OpenAPI ومخطط PostgreSQL وتعليمات GenSpark وتنزيل الملفات الأصلية. مواصفات فقط؛ لا يغير التفعيل الحالي."
+logical_id = "cd03b789-fba0-47a6-b6ed-dd0ed97c4660"
+content_hash = "sha256:c8221a35ebb7884a4efa1eba451539d5a21386753d703ff54c6a29bb8d69fc1b"
+size = 166316
+mtime_ms = 1793259909525
+storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:0a0a899b-e4f4-4dc0-ade7-a053f07deac3/cd03b789-fba0-47a6-b6ed-dd0ed97c4660/88ea1eec-073f-498d-8cf6-f7a1f8eaa47b"
+storage_version_token = "1793260019184345"
+content_type = "text/html"
+
+[[outputs]]
+id = "08TKbwxhxTs68LrYkWaRA"
+uri = "file://generated-artifacts/cloud-api/Social-Najhin-GenSpark-Handoff.md"
+type = "text"
+title = "ملف التسليم الشامل إلى GenSpark"
+description = "وثيقة واحدة تضم الدليل العربي وتعليمات البناء وعقد OpenAPI الكامل ومخطط SQL واختبارات القبول. ارفعها إلى GenSpark لبناء الموقع الخارجي."
+logical_id = "f901ea7f-6eae-4252-8919-30e94604b182"
+content_hash = "sha256:a26c0894e639a9d075388bbd2899875965e24f21724422e6e864cd01d75d5c5b"
+size = 45622
+mtime_ms = 1793259909505
+storage_uri = "gcs://replit-rams-assets-reed/rams/assets/repl:0a0a899b-e4f4-4dc0-ade7-a053f07deac3/f901ea7f-6eae-4252-8919-30e94604b182/7f10b167-5aa1-4549-91c4-16556f725fdb"
+storage_version_token = "1793260019695323"
+content_type = "text/markdown"
