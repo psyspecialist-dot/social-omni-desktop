@@ -1,6 +1,17 @@
 name: Build 1.0.4 native installers into unpublished draft
 on:
   workflow_dispatch:
+    inputs:
+      existing_release_id:
+        description: 'Existing unpublished draft ID for macOS-only continuation'
+        type: string
+        required: false
+        default: ''
+      existing_source_sha:
+        description: 'Exact source commit already built for Windows in that draft'
+        type: string
+        required: false
+        default: ''
 permissions:
   contents: write
 concurrency:
@@ -9,32 +20,45 @@ concurrency:
 env:
   GH_TOKEN: ${{ github.token }}
   CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+  BUILD_SOURCE_SHA: ${{ inputs.existing_release_id != '' && inputs.existing_source_sha || github.sha }}
 jobs:
   source:
     runs-on: ubuntu-latest
     outputs:
-      release_id: ${{ steps.draft.outputs.release_id }}
+      release_id: ${{ steps.reuse.outputs.release_id || steps.draft.outputs.release_id }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
+        if: inputs.existing_release_id == ''
         with:
           version: 10.26.1
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
       - run: pnpm install --frozen-lockfile --ignore-scripts
+        if: inputs.existing_release_id == ''
       - run: pnpm --filter @workspace/social-omni-desktop run desktop:export
+        if: inputs.existing_release_id == ''
       - run: node --test tools/licensing/keygen.test.cjs lib/socialomni-api/cloud-license-client.test.cjs
+        if: inputs.existing_release_id == ''
       - id: draft
+        if: inputs.existing_release_id == ''
         run: node scripts/release/draft-assets.cjs prepare
       - name: Store standalone source in private draft, not Actions artifact storage
+        if: inputs.existing_release_id == ''
         run: gh release upload v1.0.4 artifacts/social-omni-desktop/public/downloads/social-najhin-desktop.zip --repo "$GITHUB_REPOSITORY" --clobber
+      - id: reuse
+        name: Verify and reuse the exact source and already validated Windows outputs
+        if: inputs.existing_release_id != ''
+        env:
+          RELEASE_ID: ${{ inputs.existing_release_id }}
+        run: node scripts/release/draft-assets.cjs reuse-source
   installers:
     needs: source
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, macos-14]
+        os: ${{ inputs.existing_release_id != '' && fromJSON('["macos-15"]') || fromJSON('["windows-2022","macos-15"]') }}
     runs-on: ${{ matrix.os }}
     env:
       RELEASE_ID: ${{ needs.source.outputs.release_id }}

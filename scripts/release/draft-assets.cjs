@@ -1,7 +1,9 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const { createHash } = require('node:crypto');
 const repo = process.env.GITHUB_REPOSITORY;
 const tag = 'v1.0.4';
+const sourceCommit = process.env.BUILD_SOURCE_SHA || process.env.GITHUB_SHA;
 const api = `https://api.github.com/repos/${repo}`;
 const headers = { authorization: `Bearer ${process.env.GH_TOKEN}`, accept: 'application/vnd.github+json',
   'content-type': 'application/json', 'X-GitHub-Api-Version': '2022-11-28' };
@@ -23,7 +25,7 @@ function output(key, value) {
     let release = releases.find(r => r.tag_name === tag);
     if (release && !release.draft) throw new Error('Refusing to overwrite a published release.');
     const metadata = {
-      tag_name: tag, target_commitish: process.env.GITHUB_SHA, name: 'Social Najhin 1.0.4 — unsigned installers',
+      tag_name: tag, target_commitish: sourceCommit, name: 'Social Najhin 1.0.4 — unsigned installers',
       draft: true, prerelease: false,
       body: 'Private build draft. NOT published. Unsigned Windows x64 and macOS Intel/Apple Silicon installers. Apple notarization is disabled. Cloud account activation is enabled; passwords and signing keys are not included.',
     };
@@ -35,8 +37,19 @@ function output(key, value) {
     return;
   }
   const release = await request(`/releases/${process.env.RELEASE_ID}`);
-  if (!release.draft || release.tag_name !== tag || release.target_commitish !== process.env.GITHUB_SHA) {
+  if (!release.draft || release.tag_name !== tag || release.target_commitish !== sourceCommit) {
     throw new Error('Release draft does not match this source commit.');
+  }
+  if (mode === 'reuse-source') {
+    if (!/^[0-9a-f]{40}$/.test(sourceCommit)) throw new Error('A full source commit is required.');
+    for (const name of ['social-najhin-desktop.zip', 'Social-Najhin-1.0.4-win-x64.exe', 'SHA256SUMS-Windows.txt']) {
+      if (!release.assets.some(a => a.name === name && a.state === 'uploaded' && a.digest?.startsWith('sha256:'))) {
+        throw new Error(`Cannot continue without verified existing output: ${name}`);
+      }
+    }
+    output('release_id', release.id);
+    console.info('Reusing the existing source commit and Windows outputs without changing or rebuilding them.');
+    return;
   }
   if (mode === 'download-source') {
     const asset = release.assets.find(a => a.name === 'social-najhin-desktop.zip');
@@ -47,7 +60,11 @@ function output(key, value) {
     if (!response.ok) throw new Error(`Source download failed: HTTP ${response.status}`);
     const destination = path.join(process.env.RUNNER_TEMP, 'najhin-source', asset.name);
     fs.mkdirSync(path.dirname(destination), { recursive: true });
-    fs.writeFileSync(destination, Buffer.from(await response.arrayBuffer()));
+    const buffer = Buffer.from(await response.arrayBuffer());
+    if (asset.digest !== `sha256:${createHash('sha256').update(buffer).digest('hex')}`) {
+      throw new Error('Standalone source download digest does not match the uploaded asset.');
+    }
+    fs.writeFileSync(destination, buffer);
     console.info('Downloaded the exact standalone source for this build.');
   } else if (mode === 'verify') {
     const required = [
