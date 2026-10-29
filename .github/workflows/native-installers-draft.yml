@@ -1,0 +1,171 @@
+name: Build 1.0.4 native installers into unpublished draft
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: native-installers-draft-104
+  cancel-in-progress: false
+env:
+  GH_TOKEN: ${{ github.token }}
+  CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.draft.outputs.release_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm --filter @workspace/social-omni-desktop run desktop:export
+      - run: node --test tools/licensing/keygen.test.cjs lib/socialomni-api/cloud-license-client.test.cjs
+      - id: draft
+        run: node scripts/release/draft-assets.cjs prepare
+      - name: Store standalone source in private draft, not Actions artifact storage
+        run: gh release upload v1.0.4 artifacts/social-omni-desktop/public/downloads/social-najhin-desktop.zip --repo "$GITHUB_REPOSITORY" --clobber
+  installers:
+    needs: source
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, macos-14]
+    runs-on: ${{ matrix.os }}
+    env:
+      RELEASE_ID: ${{ needs.source.outputs.release_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.26.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Download exact source from the unpublished draft
+        run: node scripts/release/draft-assets.cjs download-source
+      - name: Extract standalone source on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Expand-Archive -Path "$env:RUNNER_TEMP/najhin-source/social-najhin-desktop.zip" -DestinationPath "$env:RUNNER_TEMP/najhin-release"
+      - name: Extract standalone source on macOS
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/najhin-release"
+          unzip -q "$RUNNER_TEMP/najhin-source/social-najhin-desktop.zip" -d "$RUNNER_TEMP/najhin-release"
+      - name: Install and build Windows x64 NSIS
+        if: runner.os == 'Windows'
+        shell: pwsh
+        working-directory: ${{ runner.temp }}/najhin-release/social-najhin-desktop
+        run: |
+          pnpm install --frozen-lockfile --ignore-workspace --ignore-scripts
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node -e "if(process.versions.node.split('.')[0]!=='20')throw Error('Node 20 required'); for(const n of ['electron-builder','electron-builder-squirrel-windows'])if(require(n+'/package.json').version!=='26.0.12')throw Error('Wrong builder');if(require('./package.json').version!=='1.0.4')throw Error('Wrong app version')"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          pnpm run check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          pnpm run build:win --publish never
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Install and build macOS Intel and Apple Silicon
+        if: runner.os == 'macOS'
+        shell: bash
+        working-directory: ${{ runner.temp }}/najhin-release/social-najhin-desktop
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile --ignore-workspace --ignore-scripts
+          node -e "if(process.versions.node.split('.')[0]!=='20')throw Error('Node 20 required'); for(const n of ['electron-builder','electron-builder-squirrel-windows'])if(require(n+'/package.json').version!=='26.0.12')throw Error('Wrong builder');if(require('./package.json').version!=='1.0.4')throw Error('Wrong app version')"
+          pnpm run check
+          pnpm run build:mac --publish never
+      - name: Verify Windows installer by installing and uninstalling it
+        if: runner.os == 'Windows'
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $output = "$env:RUNNER_TEMP/najhin-release/social-najhin-desktop/dist/installers"
+          $installers = @(Get-ChildItem "$output/Social-Najhin-1.0.4-win-x64.exe")
+          if ($installers.Count -ne 1) { throw "Expected the 1.0.4 Windows x64 NSIS installer." }
+          $installer = $installers[0]
+          $stream = [IO.File]::OpenRead($installer.FullName)
+          try {
+            if ($stream.ReadByte() -ne 77 -or $stream.ReadByte() -ne 90) { throw "Not a Windows executable." }
+          } finally { $stream.Dispose() }
+          $installDir = Join-Path $env:RUNNER_TEMP 'najhin-install-check'
+          $process = Start-Process -FilePath $installer.FullName -ArgumentList "/S", "/currentuser", "/D=$installDir" -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "NSIS installation failed." }
+          foreach ($file in @("Social Najhin.exe", "resources/app.asar", "resources/app.asar.unpacked/node_modules/sql.js/dist/sql-wasm.wasm")) {
+            if (-not (Test-Path "$installDir/$file")) { throw "Installed runtime missing: $file" }
+          }
+          if (-not (Test-Path "$installDir/resources/browser-runtime")) { throw "Installed Chromium is missing." }
+          $uninstaller = "$installDir/Uninstall Social Najhin.exe"
+          if (-not (Test-Path $uninstaller)) { throw "Uninstaller is missing." }
+          $process = Start-Process -FilePath $uninstaller -ArgumentList "/S", "/currentuser" -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "Uninstall failed." }
+      - name: Verify and mount both Mac disk images
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/najhin-release/social-najhin-desktop/dist/installers"
+          count=0
+          mount_point=""
+          cleanup() { if [ -n "$mount_point" ]; then hdiutil detach "$mount_point" || true; rmdir "$mount_point" || true; fi; }
+          trap cleanup EXIT
+          for image in "$output"/*.dmg; do
+            test -f "$image"
+            hdiutil verify "$image"
+            mount_point="$(mktemp -d)"
+            hdiutil attach -readonly -nobrowse -mountpoint "$mount_point" "$image"
+            resources="$mount_point/Social Najhin.app/Contents/Resources"
+            test -f "$resources/app.asar"
+            test -f "$resources/app.asar.unpacked/node_modules/sql.js/dist/sql-wasm.wasm"
+            test -d "$resources/browser-runtime"
+            hdiutil detach "$mount_point"
+            rmdir "$mount_point"
+            mount_point=""
+            count=$((count + 1))
+          done
+          test "$count" -eq 2
+      - name: Hash and store verified Windows files in the unpublished draft
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $output = "$env:RUNNER_TEMP/najhin-release/social-najhin-desktop/dist/installers"
+          $files = @(Get-ChildItem "$output/*" -File | Where-Object { $_.Extension -in @('.exe','.blockmap','.yml') })
+          $hashes = $files | ForEach-Object { $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower(); "$hash  $($_.Name)" }
+          $hashes | Set-Content "$output/SHA256SUMS-Windows.txt" -Encoding utf8
+          $files += Get-Item "$output/SHA256SUMS-Windows.txt"
+          foreach ($file in $files) {
+            gh release upload v1.0.4 $file.FullName --repo $env:GITHUB_REPOSITORY --clobber
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+      - name: Hash and store verified Mac files in the unpublished draft
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          output="$RUNNER_TEMP/najhin-release/social-najhin-desktop/dist/installers"
+          cd "$output"
+          shasum -a 256 ./*.dmg ./*.zip ./*.blockmap ./latest*.yml > SHA256SUMS-macOS.txt
+          for file in ./*.dmg ./*.zip ./*.blockmap ./latest*.yml ./SHA256SUMS-macOS.txt; do
+            gh release upload v1.0.4 "$file" --repo "$GITHUB_REPOSITORY" --clobber
+          done
+  verify:
+    needs: [source, installers]
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_ID: ${{ needs.source.outputs.release_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node scripts/release/draft-assets.cjs verify
