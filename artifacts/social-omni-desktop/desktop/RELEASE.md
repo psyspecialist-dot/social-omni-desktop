@@ -21,18 +21,22 @@ macOS releases before commercial delivery.
 
 ### Current build status
 
-Version 1.0.2 has unsigned macOS Intel and Apple Silicon app ZIPs and a Windows
-x64 portable EXE. They include the updated media workers, persistent CRM tags,
-QR text menus and optional OpenAI replies. Extract the matching Mac ZIP and
-move Social Najhin.app into Applications. Run the Windows portable EXE directly;
-it is not an NSIS Setup installer and does not create installation shortcuts.
-All three packages include the API dependencies, SQLite WASM and Chromium.
+Version 1.0.4 uses cloud account sign-in and device activation against the
+published GenSpark API configured in `licensing-config.json`. Login alone does
+not grant app access. Existing offline certificates are preserved but do not
+override a cloud denial. Passwords and personal login tokens are not saved;
+refresh tokens require OS encryption for persistence.
 
-This host could not produce a filesystem-validated macOS DMG or complete NSIS
-uninstaller generation under Wine. Use the native release workflow for DMGs
-and Windows Setup. Its Mac job verifies and mounts both DMGs before upload.
-No successful native workflow run is implied by this documentation. Actual
-native installation, macOS startup, signing and notarization remain unverified.
+The native workflow produces a Windows x64 NSIS Setup installer and macOS Intel
+and Apple Silicon DMG/app ZIPs. Every package includes Electron, API dependencies,
+SQLite WASM and the matching Chromium runtime. It verifies archive contents,
+performs a silent Windows install/uninstall, and verifies/mounts both Mac DMGs.
+See the specific successful Actions run for build evidence; a source update
+alone is not proof that new installers have been built.
+
+These workflow outputs remain unsigned and macOS notarization is disabled.
+Build/package validation does not establish successful cloud login on a
+customer's Windows/macOS device or a signed commercial release.
 
 ## Build publishers
 
