@@ -35,7 +35,7 @@ export default function CloudLicenseSettings({ license: l, perform }: Props) {
   };
   const row = (label: string, value: string) => <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '6px 0', fontSize: 12 }}><span>{t(label)}</span><span dir="auto">{value}</span></div>;
   return <section className="setting-card" id="license" data-testid="section-cloud-license">
-    <div className="setting-head"><div><strong>{t('Cloud account & device activation')}</strong><p>{t('Sign in with your website account. Login alone does not grant app access.')}</p></div><span className="mono-tag" data-testid="status-license">{t(l.status === 'active' ? 'License active' : 'Not activated')}</span></div>
+    <div className="setting-head"><div><strong>{t('Cloud account & device activation')}</strong><p>{t('Sign in with your website account. Login alone does not grant app access.')}</p></div><span className="mono-tag" data-testid="status-license">{t(l.status === 'active' ? 'License active' : l.configured ? 'Not activated' : 'Cloud activation unavailable')}</span></div>
     <p className="heading-sub">{t('Cloud mode requires regular online verification. Existing offline certificates are preserved but are not used as a fallback.')}</p>
     {l.error && <p role="alert">{t(l.error)}</p>}
     {l.cloud?.warning && <p role="status">{t(l.cloud.warning)}</p>}

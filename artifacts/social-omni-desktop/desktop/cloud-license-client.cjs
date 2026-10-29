@@ -21,24 +21,32 @@ const MESSAGES = {
   RATE_LIMITED: 'Too many requests. Wait before trying again.',
   SERVICE_UNAVAILABLE: 'Unable to verify cloud access. Check your connection and try again.',
   INVALID_RESPONSE: 'The account website returned an invalid API response.',
+  INVALID_CONFIGURATION: 'Cloud authority is not configured in this release.',
+  MACHINE_ID_UNAVAILABLE: 'Machine ID is unavailable. Activation was not attempted.',
   SECURE_STORAGE: 'Secure system storage is unavailable. This session will not survive an app restart.',
 };
 
 // Only this main-process object ever holds authentication tokens.
 function createCloudLicenseClient({
   file, config, secureStore, fetchImpl = fetch, detect = machineId,
-  appVersion = '1.0.3', platform = process.platform, deviceName = os.hostname(),
+  appVersion = '1.0.4', platform = process.platform, deviceName = os.hostname(),
   clock = () => performance.now(), wallClock = () => Date.now(),
 }) {
-  let device = null, configured = false;
+  let device = null, configured = false, configurationError = null, base = '';
   try {
     const url = new URL(config.serverUrl);
-    configured = url.protocol === 'https:' && url.pathname === '/' && !url.username &&
-      !url.password && !url.search && !url.hash;
-    device = detect();
-    configured = configured && /^[a-f0-9]{64}$/.test(device);
-  } catch { /* Fail closed. */ }
-  const base = configured ? new URL(config.serverUrl).origin : '';
+    if (url.protocol !== 'https:' || url.pathname !== '/' || url.username || url.password || url.search || url.hash) {
+      throw failure('INVALID_CONFIGURATION');
+    }
+    base = url.origin;
+  } catch { configurationError = 'INVALID_CONFIGURATION'; }
+  if (!configurationError) {
+    try {
+      device = detect();
+      if (!/^[a-f0-9]{64}$/.test(device)) throw failure('MACHINE_ID_UNAVAILABLE');
+      configured = true;
+    } catch { device = null; configured = false; configurationError = 'MACHINE_ID_UNAVAILABLE'; }
+  }
   let accessToken = null, refreshToken = null, snapshot = null;
   let tokenUntil = 0, decisionUntil = 0, nextCheck = 0, retryUntil = 0;
   let error = null, warning = null, busy = false, stopped = false;
@@ -107,7 +115,7 @@ function createCloudLicenseClient({
     error = value.entitlement.app_access ? null : (MESSAGES[value.entitlement.reason] || MESSAGES.APP_ACCESS_DENIED);
   };
   async function request(route, { method = 'GET', body, token } = {}) {
-    if (!configured) throw failure('INVALID_RESPONSE');
+    if (!configured) throw failure(configurationError || 'INVALID_CONFIGURATION');
     if (clock() < retryUntil) throw failure('RATE_LIMITED', 429);
     let response;
     try {
@@ -181,7 +189,7 @@ function createCloudLicenseClient({
       kind: null, supportPlan: null, supportUntil: snapshot?.entitlement.support_until || null,
       supportActive: !!snapshot?.entitlement.updates_allowed,
       activatedAt: snapshot?.device.activated_at || null, serverUrl: base,
-      error: error || (snapshot && !active ? MESSAGES.SERVICE_UNAVAILABLE : null),
+      error: (configurationError && MESSAGES[configurationError]) || error || (snapshot && !active ? MESSAGES.SERVICE_UNAVAILABLE : null),
       cloud: { signedIn: !!(accessToken || refreshToken), email: snapshot?.user.email || null,
         deviceStatus: snapshot?.device.status || null, accessModel: snapshot?.entitlement.access_model || null,
         reason: snapshot?.entitlement.reason || null, warning, busy, retryAfterSeconds: Math.max(0, Math.ceil((retryUntil - clock()) / 1000)) },

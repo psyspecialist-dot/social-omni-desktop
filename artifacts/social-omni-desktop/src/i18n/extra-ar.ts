@@ -1,6 +1,8 @@
 /** Display-only translations for shared controls and locally recorded service events. */
 export const extraAr: Record<string,string> = {
   "Cloud account & device activation": "الحساب السحابي وتفعيل الجهاز",
+  "Cloud activation unavailable": "التفعيل السحابي غير متاح",
+  "Cloud authority is not configured in this release.": "جهة الحساب السحابي غير مُعدّة في هذا الإصدار.",
   "Sign in with your website account. Login alone does not grant app access.": "سجّل الدخول بحساب الموقع. تسجيل الدخول وحده لا يمنح حق استخدام التطبيق.",
   "Cloud mode requires regular online verification. Existing offline certificates are preserved but are not used as a fallback.": "يتطلب الوضع السحابي تحققًا دوريًا عبر الإنترنت. تبقى الشهادات المحلية محفوظة دون استخدامها بديلًا عند تعذر التحقق.",
   "Device status": "حالة الجهاز",
