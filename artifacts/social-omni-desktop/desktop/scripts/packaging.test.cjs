@@ -8,6 +8,17 @@ const config = require('../package.json');
 const { verifyArchiveFiles } = require('./verify-package.cjs');
 const { verifyLicenseConfiguration } = require('./verify-license-config.cjs');
 
+test('standalone packaging disables implicit updater publishing even in an authenticated CI environment', async () => {
+  assert.equal(config.build.publish, null);
+  const { createRequire } = require('node:module');
+  const builder = createRequire(require.resolve('electron-builder'));
+  const { getPublishConfigs } = builder('app-builder-lib/out/publish/PublishManager');
+  const publishers = await getPublishConfigs({
+    platformSpecificBuildOptions: {}, config: config.build, info: {},
+  }, null, 'x64', false);
+  assert.equal(publishers, null);
+});
+
 test('buyer release embeds enabled cloud licensing and the published HTTPS authority', () => {
   const licensing = require('../licensing-config.json');
   assert.equal(licensing.enabled, true);

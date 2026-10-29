@@ -61,6 +61,8 @@ jobs:
           unzip -q "$RUNNER_TEMP/najhin-source/social-najhin-desktop.zip" -d "$RUNNER_TEMP/najhin-release"
       - name: Install and build Windows x64 NSIS
         if: runner.os == 'Windows'
+        env:
+          GH_TOKEN: ''
         shell: pwsh
         working-directory: ${{ runner.temp }}/najhin-release/social-najhin-desktop
         run: |
@@ -74,6 +76,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Install and build macOS Intel and Apple Silicon
         if: runner.os == 'macOS'
+        env:
+          GH_TOKEN: ''
         shell: bash
         working-directory: ${{ runner.temp }}/najhin-release/social-najhin-desktop
         run: |

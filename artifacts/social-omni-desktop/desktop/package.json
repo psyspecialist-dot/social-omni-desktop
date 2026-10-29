@@ -23,6 +23,7 @@
     "copyright": "Copyright © 2026 Social Najhin",
     "asar": true,
     "npmRebuild": false,
+    "publish": null,
     "directories": {
       "output": "dist/installers",
       "buildResources": "build"
