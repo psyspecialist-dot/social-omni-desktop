@@ -6,7 +6,12 @@ const desktopOnly = () => ({
   licenseId: null, maxDevices: null, devicesUsed: null, kind: null, supportPlan: null,
   supportUntil: null, supportActive: false, activatedAt: null, serverUrl: '', error: null,
 });
-function createLicenseClient({ file, config, secureStore, fetchImpl = fetch, detect = detectMachine, now = () => Date.now() }) {
+function createLicenseClient({ file, config, secureStore, fetchImpl = fetch, detect = detectMachine, now = () => Date.now(), appVersion }) {
+  if (config.mode === 'cloud' && config.enabled !== false) {
+    return require('./cloud-license-client.cjs').createCloudLicenseClient({
+      file: `${file}.cloud`, config, secureStore, fetchImpl, detect, appVersion,
+    });
+  }
   const mode = config.mode || 'online';
   const enabled = config.enabled !== false;
   let device = null, deviceError = null;

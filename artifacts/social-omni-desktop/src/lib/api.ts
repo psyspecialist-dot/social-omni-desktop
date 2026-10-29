@@ -56,7 +56,8 @@ export interface SimulationAnalytics { messagesSent: number; realMessagesSent?: 
 export interface LicenseStatus {
   native: boolean; configured: boolean;
   status: 'active' | 'disabled' | 'not_activated' | 'invalid' | 'unconfigured' | 'desktop_only';
-  mode?: 'online' | 'offline'; enabled?: boolean;
+  mode?: 'online' | 'offline' | 'cloud'; enabled?: boolean;
+  cloud?: { signedIn: boolean; email: string | null; deviceStatus: string | null; accessModel: string | null; reason: string | null; warning: string | null; busy: boolean; retryAfterSeconds: number };
   machineId: string | null; licenseId: string | null; maxDevices: number | null; devicesUsed: number | null;
   kind: 'standard' | 'reseller' | null; supportPlan: 'none' | 'monthly' | 'yearly' | null;
   supportUntil: string | null; supportActive: boolean; activatedAt: string | null; serverUrl: string; error: string | null;

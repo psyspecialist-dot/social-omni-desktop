@@ -6,10 +6,20 @@ function verifyLicenseConfiguration(config) {
   if (!config || typeof config.enabled !== 'boolean') {
     throw new Error('License configuration must explicitly set enabled to true or false.');
   }
-  if (!['offline', 'online'].includes(config.mode)) {
-    throw new Error('License configuration must explicitly select offline or online mode.');
+  if (!['offline', 'online', 'cloud'].includes(config.mode)) {
+    throw new Error('License configuration must explicitly select offline, online or cloud mode.');
   }
   if (!config.enabled) return config; // Preserve the owner's intentional source-build toggle.
+  if (config.mode === 'cloud') {
+    let url;
+    try { url = new URL(config.serverUrl); } catch {
+      throw new Error('Cloud licensing requires an HTTPS account website URL.');
+    }
+    if (url.protocol !== 'https:' || url.pathname !== '/' || url.username || url.password || url.search || url.hash) {
+      throw new Error('Cloud licensing requires a clean HTTPS origin.');
+    }
+    return config;
+  }
   try {
     const key = crypto.createPublicKey({
       key: Buffer.from(config.publicKey, 'base64'), format: 'der', type: 'spki',

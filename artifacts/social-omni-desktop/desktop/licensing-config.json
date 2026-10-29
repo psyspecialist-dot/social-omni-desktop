@@ -1,7 +1,7 @@
 {
   "enabled": true,
-  "mode": "offline",
-  "serverUrl": "",
+  "mode": "cloud",
+  "serverUrl": "https://736c5a67-ada7-4b71-8509-88e554ff733f.vip.gensparksite.com",
   "publicKey": "MCowBQYDK2VwAyEAMoUkW6UOUTIp4ygzwdxCvVHWaKVzeCi7ENON2B1Wy+M=",
   "releaseDate": "2026-10-12T00:00:00.000Z"
 }

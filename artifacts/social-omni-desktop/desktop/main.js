@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain, shell, safeStorage, Menu, clipboard } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, shell, safeStorage, Menu, clipboard, powerMonitor } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 // Browser binaries live outside ASAR and do not depend on the customer's cache.
@@ -34,6 +34,7 @@ let databasePath;
 let window;
 let apiServer;
 let apiService;
+let desktopLicense;
 let apiPort;
 const apiSecret = randomBytes(32).toString('hex');
 const desktopWorkspace = '00000000-0000-4000-8000-000000000001';
@@ -116,6 +117,7 @@ async function startApi() {
     throw new Error('The installed browser runtime is missing. Reinstall Social Najhin using the complete installer; no separate Node.js installation is required.');
   }
   const licenseOptions = {
+    appVersion: app.getVersion(),
     file: path.join(app.getPath('userData'), 'license-certificate.bin'),
     config: require('./licensing-config.json'),
     secureStore: {
@@ -127,6 +129,9 @@ async function startApi() {
   const licenseClient = developmentLicense
     ? await require('./scripts/dev-license.cjs').createDevelopmentLicense({ ...licenseOptions, isPackaged: app.isPackaged })
     : createLicenseClient(licenseOptions);
+  desktopLicense = licenseClient;
+  powerMonitor.on('resume', () => desktopLicense?.resume?.());
+  powerMonitor.on('suspend', () => desktopLicense?.suspend?.());
   apiService = createService({
     express, dbPath: path.join(app.getPath('userData'), 'socialomni-workspace.sqlite'), secret: apiSecret,
     licenseClient,
@@ -177,6 +182,8 @@ function createWindow() {
   attachEditing(window);
   window.webContents.setWindowOpenHandler(({url}) => {
     if (['https://my.telegram.org','https://my.telegram.org/'].includes(url)) void shell.openExternal('https://my.telegram.org/');
+    const cloud = desktopLicense?.status();
+    if (cloud?.mode === 'cloud' && url === `${cloud.serverUrl}/account`) void shell.openExternal(url);
     return {action:'deny'};
   });
   window.webContents.on('will-navigate', (event, destination) => {
@@ -222,6 +229,7 @@ app.on('before-quit', (event) => {
   event.preventDefault();
   if (quitting) return;
   quitting = true;
+  desktopLicense?.close?.();
   // Give persistent contexts time to flush cookies without trapping the app on exit.
   Promise.race([
     Promise.resolve(apiService?.close()),

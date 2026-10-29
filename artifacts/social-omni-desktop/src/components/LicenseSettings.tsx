@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import { Copy, KeyRound, ShieldCheck } from 'lucide-react';
 import { useI18n } from '@/i18n';
 import type { ApiState, LicenseStatus } from '@/lib/api';
+import CloudLicenseSettings from './CloudLicenseSettings';
 
 type Perform = (method: 'POST' | 'DELETE', route: string, body?: unknown) => Promise<ApiState>;
 
@@ -24,6 +25,7 @@ export default function LicenseSettings({ license, perform }: { license?: Licens
   const [copied, setCopied] = useState(false);
   const [confirmRemove, setConfirmRemove] = useState(false);
   const l: LicenseStatus = license ?? { native: false, configured: false, status: 'desktop_only', machineId: null, licenseId: null, maxDevices: null, devicesUsed: null, kind: null, supportPlan: null, supportUntil: null, supportActive: false, activatedAt: null, serverUrl: '', error: null };
+  if (l.mode === 'cloud') return <CloudLicenseSettings license={l} perform={perform} />;
   const date = (v: string | null) => { if (!v) return '—'; const d = new Date(v); return Number.isNaN(d.getTime()) ? v : new Intl.DateTimeFormat(lang === 'ar' ? 'ar' : 'en', { dateStyle: 'medium' }).format(d); };
   const canActivate = l.native && l.configured && !['desktop_only', 'unconfigured', 'disabled'].includes(l.status);
   const run = async (fn: () => Promise<ApiState>, ok: string) => {

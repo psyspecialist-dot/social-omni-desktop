@@ -13,4 +13,4 @@
 - [Offline commercial licensing](offline-commercial-licensing.md) — seller-only key generation; buyer bundles exclude issuers and signing keys; offline and CodeCanyon limits.
 - [Git authentication diagnostics](git-auth-diagnostics.md) — credential helpers may stall despite GitHub being reachable; distinguish network failure from repository authorization.
 - [Local browser verification](local-browser-verification.md) — a full Chromium installation does not imply Playwright's separate headless-shell executable is installed.
-- [External account website](external-account-website.md) — the user plans to build the external account/subscription website in GenSpark using a separate API contract.
+- [External account website](external-account-website.md) — GenSpark hosts the cloud account authority; preserve perpetual purchases and keep cloud separate from legacy offline licensing.

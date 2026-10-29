@@ -1,5 +1,24 @@
 # Social Najhin
 
+## Cloud account sign-in — 1.0.4
+
+This build uses the published Social Najhin account API at
+https://736c5a67-ada7-4b71-8509-88e554ff733f.vip.gensparksite.com .
+In Settings, sign in using your website email/password or personal desktop login
+token. Eligible accounts activate this machine automatically; a successful login
+alone does not grant application access. Device limits and access come from the
+website. Use the account link to manage other devices.
+
+Passwords and personal login tokens are never saved. The refresh token is
+encrypted with the operating system; if safe encryption is unavailable, the
+application warns that the session is memory-only. Cloud mode requires regular
+online verification and does not fall back to a local certificate. Existing local
+certificates are preserved. Signing out does not release the device seat;
+detaching this device requires confirmation and revokes its sessions.
+
+Legacy offline/SNK licensing instructions elsewhere apply only to explicit
+seller builds configured in those legacy modes, not to this cloud build.
+
 ## Production installers
 
 Customers should use the standalone Windows `.exe` or macOS `.dmg`/app `.zip`,

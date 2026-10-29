@@ -8,7 +8,7 @@ const emailMarketing = require('./email-marketing.cjs');
 const smsMarketing = require('./sms-marketing.cjs');
 const facebookMarketing = require('./facebook-marketing.cjs');
 
-module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runtime,vault,kickLegacy,cancelLegacy,readMedia,smsRequest}) {
+module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runtime,vault,kickLegacy,cancelLegacy,readMedia,smsRequest,assertLicense=()=>{}}) {
   const running=new Map(),auth=new Map();
   let closed=false;
   const touch=(id,fn)=>{
@@ -53,6 +53,7 @@ module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runt
     let transport,client;
     const session=running.get(id), signal=session.controller.signal;
     const guard=()=>{
+      assertLicense();
       if(closed || signal.aborted) throw new Error('Task cancelled.');
       const t=get(id).advanced.tasks.find(t=>t.id===taskId);
       if(!t || !active(t)) throw new Error('Task cancelled.');
@@ -243,6 +244,7 @@ module.exports = function createAdvancedWorker({get,save,ids,recordActivity,runt
   }
   const timer=setInterval(()=>{
     if(closed || !runtime) return;
+    try { assertLicense(); } catch { return; }
     for(const id of ids()) {
       if(running.has(id) || auth.has(id)) continue;
       const state=get(id);

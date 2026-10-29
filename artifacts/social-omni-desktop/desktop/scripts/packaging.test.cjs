@@ -8,10 +8,11 @@ const config = require('../package.json');
 const { verifyArchiveFiles } = require('./verify-package.cjs');
 const { verifyLicenseConfiguration } = require('./verify-license-config.cjs');
 
-test('buyer release embeds enabled offline licensing and a working public verification key', () => {
+test('buyer release embeds enabled cloud licensing and the published HTTPS authority', () => {
   const licensing = require('../licensing-config.json');
   assert.equal(licensing.enabled, true);
-  assert.equal(licensing.mode, 'offline');
+  assert.equal(licensing.mode, 'cloud');
+  assert.equal(licensing.serverUrl, 'https://736c5a67-ada7-4b71-8509-88e554ff733f.vip.gensparksite.com');
   assert.doesNotThrow(() => verifyLicenseConfiguration(licensing));
   const { createLicenseClient } = require('../license-client.cjs');
   const client = createLicenseClient({
@@ -24,12 +25,13 @@ test('buyer release embeds enabled offline licensing and a working public verifi
   assert.equal(status.native, true);
   assert.equal(status.enabled, true);
   assert.equal(status.configured, true);
-  assert.equal(status.mode, 'offline');
+  assert.equal(status.mode, 'cloud');
   assert.equal(status.status, 'not_activated');
+  client.close();
 });
 
 test('export/package guard rejects missing public keys but needs no server for offline activation', () => {
-  const licensing = require('../licensing-config.json');
+  const licensing = { ...require('../licensing-config.json'), mode: 'offline', serverUrl: '' };
   assert.throws(() => verifyLicenseConfiguration({ ...licensing, publicKey: '' }), /valid Ed25519 publicKey/);
   assert.throws(() => verifyLicenseConfiguration({ ...licensing, publicKey: 'not-a-key' }), /valid Ed25519 publicKey/);
   assert.throws(() => verifyLicenseConfiguration({ ...licensing, mode: 'online', serverUrl: '' }), /HTTPS/);
@@ -39,7 +41,7 @@ test('export/package guard rejects missing public keys but needs no server for o
 
 const archiveFixture = [
   'main.js', 'preload.js', 'editing.cjs', 'api-service.cjs', 'renderer/index.html',
-  'license-client.cjs', 'license-crypto.cjs', 'license-machine.cjs', 'licensing-config.json',
+  'cloud-license-client.cjs', 'license-client.cjs', 'license-crypto.cjs', 'license-machine.cjs', 'licensing-config.json',
   'smart-replies.cjs', 'whatsapp-media.cjs', 'facebook-media.cjs', 'wa-suite-browser.cjs',
   ...['express', 'playwright', 'sql.js', 'nodemailer', 'telegram', 'cheerio']
     .map(name => `node_modules/${name}/package.json`),
