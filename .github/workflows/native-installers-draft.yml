@@ -58,7 +58,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ${{ inputs.existing_release_id != '' && fromJSON('["macos-15"]') || fromJSON('["windows-2022","macos-15"]') }}
+        os: ${{ inputs.existing_release_id != '' && fromJSON('["macos-15-intel"]') || fromJSON('["windows-2022","macos-15-intel"]') }}
     runs-on: ${{ matrix.os }}
     env:
       RELEASE_ID: ${{ needs.source.outputs.release_id }}

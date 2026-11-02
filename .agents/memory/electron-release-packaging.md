@@ -125,3 +125,14 @@ dependency debugging, explained why waiting was not a reliable fix.
 retirement notices. Move to a supported standard image without paying for a
 larger runner or weakening DMG checks. If Windows already passed, reuse the
 same source archive/commit and its verified output rather than rebuild it.
+
+Use an explicit host architecture when a standard macOS label changes its
+architecture or has capacity problems.
+
+**Why:** `macos-15` now selects ARM runners; a native release job exhausted its
+allocation attempts before running any steps, with a provider capacity notice.
+The supported `macos-15-intel` label offers a separate standard runner pool.
+
+**How to apply:** Check the live runner-images table and job annotations. A
+standard Intel Mac can package both Intel and Apple Silicon targets; preserve
+both target archives and native disk-image checks when changing the build host.
