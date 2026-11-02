@@ -53,7 +53,7 @@ test('export/package guard rejects missing public keys but needs no server for o
 const archiveFixture = [
   'main.js', 'preload.js', 'editing.cjs', 'api-service.cjs', 'renderer/index.html',
   'cloud-license-client.cjs', 'license-client.cjs', 'license-crypto.cjs', 'license-machine.cjs', 'licensing-config.json',
-  'smart-replies.cjs', 'whatsapp-media.cjs', 'facebook-media.cjs', 'wa-suite-browser.cjs',
+  'smart-replies.cjs', 'whatsapp-media.cjs', 'whatsapp-send.cjs', 'facebook-media.cjs', 'wa-suite-browser.cjs',
   ...['express', 'playwright', 'sql.js', 'nodemailer', 'telegram', 'cheerio']
     .map(name => `node_modules/${name}/package.json`),
 ];

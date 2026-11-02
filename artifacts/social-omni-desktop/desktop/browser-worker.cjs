@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const waSuiteBrowser = require('./wa-suite-browser.cjs');
 const waMedia = require('./whatsapp-media.cjs');
+const waSend = require('./whatsapp-send.cjs');
 const facebookMedia = require('./facebook-media.cjs');
 const facebookMarketing = require('./facebook-marketing.cjs');
 const mapsBrowser = require('./advanced-browser.cjs');
@@ -212,7 +213,7 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
             // An explicit invalid-number response is safe to skip; ambiguous sends stop.
             const invalid = page.getByText(/phone number shared via url is invalid|phone number.*is(n't| not) on whatsapp|is not registered on whatsapp|رقم الهاتف.*(غير صحيح|غير صالح|ليس.*واتساب|غير مسجل)/i).first();
             const deadline = Date.now() + 60000;
-            while (!await page.locator('footer [contenteditable="true"][role="textbox"],footer [contenteditable="true"][data-tab]').first().isVisible().catch(() => false)) {
+            while (!await waSend.composer(page).isVisible().catch(() => false)) {
               await restriction();
               if (await invalid.isVisible().catch(() => false) || Date.now() >= deadline) break;
               await page.waitForTimeout(200);
@@ -225,22 +226,24 @@ module.exports = function createBrowserWorker({ get, save, recordActivity, autom
               }, `WhatsApp rejected ${target.name}. No message was submitted; continuing with the next recipient.`, 'warning');
               continue;
             }
-            const input = await readable(page, [page.locator('footer [contenteditable="true"][role="textbox"]'), page.locator('footer [contenteditable="true"][data-tab]')], 'WhatsApp direct-chat message composer', Math.max(1, deadline - Date.now()));
+            const input = await readable(page, [waSend.composer(page)], 'WhatsApp direct-chat message composer', Math.max(1, deadline - Date.now()));
             let mediaSend;
             if (job.mediaId) {
               if ((await input.textContent() || '').trim()) throw new Error('A human draft is present. Attachment sending stopped; inspect the browser.');
               const media = readMedia?.(workspace, job.mediaId);
               mediaSend = await waMedia.attach(page, media, job.messageContent, { guard, restriction, act });
             } else {
-              await act(`Typing message for ${target.name}…`, () => input.fill(job.messageContent));
+              await act(`Typing message for ${target.name}…`, () => waSend.typeText(input, job.messageContent));
             }
             const outgoing = job.messageContent.trim()
               ? page.locator('.message-out').filter({ hasText: job.messageContent }) : page.locator('.message-out');
             const count = await outgoing.count();
-            const send = mediaSend || await readable(page, [page.locator('button:has([data-icon="send"]), [role="button"]:has([data-icon="send"])'), page.getByRole('button', { name: /^(send|إرسال)$/i })], 'WhatsApp Send button', 60000);
             await act(`Sending to ${target.name}…`, async () => {
-              update(workspace, jobId, j => { j.targets.find(t => t.id === target.id).sendStatus = 'Unconfirmed'; }, 'Waiting for WhatsApp server acknowledgement. No automatic retry.');
-              await send.click();
+              const reserve = () => update(workspace, jobId, j => {
+                j.targets.find(t => t.id === target.id).sendStatus = 'Unconfirmed';
+              }, 'Waiting for WhatsApp server acknowledgement. No automatic resend.');
+              if (mediaSend) { reserve(); await mediaSend.click(); }
+              else await waSend.sendText(page, { input, text: job.messageContent, guard, restriction, beforeSubmit: reserve });
             });
             // Confirm a NEW outgoing bubble and a server-accepted check, not just a click.
             await outgoing.nth(count).waitFor({ timeout: 60000 });

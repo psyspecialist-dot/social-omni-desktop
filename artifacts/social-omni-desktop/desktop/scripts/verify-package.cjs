@@ -10,7 +10,7 @@ function verifyArchiveFiles(entries) {
   if (files.has('/scripts/dev-license.cjs')) throw new Error('Development signer must not ship in an installer.');
   for (const file of ['main.js', 'preload.js', 'editing.cjs', 'api-service.cjs', 'renderer/index.html',
     'cloud-license-client.cjs', 'license-client.cjs', 'license-crypto.cjs', 'license-machine.cjs', 'licensing-config.json',
-    'smart-replies.cjs', 'whatsapp-media.cjs', 'facebook-media.cjs', 'wa-suite-browser.cjs',
+    'smart-replies.cjs', 'whatsapp-media.cjs', 'whatsapp-send.cjs', 'facebook-media.cjs', 'wa-suite-browser.cjs',
     'node_modules/express/package.json', 'node_modules/playwright/package.json',
     'node_modules/sql.js/package.json', 'node_modules/nodemailer/package.json',
     'node_modules/telegram/package.json', 'node_modules/cheerio/package.json']) {
