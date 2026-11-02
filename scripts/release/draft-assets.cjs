@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { createHash } = require('node:crypto');
 const repo = process.env.GITHUB_REPOSITORY;
-const tag = 'v1.0.4';
+const tag = 'v1.0.5';
 const sourceCommit = process.env.BUILD_SOURCE_SHA || process.env.GITHUB_SHA;
 const api = `https://api.github.com/repos/${repo}`;
 const headers = { authorization: `Bearer ${process.env.GH_TOKEN}`, accept: 'application/vnd.github+json',
@@ -25,9 +25,9 @@ function output(key, value) {
     let release = releases.find(r => r.tag_name === tag);
     if (release && !release.draft) throw new Error('Refusing to overwrite a published release.');
     const metadata = {
-      tag_name: tag, target_commitish: sourceCommit, name: 'Social Najhin 1.0.4 — unsigned installers',
+      tag_name: tag, target_commitish: sourceCommit, name: 'Social Najhin 1.0.5 — WhatsApp sending fix',
       draft: true, prerelease: false,
-      body: 'Private build draft. NOT published. Unsigned Windows x64 and macOS Intel/Apple Silicon installers. Apple notarization is disabled. Cloud account activation is enabled; passwords and signing keys are not included.',
+      body: 'Private build draft. NOT published. Includes updated WhatsApp Send selectors, editor events, bounded readiness retries and trusted Enter fallback without resending uncertain submissions. Unsigned Windows x64 and macOS Intel/Apple Silicon installers. Apple notarization is disabled. Cloud account activation is enabled; passwords and signing keys are not included. Live WhatsApp account sending has not been verified.',
     };
     release = await request(release ? `/releases/${release.id}` : '/releases', {
       method: release ? 'PATCH' : 'POST', body: JSON.stringify(metadata),
@@ -42,7 +42,7 @@ function output(key, value) {
   }
   if (mode === 'reuse-source') {
     if (!/^[0-9a-f]{40}$/.test(sourceCommit)) throw new Error('A full source commit is required.');
-    for (const name of ['social-najhin-desktop.zip', 'Social-Najhin-1.0.4-win-x64.exe', 'SHA256SUMS-Windows.txt']) {
+    for (const name of ['social-najhin-desktop.zip', 'Social-Najhin-1.0.5-win-x64.exe', 'SHA256SUMS-Windows.txt']) {
       if (!release.assets.some(a => a.name === name && a.state === 'uploaded' && a.digest?.startsWith('sha256:'))) {
         throw new Error(`Cannot continue without verified existing output: ${name}`);
       }
@@ -68,9 +68,9 @@ function output(key, value) {
     console.info('Downloaded the exact standalone source for this build.');
   } else if (mode === 'verify') {
     const required = [
-      'Social-Najhin-1.0.4-win-x64.exe',
-      'Social-Najhin-1.0.4-mac-x64.dmg', 'Social-Najhin-1.0.4-mac-arm64.dmg',
-      'Social-Najhin-1.0.4-mac-x64.zip', 'Social-Najhin-1.0.4-mac-arm64.zip',
+      'Social-Najhin-1.0.5-win-x64.exe',
+      'Social-Najhin-1.0.5-mac-x64.dmg', 'Social-Najhin-1.0.5-mac-arm64.dmg',
+      'Social-Najhin-1.0.5-mac-x64.zip', 'Social-Najhin-1.0.5-mac-arm64.zip',
       'SHA256SUMS-Windows.txt', 'SHA256SUMS-macOS.txt',
     ];
     for (const name of required) {
@@ -79,7 +79,7 @@ function output(key, value) {
     }
     const run = `https://github.com/${repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
     fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
-      `## Social Najhin 1.0.4\nAll five native installer/app outputs and both SHA-256 lists uploaded.\n\nDraft release remains unpublished and unsigned.\n\nBuild: ${run}\n`);
+      `## Social Najhin 1.0.5\nAll five native installer/app outputs and both SHA-256 lists uploaded.\n\nDraft release remains unpublished and unsigned.\n\nBuild: ${run}\n`);
     console.info('Verified all five installers/app archives and both checksum files. Draft remains unpublished.');
   } else throw new Error('Unknown release-assets operation.');
 })().catch(error => { console.error(error.message); process.exitCode = 1; });

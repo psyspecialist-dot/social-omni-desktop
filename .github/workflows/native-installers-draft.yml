@@ -1,4 +1,4 @@
-name: Build 1.0.4 native installers into unpublished draft
+name: Build 1.0.5 native installers into unpublished draft
 on:
   workflow_dispatch:
     inputs:
@@ -15,7 +15,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: native-installers-draft-104
+  group: native-installers-draft-105
   cancel-in-progress: false
 env:
   GH_TOKEN: ${{ github.token }}
@@ -46,7 +46,7 @@ jobs:
         run: node scripts/release/draft-assets.cjs prepare
       - name: Store standalone source in private draft, not Actions artifact storage
         if: inputs.existing_release_id == ''
-        run: gh release upload v1.0.4 artifacts/social-omni-desktop/public/downloads/social-najhin-desktop.zip --repo "$GITHUB_REPOSITORY" --clobber
+        run: gh release upload v1.0.5 artifacts/social-omni-desktop/public/downloads/social-najhin-desktop.zip --repo "$GITHUB_REPOSITORY" --clobber
       - id: reuse
         name: Verify and reuse the exact source and already validated Windows outputs
         if: inputs.existing_release_id != ''
@@ -92,7 +92,7 @@ jobs:
         run: |
           pnpm install --frozen-lockfile --ignore-workspace --ignore-scripts
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          node -e "if(process.versions.node.split('.')[0]!=='20')throw Error('Node 20 required'); for(const n of ['electron-builder','electron-builder-squirrel-windows'])if(require(n+'/package.json').version!=='26.0.12')throw Error('Wrong builder');if(require('./package.json').version!=='1.0.4')throw Error('Wrong app version')"
+          node -e "if(process.versions.node.split('.')[0]!=='20')throw Error('Node 20 required'); for(const n of ['electron-builder','electron-builder-squirrel-windows'])if(require(n+'/package.json').version!=='26.0.12')throw Error('Wrong builder');if(require('./package.json').version!=='1.0.5')throw Error('Wrong app version')"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           pnpm run check
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -107,7 +107,7 @@ jobs:
         run: |
           set -euo pipefail
           pnpm install --frozen-lockfile --ignore-workspace --ignore-scripts
-          node -e "if(process.versions.node.split('.')[0]!=='20')throw Error('Node 20 required'); for(const n of ['electron-builder','electron-builder-squirrel-windows'])if(require(n+'/package.json').version!=='26.0.12')throw Error('Wrong builder');if(require('./package.json').version!=='1.0.4')throw Error('Wrong app version')"
+          node -e "if(process.versions.node.split('.')[0]!=='20')throw Error('Node 20 required'); for(const n of ['electron-builder','electron-builder-squirrel-windows'])if(require(n+'/package.json').version!=='26.0.12')throw Error('Wrong builder');if(require('./package.json').version!=='1.0.5')throw Error('Wrong app version')"
           pnpm run check
           pnpm run build:mac --publish never
       - name: Verify Windows installer by installing and uninstalling it
@@ -117,8 +117,8 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           $output = "$env:RUNNER_TEMP/najhin-release/social-najhin-desktop/dist/installers"
-          $installers = @(Get-ChildItem "$output/Social-Najhin-1.0.4-win-x64.exe")
-          if ($installers.Count -ne 1) { throw "Expected the 1.0.4 Windows x64 NSIS installer." }
+          $installers = @(Get-ChildItem "$output/Social-Najhin-1.0.5-win-x64.exe")
+          if ($installers.Count -ne 1) { throw "Expected the 1.0.5 Windows x64 NSIS installer." }
           $installer = $installers[0]
           $stream = [IO.File]::OpenRead($installer.FullName)
           try {
@@ -171,7 +171,7 @@ jobs:
           $hashes | Set-Content "$output/SHA256SUMS-Windows.txt" -Encoding utf8
           $files += Get-Item "$output/SHA256SUMS-Windows.txt"
           foreach ($file in $files) {
-            gh release upload v1.0.4 $file.FullName --repo $env:GITHUB_REPOSITORY --clobber
+            gh release upload v1.0.5 $file.FullName --repo $env:GITHUB_REPOSITORY --clobber
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           }
       - name: Hash and store verified Mac files in the unpublished draft
@@ -184,7 +184,7 @@ jobs:
           cd "$output"
           shasum -a 256 ./*.dmg ./*.zip ./*.blockmap ./latest*.yml > SHA256SUMS-macOS.txt
           for file in ./*.dmg ./*.zip ./*.blockmap ./latest*.yml ./SHA256SUMS-macOS.txt; do
-            gh release upload v1.0.4 "$file" --repo "$GITHUB_REPOSITORY" --clobber
+            gh release upload v1.0.5 "$file" --repo "$GITHUB_REPOSITORY" --clobber
           done
   verify:
     needs: [source, installers]
